@@ -7,11 +7,9 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "React/RCTBridgeModule.h"
 
-#import "RCTBridgeModule.h"
-
-@interface RCT_EXTERN_MODULE(MobileMessaging, NSObject)
-
-RCT_EXTERN_METHOD(get)
-
+@interface RCT_EXTERN_MODULE(ReactNativeMobileMessaging, NSObject)
+RCT_EXTERN_METHOD(start)
+RCT_EXTERN_METHOD(currentTime: (RCTResponseSenderBlock)callback)
 @end
