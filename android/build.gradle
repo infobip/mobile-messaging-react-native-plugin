@@ -34,6 +34,7 @@ buildscript {
         }
         dependencies {
             classpath 'com.android.tools.build:gradle:3.4.1'
+            classpath 'com.google.gms:google-services:4.2.0'
         }
     }
 }
@@ -71,8 +72,18 @@ repositories {
 }
 
 dependencies {
-    //noinspection GradleDynamicVersion
-    implementation 'com.facebook.react:react-native:+'  // From node_modules
+    def mmVersion = '2.2.2'
+
+    implementation 'com.google.gms:google-services:+'
+    implementation 'com.google.firebase:firebase-core:9.6.1'
+    implementation 'com.facebook.react:react-native:+'
+    implementation "com.android.support:support-v4:+"
+    implementation "com.android.support:appcompat-v7:+"
+//    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation "org.infobip.mobile.messaging.api:infobip-mobile-messaging-android-geo-sdk:$mmVersion@aar"
+    implementation ("org.infobip.mobile.messaging.api:infobip-mobile-messaging-android-sdk:$mmVersion@aar") {
+        transitive = true;
+    }
 }
 
 def configureReactNativePom(def pom) {
