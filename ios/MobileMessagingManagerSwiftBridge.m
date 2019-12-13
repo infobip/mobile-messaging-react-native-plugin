@@ -10,6 +10,5 @@
 #import "React/RCTBridgeModule.h"
 
 @interface RCT_EXTERN_MODULE(ReactNativeMobileMessaging, NSObject)
-RCT_EXTERN_METHOD(start)
-RCT_EXTERN_METHOD(currentTime: (RCTResponseSenderBlock)callback)
+RCT_EXTERN_METHOD(init:(NSDictionary *)config)
 @end
