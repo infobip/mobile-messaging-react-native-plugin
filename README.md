@@ -15,3 +15,4 @@ import ReactNativeMobileMessaging from 'infobip-mobile-messaging-react-native-pl
 // TODO: What to do with the module?
 ReactNativeMobileMessaging;
 ```
+
