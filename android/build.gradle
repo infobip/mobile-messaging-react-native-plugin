@@ -34,7 +34,7 @@ buildscript {
         }
         dependencies {
             classpath 'com.android.tools.build:gradle:3.4.1'
-            classpath 'com.google.gms:google-services:4.2.0'
+//            classpath 'com.google.gms:google-services:4.2.0'
         }
     }
 }
@@ -74,7 +74,7 @@ repositories {
 dependencies {
     def mmVersion = '2.2.2'
 
-    implementation 'com.google.gms:google-services:+'
+//    implementation 'com.google.gms:google-services:+'
     implementation 'com.google.firebase:firebase-core:9.6.1'
     implementation 'com.facebook.react:react-native:+'
     implementation "com.android.support:support-v4:+"
@@ -83,6 +83,7 @@ dependencies {
     implementation "org.infobip.mobile.messaging.api:infobip-mobile-messaging-android-geo-sdk:$mmVersion@aar"
     implementation ("org.infobip.mobile.messaging.api:infobip-mobile-messaging-android-sdk:$mmVersion@aar") {
         transitive = true;
+        exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk8';
     }
 }
 

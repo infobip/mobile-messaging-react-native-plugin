@@ -171,8 +171,8 @@ public class  ReactNativeMobileMessagingModule extends ReactContextBaseJavaModul
 
     @ReactMethod
     public void init(ReadableMap args, final Callback successCallback, final Callback errorCallback) throws JSONException {
-        final Configuration configuration = Configuration.resolveConfiguration(ReactNativeJson.convertMapToJson(args));
-        Log.e(Utils.TAG, configuration.applicationCode);
+            final Configuration configuration = Configuration.resolveConfiguration(ReactNativeJson.convertMapToJson(args));
+            Log.e(Utils.TAG, configuration.applicationCode);
 
 //TODO: check how to request permissions
 //    if (configuration.geofencingEnabled && (!cordova.hasPermission(Manifest.permission.ACCESS_FINE_LOCATION) ||
@@ -183,74 +183,75 @@ public class  ReactNativeMobileMessagingModule extends ReactContextBaseJavaModul
 //      return;
 //    }
 
-        final Application context = (Application) reactContext.getApplicationContext();
+            final Application context = (Application) reactContext.getApplicationContext();
 
-        if (configuration.loggingEnabled) {
-            MobileMessagingLogger.enforce();
-        }
+            if (configuration.loggingEnabled) {
+                MobileMessagingLogger.enforce();
+            }
 
-        PreferenceHelper.saveString(context, MobileMessagingProperty.SYSTEM_DATA_VERSION_POSTFIX, "reactNative " + configuration.reactNativePluginVersion);
+            PreferenceHelper.saveString(context, MobileMessagingProperty.SYSTEM_DATA_VERSION_POSTFIX, "reactNative " + configuration.reactNativePluginVersion);
 
-        MobileMessaging.Builder builder = new MobileMessaging.Builder(context)
-                .withApplicationCode(configuration.applicationCode);
+            MobileMessaging.Builder builder = new MobileMessaging.Builder(context)
+                    .withApplicationCode(configuration.applicationCode);
 
-        if (configuration.privacySettings.userDataPersistingDisabled) {
-            builder.withoutStoringUserData();
-        }
-        if (configuration.privacySettings.carrierInfoSendingDisabled) {
-            builder.withoutCarrierInfo();
-        }
-        if (configuration.privacySettings.systemInfoSendingDisabled) {
-            builder.withoutSystemInfo();
-        }
+            if (configuration.privacySettings.userDataPersistingDisabled) {
+                builder.withoutStoringUserData();
+            }
+            if (configuration.privacySettings.carrierInfoSendingDisabled) {
+                builder.withoutCarrierInfo();
+            }
+            if (configuration.privacySettings.systemInfoSendingDisabled) {
+                builder.withoutSystemInfo();
+            }
 
-        //TODO: MessageStoreAdapter
+            //TODO: MessageStoreAdapter
     /*if (configuration.messageStorage != null) {
       builder.withMessageStore(MessageStoreAdapter.class);
-    } else*/ if (configuration.defaultMessageStorage) {
-            builder.withMessageStore(SQLiteMessageStore.class);
-        }
+    } else*/
+            if (configuration.defaultMessageStorage) {
+                builder.withMessageStore(SQLiteMessageStore.class);
+            }
 
-        if (configuration.android != null) {
-            NotificationSettings.Builder notificationBuilder = new NotificationSettings.Builder(context);
-            if (configuration.android.notificationIcon != null) {
-                int resId = getResId(context.getResources(), configuration.android.notificationIcon, context.getPackageName());
-                if (resId != 0) {
-                    notificationBuilder.withDefaultIcon(resId);
+            if (configuration.android != null) {
+                NotificationSettings.Builder notificationBuilder = new NotificationSettings.Builder(context);
+                if (configuration.android.notificationIcon != null) {
+                    int resId = getResId(context.getResources(), configuration.android.notificationIcon, context.getPackageName());
+                    if (resId != 0) {
+                        notificationBuilder.withDefaultIcon(resId);
+                    }
                 }
+                if (configuration.android.multipleNotifications) {
+                    notificationBuilder.withMultipleNotifications();
+                }
+                if (configuration.android.notificationAccentColor != null) {
+                    int color = Color.parseColor(configuration.android.notificationAccentColor);
+                    notificationBuilder.withColor(color);
+                }
+                builder.withDisplayNotification(notificationBuilder.build());
             }
-            if (configuration.android.multipleNotifications) {
-                notificationBuilder.withMultipleNotifications();
-            }
-            if (configuration.android.notificationAccentColor != null) {
-                int color = Color.parseColor(configuration.android.notificationAccentColor);
-                notificationBuilder.withColor(color);
-            }
-            builder.withDisplayNotification(notificationBuilder.build());
-        }
 
-        builder.build(new MobileMessaging.InitListener() {
-            @SuppressLint("MissingPermission")
-            @Override
-            public void onSuccess() {
-                if (configuration.geofencingEnabled) {
-                    MobileGeo.getInstance(context).activateGeofencing();
+            builder.build(new MobileMessaging.InitListener() {
+                @SuppressLint("MissingPermission")
+                @Override
+                public void onSuccess() {
+                    if (configuration.geofencingEnabled) {
+                        MobileGeo.getInstance(context).activateGeofencing();
+                    }
+
+                    NotificationCategory categories[] = notificationCategoriesFromConfiguration(configuration.notificationCategories);
+                    if (categories.length > 0) {
+                        MobileInteractive.getInstance(context).setNotificationCategories(categories);
+                    }
+
+                    successCallback.invoke();
                 }
 
-                NotificationCategory categories[] = notificationCategoriesFromConfiguration(configuration.notificationCategories);
-                if (categories.length > 0) {
-                    MobileInteractive.getInstance(context).setNotificationCategories(categories);
+                @Override
+                public void onError(InternalSdkError e, @Nullable Integer googleErrorCode) {
+                    errorCallback.invoke(e.get(), googleErrorCode);
+                    Log.e(Utils.TAG, "Cannot start SDK: " + e.get() + " errorCode: " + googleErrorCode);
                 }
-
-                successCallback.invoke("success");
-            }
-
-            @Override
-            public void onError(InternalSdkError e, @Nullable Integer googleErrorCode) {
-                errorCallback.invoke(e.get(), googleErrorCode);
-                Log.e(Utils.TAG, "Cannot start SDK: " + e.get() + " errorCode: " + googleErrorCode);
-            }
-        });
+            });
     }
 
     private void registerBroadcastReceiver() {
