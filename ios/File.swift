@@ -10,17 +10,22 @@ import Foundation
 import MobileMessaging
 
 @objc(ReactNativeMobileMessaging)
-class ReactNativeMobileMessaging: NSObject  {
+class ReactNativeMobileMessaging: RCTEventEmitter  {
 	@objc
-    static func requiresMainQueueSetup() -> Bool {
+    override static func requiresMainQueueSetup() -> Bool {
 	  return true
 	}
 
     @objc(init:onSuccess:onError:)
-    func start(config: NSDictionary, successCallback: RCTResponseSenderBlock, errorCallback: RCTResponseSenderBlock) {
-		guard let config = config as? [String : AnyObject], let configuration = MMConfiguration(rawConfig: config) else { return }
+    func start(config: NSDictionary, successCallback: @escaping RCTResponseSenderBlock, errorCallback: RCTResponseSenderBlock) {
+        guard let config = config as? [String : AnyObject], let configuration = MMConfiguration(rawConfig: config) else {
+            errorCallback(nil)
+            return
+        }
 		MobileMessaging.logger = MMDefaultLogger()
-		MobileMessaging.withApplicationCode(configuration.appCode, notificationType: configuration.notificationType)?.start()
+        MobileMessaging.withApplicationCode(configuration.appCode, notificationType: configuration.notificationType)?.start({
+            successCallback(nil)
+        })
 	}
 }
 

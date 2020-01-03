@@ -23,7 +23,18 @@ RCT_EXTERN_METHOD(init:(NSDictionary *)config onSuccess:(RCTResponseSenderBlock)
 
 - (NSArray<NSString *> *)supportedEvents
 {
-  return @[@"tokenReceived"];
+  return @[
+      @"tokenReceived",
+      @"registrationUpdated",
+      @"installationUpdated",
+      @"userUpdated",
+      @"personalized",
+      @"depersonalized",
+      @"geofenceEntered",
+      @"actionTapped",
+      @"notificationTapped",
+      @"messageReceived"
+  ];
 }
 
 - (void)calendarEventReminderReceived
