@@ -51,7 +51,8 @@ class MobileMessaging {
      *			}
      *		]
      *	}
-     * @param {Function} onInitError. Error callback
+     * @param {Function} onSuccess. Success callback
+     * @param {Function} onError. Error callback
      */
     init(config, onSuccess, onError) {
         var messageStorage = config.messageStorage;
