@@ -5,7 +5,7 @@ const { ReactNativeMobileMessaging } = NativeModules;
 /**
  * Constructor
  */
-export class MobileMessaging {
+class MobileMessaging {
     constructor() {
         this.supportedEvents = ["messageReceived", "notificationTapped", "tokenReceived", "registrationUpdated", "geofenceEntered", "actionTapped", "installationUpdated", "userUpdated", "personalized", "depersonalized"];
     }
@@ -53,24 +53,21 @@ export class MobileMessaging {
      *	}
      * @param {Function} onInitError. Error callback
      */
-    init(config, onInitError) {
+    init(config, onSuccess, onError) {
         var messageStorage = config.messageStorage;
-        var _onInitErrorHandler = onInitError || function() {};
+        var _onErrorHandler = onError || function() {};
+        var _onSuccessHandler = onSuccess || function() {};
 
         this.configuration = config;
 
         if (!config.applicationCode) {
+            _onErrorHandler('No application code provided');
             console.error('No application code provided');
-            _onInitErrorHandler('No application code provided');
             return;
         }
 
-        ReactNativeMobileMessaging.init(
-            config,
-            () => {},
-            (code, error) => {
-                _onInitErrorHandler();
-            },
-        );
+        ReactNativeMobileMessaging.init(config, _onSuccessHandler, _onErrorHandler,);
     };
 }
+
+export var mobileMessaging = new MobileMessaging();
