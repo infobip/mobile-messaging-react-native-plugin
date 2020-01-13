@@ -9,7 +9,18 @@ export default ReactNativeMobileMessaging;
  */
 class MobileMessaging {
     constructor() {
-        this.supportedEvents = ["messageReceived", "notificationTapped", "tokenReceived", "registrationUpdated", "geofenceEntered", "actionTapped", "installationUpdated", "userUpdated", "personalized", "depersonalized"];
+        this.supportedEvents = [
+            "messageReceived",
+            "notificationTapped",
+            "tokenReceived",
+            "registrationUpdated",
+            "geofenceEntered",
+            "actionTapped",
+            "installationUpdated",
+            "userUpdated",
+            "personalized",
+            "depersonalized"
+        ];
     }
 
     /**
@@ -56,21 +67,19 @@ class MobileMessaging {
      * @param {Function} onSuccess. Success callback
      * @param {Function} onError. Error callback
      */
-    init(config, onSuccess, onError) {
-        var messageStorage = config.messageStorage;
-        var _onErrorHandler = onError || function() {};
-        var _onSuccessHandler = onSuccess || function() {};
+    init(config, onSuccess = function() {}, onError = function() {}) {
+        let messageStorage = config.messageStorage;
 
         this.configuration = config;
 
         if (!config.applicationCode) {
-            _onErrorHandler('No application code provided');
+            onError('No application code provided');
             console.error('No application code provided');
             return;
         }
 
-        ReactNativeMobileMessaging.init(config, _onSuccessHandler, _onErrorHandler,);
+        ReactNativeMobileMessaging.init(config, onSuccess, onError);
     };
 }
 
-export var mobileMessaging = new MobileMessaging();
+export let mobileMessaging = new MobileMessaging();
