@@ -1,0 +1,22 @@
+#!/bin/sh
+
+if [ -z "$1" ]
+then
+	echo "Please provide version as first paratemer"
+	exit 1
+fi
+
+# Update version in plugin.xml
+#sed -E -e 'H;1h;$!d;x' -e 's@version\=\"[^"\s]*\"@version="'$1'"@' -i '' plugin.xml
+
+# Update version in package.json
+npm --no-git-tag-version --force version $1
+
+if [ -z "$2" ]
+then
+	#git add plugin.xml
+	git add package.json
+	git add README.md
+else
+	echo "Skipping 'git add'"
+fi
