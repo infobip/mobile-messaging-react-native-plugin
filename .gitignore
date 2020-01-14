@@ -42,3 +42,4 @@ buck-out/
 *.keystore
 ios/Pods
 Podfile.lock
+*.tgz

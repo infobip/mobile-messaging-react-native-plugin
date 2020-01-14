@@ -27,6 +27,7 @@
     "react-native": ">=0.59.0-rc.0 <1.0.x"
   },
   "devDependencies": {
+    "metro-react-native-babel-preset": "^0.56.4",
     "react": "^16.8.3",
     "react-native": "^0.59.10"
   }
