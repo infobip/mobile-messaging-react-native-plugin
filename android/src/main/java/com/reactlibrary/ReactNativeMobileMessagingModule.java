@@ -9,15 +9,10 @@ import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
-//import com.facebook.react.module.annotations.ReactModule;
+import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
 
 import com.facebook.react.bridge.Callback;
-
-import org.infobip.mobile.messaging.Message;
-import org.infobip.mobile.messaging.MobileMessaging;
-import org.infobip.mobile.messaging.NotificationSettings;
-import org.infobip.mobile.messaging.storage.SQLiteMessageStore;
-
 
 //MobileMessaging
 import android.annotation.SuppressLint;
@@ -27,22 +22,22 @@ import android.graphics.Color;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-//import android.support.annotation.NonNull;
-//import android.support.annotation.Nullable;
+
+import android.os.AsyncTask;
 import android.util.Log;
 
-import com.facebook.react.bridge.ReadableMap;
-import com.reactlibrary.userdatamappers.InstallationJson;
-import com.reactlibrary.userdatamappers.MessageJson;
-import com.reactlibrary.userdatamappers.ReactNativeJson;
-import com.reactlibrary.userdatamappers.UserJson;
+import com.reactlibrary.datamappers.PersonalizationCtx;
+import com.reactlibrary.datamappers.InstallationJson;
+import com.reactlibrary.datamappers.MessageJson;
+import com.reactlibrary.datamappers.ReactNativeJson;
+import com.reactlibrary.datamappers.UserJson;
 
 import org.infobip.mobile.messaging.BroadcastParameter;
 import org.infobip.mobile.messaging.Event;
 import org.infobip.mobile.messaging.Installation;
 import org.infobip.mobile.messaging.MobileMessagingProperty;
+import org.infobip.mobile.messaging.SuccessPending;
 import org.infobip.mobile.messaging.User;
-
 import org.infobip.mobile.messaging.geo.GeoEvent;
 import org.infobip.mobile.messaging.geo.MobileGeo;
 import org.infobip.mobile.messaging.interactive.InteractiveEvent;
@@ -51,7 +46,14 @@ import org.infobip.mobile.messaging.interactive.NotificationAction;
 import org.infobip.mobile.messaging.interactive.NotificationCategory;
 import org.infobip.mobile.messaging.logging.MobileMessagingLogger;
 import org.infobip.mobile.messaging.mobile.InternalSdkError;
+import org.infobip.mobile.messaging.mobile.Result;
+import org.infobip.mobile.messaging.Message;
+import org.infobip.mobile.messaging.MobileMessaging;
+import org.infobip.mobile.messaging.NotificationSettings;
+import org.infobip.mobile.messaging.mobile.MobileMessagingError;
+import org.infobip.mobile.messaging.storage.SQLiteMessageStore;
 import org.infobip.mobile.messaging.util.PreferenceHelper;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -60,7 +62,6 @@ import java.util.List;
 import java.util.Map;
 
 
-//@ReactModule(name = ReactNativeMobileMessagingModule.MODULE_NAME)
 public class  ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule implements LifecycleEventListener {
     public static final String MODULE_NAME = "ReactNativeMobileMessaging";
 
@@ -326,6 +327,148 @@ public class  ReactNativeMobileMessagingModule extends ReactContextBaseJavaModul
                     .build();
         }
         return notificationActions;
+    }
+
+
+    /*User Profile Management*/
+
+    @ReactMethod
+    public void saveUser(ReadableMap args, final Callback successCallback, final Callback errorCallback) throws JSONException {
+        final User user = UserJson.resolveUser(ReactNativeJson.convertMapToJson(args));
+        mobileMessaging().saveUser(user, userResultListener(successCallback, errorCallback));
+    }
+
+    @ReactMethod
+    public void fetchUser(final Callback successCallback, final Callback errorCallback) {
+        mobileMessaging().fetchUser(userResultListener(successCallback, errorCallback));
+    }
+
+    @NonNull
+    private MobileMessaging.ResultListener<User> userResultListener(final Callback successCallback, final Callback errorCallback) {
+        return new MobileMessaging.ResultListener<User>() {
+            @Override
+            public void onResult(Result<User, MobileMessagingError> result) {
+                if (result.isSuccess()) {
+                    ReadableMap readableMap = UserJson.toReadableMap(result.getData());
+                    successCallback.invoke(readableMap);
+                } else {
+                    errorCallback.invoke(result.getError().getMessage());
+                }
+            }
+        };
+    }
+
+    @ReactMethod
+    public void getUser(final Callback successCallback) {
+        User user = mobileMessaging().getUser();
+        ReadableMap userReadableMap = UserJson.toReadableMap(user);
+        successCallback.invoke(userReadableMap);
+    }
+
+    @ReactMethod
+    public void saveInstallation(ReadableMap args, final Callback successCallback, final Callback errorCallback) throws JSONException {
+        final Installation installation = InstallationJson.resolveInstallation(ReactNativeJson.convertMapToJson(args));
+        mobileMessaging().saveInstallation(installation, installationResultListener(successCallback, errorCallback));
+    }
+
+    @ReactMethod
+    public void fetchInstallation(final Callback successCallback, final Callback errorCallback) {
+        mobileMessaging().fetchInstallation(installationResultListener(successCallback, errorCallback));
+    }
+
+    @NonNull
+    private MobileMessaging.ResultListener<Installation> installationResultListener(final Callback successCallback, final Callback errorCallback) {
+        return new MobileMessaging.ResultListener<Installation>() {
+            @Override
+            public void onResult(Result<Installation, MobileMessagingError> result) {
+                if (result.isSuccess()) {
+                    ReadableMap readableMap = InstallationJson.toReadableMap(result.getData());
+                    successCallback.invoke(readableMap);
+                } else {
+                    errorCallback.invoke(result.getError().getMessage());
+                }
+            }
+        };
+    }
+
+    @ReactMethod
+    public void getInstallation(final Callback successCallback) {
+        Installation installation = mobileMessaging().getInstallation();
+        ReadableMap installationReadableMap = InstallationJson.toReadableMap(installation);
+        successCallback.invoke(installationReadableMap);
+    }
+
+    @ReactMethod
+    public void personalize(ReadableMap args, final Callback successCallback, final Callback errorCallback) throws JSONException {
+        final PersonalizationCtx ctx = PersonalizationCtx.resolvePersonalizationCtx(ReactNativeJson.convertMapToJson(args));
+        mobileMessaging().personalize(ctx.userIdentity, ctx.userAttributes, ctx.forceDepersonalize, new MobileMessaging.ResultListener<User>() {
+            @Override
+            public void onResult(Result<User, MobileMessagingError> result) {
+                if (result.isSuccess()) {
+                    ReadableMap readableMap = UserJson.toReadableMap(result.getData());
+                    successCallback.invoke(readableMap);
+                } else {
+                    errorCallback.invoke(result.getError().getMessage());
+                }
+            }
+        });
+    }
+
+    private static final Map<SuccessPending, String> depersonalizeStates = new HashMap<SuccessPending, String>() {{
+        put(SuccessPending.Pending, "pending");
+        put(SuccessPending.Success, "success");
+    }};
+
+    @ReactMethod
+    public void depersonalize(final Callback successCallback, final Callback errorCallback) {
+        mobileMessaging().depersonalize(new MobileMessaging.ResultListener<SuccessPending>() {
+            @Override
+            public void onResult(Result<SuccessPending, MobileMessagingError> result) {
+                if (result.isSuccess()) {
+                    successCallback.invoke(depersonalizeStates.get(result.getData()));
+                } else {
+                    errorCallback.invoke(result.getError().getMessage());
+                }
+            }
+        });
+    }
+
+    @ReactMethod
+    public void depersonalizeInstallation(final String pushRegistrationId, final Callback successCallback, final Callback errorCallback) {
+        if (pushRegistrationId.isEmpty()) {
+            errorCallback.invoke("Cannot resolve pushRegistrationId from arguments");
+            return;
+        }
+        mobileMessaging().depersonalizeInstallation(pushRegistrationId, installationsResultListener(successCallback, errorCallback));
+    }
+
+    @ReactMethod
+    public void setInstallationAsPrimary(final String pushRegistrationId, final Boolean primary, final Callback successCallback, final Callback errorCallback) {
+
+        if (pushRegistrationId.isEmpty()) {
+            errorCallback.invoke("Cannot resolve pushRegistrationId from arguments");
+            return;
+        }
+        mobileMessaging().setInstallationAsPrimary(pushRegistrationId, primary, installationsResultListener(successCallback, errorCallback));
+    }
+
+    @NonNull
+    private MobileMessaging.ResultListener<List<Installation>> installationsResultListener(final Callback successCallback, final Callback errorCallback) {
+        return new MobileMessaging.ResultListener<List<Installation>>() {
+            @Override
+            public void onResult(Result<List<Installation>, MobileMessagingError> result) {
+                if (result.isSuccess()) {
+                    ReadableArray readableArray = InstallationJson.toReadableArray(result.getData());
+                    successCallback.invoke(readableArray);
+                } else {
+                    errorCallback.invoke(result.getError().getMessage());
+                }
+            }
+        };
+    }
+
+    private MobileMessaging mobileMessaging() {
+        return MobileMessaging.getInstance(this.reactContext.getApplicationContext());
     }
 
 }

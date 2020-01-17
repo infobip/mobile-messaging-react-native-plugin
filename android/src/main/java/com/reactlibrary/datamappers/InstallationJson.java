@@ -1,4 +1,4 @@
-package com.reactlibrary.userdatamappers;
+package com.reactlibrary.datamappers;
 
 import org.infobip.mobile.messaging.CustomAttributeValue;
 import org.infobip.mobile.messaging.Installation;
@@ -10,20 +10,37 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import java.util.List;
 import java.util.Map;
 import java.lang.reflect.Type;
 
+import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
 import com.google.gson.reflect.TypeToken;
 
 public class InstallationJson extends Installation {
 
-    static JSONArray toJSON(final List<Installation> installations) {
+    public static JSONArray toJSON(final List<Installation> installations) {
+        if (installations == null) {
+            return null;
+        }
         JSONArray installationsJson = new JSONArray();
         for (Installation installation : installations) {
             installationsJson.put(toJSON(installation));
         }
         return installationsJson;
+    }
+
+    @NonNull
+    public static Installation resolveInstallation(JSONObject args) throws JSONException {
+        if (args == null) {
+            throw new IllegalArgumentException("Cannot resolve installation from arguments");
+        }
+
+        return InstallationJson.fromJSON(args);
     }
 
     public static JSONObject toJSON(final Installation installation) {
@@ -38,7 +55,25 @@ public class InstallationJson extends Installation {
         }
     }
 
-    static Installation fromJSON(JSONObject json) {
+    public static ReadableMap toReadableMap(final Installation installation) {
+        try {
+            return ReactNativeJson.convertJsonToMap(InstallationJson.toJSON(installation));
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static ReadableArray toReadableArray(final List<Installation> installations) {
+        try {
+            return ReactNativeJson.convertJsonToArray(InstallationJson.toJSON(installations));
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private static Installation fromJSON(JSONObject json) {
         Installation installation = new Installation();
 
         try {

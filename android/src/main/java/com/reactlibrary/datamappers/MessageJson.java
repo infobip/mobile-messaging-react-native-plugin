@@ -1,6 +1,8 @@
-package com.reactlibrary.userdatamappers;
+package com.reactlibrary.datamappers;
 
 import android.util.Log;
+
+import com.reactlibrary.Utils;
 
 import org.infobip.mobile.messaging.Message;
 import org.json.JSONException;
@@ -32,8 +34,8 @@ public class MessageJson {
                     .putOpt("seenDate", message.getSeenTimestamp())
                     .putOpt("geo", hasGeo(message));
         } catch (JSONException e) {
-            Log.w(com.reactlibrary.Utils.TAG, "Cannot convert message to JSON: " + e.getMessage());
-            Log.d(com.reactlibrary.Utils.TAG, Log.getStackTraceString(e));
+            Log.w(Utils.TAG, "Cannot convert message to JSON: " + e.getMessage());
+            Log.d(Utils.TAG, Log.getStackTraceString(e));
             return null;
         }
     }

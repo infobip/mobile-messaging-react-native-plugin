@@ -1,4 +1,4 @@
-package com.reactlibrary.userdatamappers;
+package com.reactlibrary.datamappers;
 
 import org.infobip.mobile.messaging.CustomAttributeValue;
 import org.infobip.mobile.messaging.User;
@@ -14,6 +14,11 @@ import org.infobip.mobile.messaging.util.DateTimeUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+import com.facebook.react.bridge.ReadableMap;
 
 import java.text.ParseException;
 import java.util.Date;
@@ -42,7 +47,25 @@ public class UserJson extends User {
         }
     }
 
-    static User fromJSON(JSONObject json) {
+    @NonNull
+    public static User resolveUser(JSONObject args) throws JSONException {
+        if (args == null) {
+            throw new IllegalArgumentException("Cannot resolve user from arguments");
+        }
+
+        return UserJson.fromJSON(args);
+    }
+
+    public static ReadableMap toReadableMap(final User user) {
+        try {
+            return ReactNativeJson.convertJsonToMap(toJSON(user));
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private static User fromJSON(JSONObject json) {
         User user = new User();
 
         try {
@@ -96,7 +119,7 @@ public class UserJson extends User {
         return user;
     }
 
-    static UserAttributes userAttributesFromJson(JSONObject json) {
+    public static UserAttributes userAttributesFromJson(JSONObject json) {
         if (json == null) {
             return null;
         }
@@ -145,7 +168,7 @@ public class UserJson extends User {
         return userAttributes;
     }
 
-    static UserIdentity userIdentityFromJson(JSONObject json) {
+    public static UserIdentity userIdentityFromJson(JSONObject json) {
         UserIdentity userIdentity = new UserIdentity();
         try {
             if (json.has(UserAtts.externalUserId)) {
@@ -183,10 +206,4 @@ public class UserJson extends User {
             }
         }
     }
-}
-
-class PersonalizationCtx {
-    UserIdentity userIdentity;
-    UserAttributes userAttributes;
-    boolean forceDepersonalize;
 }

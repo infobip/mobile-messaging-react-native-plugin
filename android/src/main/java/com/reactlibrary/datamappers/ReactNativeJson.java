@@ -1,4 +1,4 @@
-package com.reactlibrary.userdatamappers;
+package com.reactlibrary.datamappers;
 
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.WritableMap;
@@ -18,7 +18,10 @@ import org.json.JSONObject;
 import java.util.Iterator;
 
 public class ReactNativeJson {
-    public static WritableMap convertJsonToMap(JSONObject jsonObject) throws JSONException {
+    static WritableMap convertJsonToMap(JSONObject jsonObject) throws JSONException {
+        if (jsonObject == null) {
+            return null;
+        }
         WritableMap map = new WritableNativeMap();
 
         Iterator<String> iterator = jsonObject.keys();
@@ -44,7 +47,10 @@ public class ReactNativeJson {
         return map;
     }
 
-    public static WritableArray convertJsonToArray(JSONArray jsonArray) throws JSONException {
+    static WritableArray convertJsonToArray(JSONArray jsonArray) throws JSONException {
+        if (jsonArray == null) {
+            return null;
+        }
         WritableArray array = new WritableNativeArray();
 
         for (int i = 0; i < jsonArray.length(); i++) {
@@ -69,6 +75,9 @@ public class ReactNativeJson {
     }
 
     public static JSONObject convertMapToJson(ReadableMap readableMap) throws JSONException {
+        if (readableMap == null) {
+            return null;
+        }
         JSONObject object = new JSONObject();
         ReadableMapKeySetIterator iterator = readableMap.keySetIterator();
         while (iterator.hasNextKey()) {
@@ -97,7 +106,10 @@ public class ReactNativeJson {
         return object;
     }
 
-    public static JSONArray convertArrayToJson(ReadableArray readableArray) throws JSONException {
+    private static JSONArray convertArrayToJson(ReadableArray readableArray) throws JSONException {
+        if (readableArray == null) {
+            return null;
+        }
         JSONArray array = new JSONArray();
         for (int i = 0; i < readableArray.size(); i++) {
             switch (readableArray.getType(i)) {
