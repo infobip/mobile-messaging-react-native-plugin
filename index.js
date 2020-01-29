@@ -1,4 +1,9 @@
-import { NativeModules } from 'react-native';
+import {
+    NativeEventEmitter,
+    NativeModules,
+    PermissionsAndroid,
+    Platform
+} from 'react-native';
 
 const { ReactNativeMobileMessaging } = NativeModules;
 
@@ -21,7 +26,49 @@ class MobileMessaging {
             "personalized",
             "depersonalized"
         ];
+        this.messageStorageEvents = [
+            'messageStorage.start',
+            'messageStorage.stop',
+            'messageStorage.save',
+            'messageStorage.find',
+            'messageStorage.findAll'
+        ];
+        this.eventEmitter = new NativeEventEmitter(ReactNativeMobileMessaging);
     }
+
+    /**
+     * Register to event coming from MobileMessaging library.
+     * The following events are supported:
+     *
+     *   - messageReceived
+     *   - notificationTapped
+     *   - tokenReceived
+     *   - registrationUpdated
+     *	 - geofenceEntered
+     *	 - actionTapped
+     *	 - installationUpdated
+     *	 - userUpdated
+     *   - personalized
+     *   - depersonalized
+     *
+     * @name register
+     * @param {String} eventName
+     * @param {Function} handler will be called when event occurs
+     */
+    register(eventName, handler) {
+        this.eventEmitter.addListener(eventName, handler);
+    }
+
+    /**
+     * Un register from MobileMessaging library event.
+     *
+     * @name unregister
+     * @param {String} eventName
+     * @param {Function} handler will be unregistered from event
+     */
+    unregister(eventName, handler) {
+        this.eventEmitter.removeListener(eventName, handler);
+    };
 
     /**
      * Starts a new Mobile Messaging session.
@@ -74,11 +121,99 @@ class MobileMessaging {
 
         if (!config.applicationCode) {
             onError('No application code provided');
-            console.error('No application code provided');
+            console.error('[RNMobileMessaging] No application code provided');
             return;
         }
 
-        ReactNativeMobileMessaging.init(config, onSuccess, onError);
+        if (messageStorage) {
+
+            if (typeof messageStorage.start !== 'function') {
+                console.error('[RNMobileMessaging] Missing messageStorage.start function definition');
+                onError('Missing messageStorage.start function definition');
+                return;
+            }
+            if (typeof messageStorage.stop !== 'function') {
+                console.error('[RNMobileMessaging] Missing messageStorage.stop function definition');
+                onError('Missing messageStorage.stop function definition');
+                return;
+            }
+            if (typeof messageStorage.save !== 'function') {
+                console.error('[RNMobileMessaging] Missing messageStorage.save function definition');
+                onError('Missing messageStorage.save function definition');
+                return;
+            }
+            if (typeof messageStorage.find !== 'function') {
+                console.error('[RNMobileMessaging] Missing messageStorage.find function definition');
+                onError('Missing messageStorage.find function definition');
+                return;
+            }
+            if (typeof messageStorage.findAll !== 'function') {
+                console.error('[RNMobileMessaging] Missing messageStorage.findAll function definition');
+                onError('Missing messageStorage.findAll function definition');
+                return;
+            }
+
+            this.eventEmitter.addListener('messageStorage.start', () => {
+                messageStorage.start()
+            });
+
+            //nobody sends this event on android
+            this.eventEmitter.addListener('messageStorage.stop', () => {
+                messageStorage.stop();
+            });
+
+            this.eventEmitter.addListener('messageStorage.save', messages => {
+                messageStorage.save(messages);
+            });
+
+            //nobody sends this event on android
+            this.eventEmitter.addListener('messageStorage.find', messageId => {
+                messageStorage.find(messageId, (message) => {
+                    ReactNativeMobileMessaging.messageStorage_provideFindResult(message);
+                });
+            });
+
+            this.eventEmitter.addListener('messageStorage.findAll', () => {
+                messageStorage.findAll((messages) => {
+                    ReactNativeMobileMessaging.messageStorage_provideFindAllResult(messages);
+                });
+            });
+        }
+
+        config.reactNativePluginVersion = require('./package').version;
+
+        let geofencingEnabled = config.geofencingEnabled;
+        if (geofencingEnabled) {
+            if (Platform.OS === 'ios') {
+                console.log('[RNMobileMessaging] Geofencing is not supported for iOS platform.');
+                return;
+            }
+
+            this.checkAndroidLocationPermission().then(granted => {
+                if (!granted) {
+                    onError('Geofencing permission is not granted.');
+                    return;
+                }
+                ReactNativeMobileMessaging.init(config, onSuccess, onError);
+            })
+        } else {
+            ReactNativeMobileMessaging.init(config, onSuccess, onError);
+        }
+    };
+
+    async checkAndroidLocationPermission(): Promise<Boolean> {
+        const locationPermissionGranted = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION);
+        if (locationPermissionGranted) {
+            return true;
+        } else {
+            try {
+                const granted = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION);
+                return granted === PermissionsAndroid.RESULTS.GRANTED;
+            } catch (err) {
+                console.error('[RNMobileMessaging] Can\'t check android permission', err);
+                return false;
+            }
+        }
     };
 
     /**
@@ -244,6 +379,42 @@ class MobileMessaging {
      */
     depersonalizeInstallation(pushRegistrationId, onSuccess = function() {}, onError = function() {}) {
         ReactNativeMobileMessaging.depersonalizeInstallation(pushRegistrationId, onSuccess, onError);
+    };
+
+    /**
+     * Mark messages as seen
+     *
+     * @name markMessagesSeen
+     * @param {Array} messageIds of identifiers of message to mark as seen
+     * @param {Function} callback will be called upon completion
+     */
+    markMessagesSeen(messageIds, callback) {
+        ReactNativeMobileMessaging.markMessagesSeen(messageIds, callback = function() {});
+    };
+
+    defaultMessageStorage = function() {
+        let config = this.configuration;
+        if (!config.defaultMessageStorage) {
+            return undefined;
+        }
+
+        return {
+            find: function (messageId, onSuccess, onError = function() {} ) {
+                ReactNativeMobileMessaging.defaultMessageStorage_find(messageId, onSuccess, onError);
+            },
+
+            findAll: function (onSuccess, onError = function() {}) {
+                ReactNativeMobileMessaging.defaultMessageStorage_findAll(onSuccess, onError);
+            },
+
+            delete: function (messageId, onSuccess = function() {}, onError = function() {}) {
+                ReactNativeMobileMessaging.defaultMessageStorage_delete(messageId, onSuccess, onError);
+            },
+
+            deleteAll: function (onSuccess = function() {}, onError = function() {}) {
+                ReactNativeMobileMessaging.defaultMessageStorage_deleteAll(onSuccess, onError);
+            }
+        };
     };
 
 }

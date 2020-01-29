@@ -16,8 +16,6 @@ class Configuration {
         String notificationIcon;
         boolean multipleNotifications;
         String notificationAccentColor;
-        //TODO: for cordova it's in config.xml
-        String senderId;
     }
 
     class PrivacySettings {
