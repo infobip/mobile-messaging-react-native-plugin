@@ -52,7 +52,12 @@ RCT_EXTERN_METHOD(defaultMessageStorage_deleteAll:(RCTResponseSenderBlock)succes
       @"geofenceEntered",
       @"actionTapped",
       @"notificationTapped",
-      @"messageReceived"
+      @"messageReceived",
+      @"messageStorage.start",
+      @"messageStorage.stop",
+      @"messageStorage.save",
+      @"messageStorage.find",
+      @"messageStorage.findAll"
   ];
 }
 
