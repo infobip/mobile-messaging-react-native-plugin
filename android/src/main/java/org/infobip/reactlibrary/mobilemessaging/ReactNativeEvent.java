@@ -1,4 +1,4 @@
-package com.reactlibrary;
+package org.infobip.reactlibrary.mobilemessaging;
 
 import android.util.Log;
 
@@ -12,7 +12,7 @@ import com.facebook.react.bridge.WritableNativeArray;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.google.gson.JsonIOException;
-import com.reactlibrary.datamappers.ReactNativeJson;
+import org.infobip.reactlibrary.mobilemessaging.datamappers.ReactNativeJson;
 
 import org.json.JSONArray;
 import org.json.JSONException;

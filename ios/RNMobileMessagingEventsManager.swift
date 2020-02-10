@@ -1,5 +1,5 @@
 //
-//  RNMobileMessagingEventsManager.swift
+//  RNRNMobileMessagingEventsManager.swift
 //  infobip-mobile-messaging-react-native-plugin
 //
 //  Created by Olga Koroleva on 04.02.2020.
@@ -8,7 +8,7 @@
 import Foundation
 import MobileMessaging
 
-class MobileMessagingEventsManager {
+class RNMobileMessagingEventsManager {
     private var eventEmitter: RCTEventEmitter!
     
     private let supportedNotifications: [String: String] = [

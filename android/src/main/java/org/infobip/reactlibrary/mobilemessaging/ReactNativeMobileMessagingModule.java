@@ -1,4 +1,4 @@
-package com.reactlibrary;
+package org.infobip.reactlibrary.mobilemessaging;
 
 import android.app.Application;
 import android.content.BroadcastReceiver;
@@ -31,11 +31,11 @@ import android.util.Log;
 
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
-import com.reactlibrary.datamappers.InstallationJson;
-import com.reactlibrary.datamappers.MessageJson;
-import com.reactlibrary.datamappers.PersonalizationCtx;
-import com.reactlibrary.datamappers.ReactNativeJson;
-import com.reactlibrary.datamappers.UserJson;
+import org.infobip.reactlibrary.mobilemessaging.datamappers.InstallationJson;
+import org.infobip.reactlibrary.mobilemessaging.datamappers.MessageJson;
+import org.infobip.reactlibrary.mobilemessaging.datamappers.PersonalizationCtx;
+import org.infobip.reactlibrary.mobilemessaging.datamappers.ReactNativeJson;
+import org.infobip.reactlibrary.mobilemessaging.datamappers.UserJson;
 
 import org.infobip.mobile.messaging.BroadcastParameter;
 import org.infobip.mobile.messaging.Event;

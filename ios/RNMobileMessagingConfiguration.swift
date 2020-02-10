@@ -1,5 +1,5 @@
 //
-//  MMConfiguration.swift
+//  RNMobileMessagingConfiguration.swift
 //  infobip-mobile-messaging-react-native-plugin
 //
 //  Created by Olga Koroleva on 04.02.2020.
@@ -8,7 +8,7 @@
 import Foundation
 import MobileMessaging
 
-class MMConfiguration {
+class RNMobileMessagingConfiguration {
     struct Keys {
         static let privacySettings = "privacySettings"
         static let userDataPersistingDisabled = "userDataPersistingDisabled"
@@ -38,36 +38,36 @@ class MMConfiguration {
     let categories: [NotificationCategory]?
 
     init?(rawConfig: [String: AnyObject]) {
-        guard let appCode = rawConfig[MMConfiguration.Keys.applicationCode] as? String,
+        guard let appCode = rawConfig[RNMobileMessagingConfiguration.Keys.applicationCode] as? String,
             let ios = rawConfig["ios"] as? [String: AnyObject] else
         {
             return nil
         }
 
         self.appCode = appCode
-        self.geofencingEnabled = rawConfig[MMConfiguration.Keys.geofencingEnabled].unwrap(orDefault: false)
-        self.forceCleanup = ios[MMConfiguration.Keys.forceCleanup].unwrap(orDefault: false)
-        self.logging = ios[MMConfiguration.Keys.logging].unwrap(orDefault: false)
-        self.defaultMessageStorage = rawConfig[MMConfiguration.Keys.defaultMessageStorage].unwrap(orDefault: false)
-        self.messageStorageEnabled = rawConfig[MMConfiguration.Keys.messageStorage] != nil ? true : false
+        self.geofencingEnabled = rawConfig[RNMobileMessagingConfiguration.Keys.geofencingEnabled].unwrap(orDefault: false)
+        self.forceCleanup = ios[RNMobileMessagingConfiguration.Keys.forceCleanup].unwrap(orDefault: false)
+        self.logging = ios[RNMobileMessagingConfiguration.Keys.logging].unwrap(orDefault: false)
+        self.defaultMessageStorage = rawConfig[RNMobileMessagingConfiguration.Keys.defaultMessageStorage].unwrap(orDefault: false)
+        self.messageStorageEnabled = rawConfig[RNMobileMessagingConfiguration.Keys.messageStorage] != nil ? true : false
 
-        if let rawPrivacySettings = rawConfig[MMConfiguration.Keys.privacySettings] as? [String: Any] {
+        if let rawPrivacySettings = rawConfig[RNMobileMessagingConfiguration.Keys.privacySettings] as? [String: Any] {
             var ps = [String: Any]()
-            ps[MMConfiguration.Keys.userDataPersistingDisabled] = rawPrivacySettings[MMConfiguration.Keys.userDataPersistingDisabled].unwrap(orDefault: false)
-            ps[MMConfiguration.Keys.carrierInfoSendingDisabled] = rawPrivacySettings[MMConfiguration.Keys.carrierInfoSendingDisabled].unwrap(orDefault: false)
-            ps[MMConfiguration.Keys.systemInfoSendingDisabled] = rawPrivacySettings[MMConfiguration.Keys.systemInfoSendingDisabled].unwrap(orDefault: false)
-            ps[MMConfiguration.Keys.applicationCodePersistingDisabled] = rawPrivacySettings[MMConfiguration.Keys.applicationCodePersistingDisabled].unwrap(orDefault: false)
+            ps[RNMobileMessagingConfiguration.Keys.userDataPersistingDisabled] = rawPrivacySettings[RNMobileMessagingConfiguration.Keys.userDataPersistingDisabled].unwrap(orDefault: false)
+            ps[RNMobileMessagingConfiguration.Keys.carrierInfoSendingDisabled] = rawPrivacySettings[RNMobileMessagingConfiguration.Keys.carrierInfoSendingDisabled].unwrap(orDefault: false)
+            ps[RNMobileMessagingConfiguration.Keys.systemInfoSendingDisabled] = rawPrivacySettings[RNMobileMessagingConfiguration.Keys.systemInfoSendingDisabled].unwrap(orDefault: false)
+            ps[RNMobileMessagingConfiguration.Keys.applicationCodePersistingDisabled] = rawPrivacySettings[RNMobileMessagingConfiguration.Keys.applicationCodePersistingDisabled].unwrap(orDefault: false)
 
             privacySettings = ps
         } else {
             privacySettings = [:]
         }
 
-        self.reactNativePluginVersion = rawConfig[MMConfiguration.Keys.reactNativePluginVersion].unwrap(orDefault: "unknown")
+        self.reactNativePluginVersion = rawConfig[RNMobileMessagingConfiguration.Keys.reactNativePluginVersion].unwrap(orDefault: "unknown")
 
-        self.categories = (rawConfig[MMConfiguration.Keys.notificationCategories] as? [[String: Any]])?.compactMap(NotificationCategory.init)
+        self.categories = (rawConfig[RNMobileMessagingConfiguration.Keys.notificationCategories] as? [[String: Any]])?.compactMap(NotificationCategory.init)
 
-        if let notificationTypeNames =  ios[MMConfiguration.Keys.notificationTypes] as? [String] {
+        if let notificationTypeNames =  ios[RNMobileMessagingConfiguration.Keys.notificationTypes] as? [String] {
             let options = notificationTypeNames.reduce([], { (result, notificationTypeName) -> [UserNotificationType] in
                 var result = result
                 switch notificationTypeName {

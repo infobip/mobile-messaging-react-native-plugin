@@ -1,4 +1,4 @@
-package com.reactlibrary;
+package org.infobip.reactlibrary.mobilemessaging;
 
 import java.util.Arrays;
 import java.util.Collections;

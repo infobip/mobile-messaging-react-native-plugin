@@ -1,10 +1,10 @@
-package com.reactlibrary.datamappers;
+package org.infobip.reactlibrary.mobilemessaging.datamappers;
 
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import android.util.Log;
 
-import com.reactlibrary.Utils;
+import org.infobip.reactlibrary.mobilemessaging.Utils;
 
 import org.infobip.mobile.messaging.Message;
 import org.infobip.mobile.messaging.geo.Area;

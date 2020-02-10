@@ -1,4 +1,4 @@
-package com.reactlibrary;
+package org.infobip.reactlibrary.mobilemessaging;
 
 import android.content.Context;
 import android.content.SharedPreferences;

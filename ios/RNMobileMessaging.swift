@@ -11,7 +11,7 @@ import MobileMessaging
 @objc(ReactNativeMobileMessaging)
 class ReactNativeMobileMessaging: RCTEventEmitter  {
 //    private var messageStorageAdapter: MessageStorageAdapter?
-    private var eventsManager: MobileMessagingEventsManager?
+    private var eventsManager: RNMobileMessagingEventsManager?
     
     @objc
     override static func requiresMainQueueSetup() -> Bool {
@@ -20,7 +20,7 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
     
     override init() {
         super.init()
-        self.eventsManager = MobileMessagingEventsManager(eventEmitter: self)
+        self.eventsManager = RNMobileMessagingEventsManager(eventEmitter: self)
 //        self.messageStorageAdapter = MessageStorageAdapter(eventEmitter: self)
     }
     
@@ -30,18 +30,18 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
 
     @objc(init:onSuccess:onError:)
     func start(config: NSDictionary, onSuccess: @escaping RCTResponseSenderBlock, onError: @escaping RCTResponseErrorBlock) {
-        guard let config = config as? [String : AnyObject], let configuration = MMConfiguration(rawConfig: config) else {
+        guard let config = config as? [String : AnyObject], let configuration = RNMobileMessagingConfiguration(rawConfig: config) else {
             onError(NSError(type: .InvalidArguments))
             return
         }
         start(configuration: configuration, onSuccess: onSuccess)
     }
     
-    private func start(configuration: MMConfiguration, onSuccess: @escaping RCTResponseSenderBlock) {
-        MobileMessaging.privacySettings.applicationCodePersistingDisabled = configuration.privacySettings[MMConfiguration.Keys.applicationCodePersistingDisabled].unwrap(orDefault: false)
-        MobileMessaging.privacySettings.systemInfoSendingDisabled = configuration.privacySettings[MMConfiguration.Keys.systemInfoSendingDisabled].unwrap(orDefault: false)
-        MobileMessaging.privacySettings.carrierInfoSendingDisabled = configuration.privacySettings[MMConfiguration.Keys.carrierInfoSendingDisabled].unwrap(orDefault: false)
-        MobileMessaging.privacySettings.userDataPersistingDisabled = configuration.privacySettings[MMConfiguration.Keys.userDataPersistingDisabled].unwrap(orDefault: false)
+    private func start(configuration: RNMobileMessagingConfiguration, onSuccess: @escaping RCTResponseSenderBlock) {
+        MobileMessaging.privacySettings.applicationCodePersistingDisabled = configuration.privacySettings[RNMobileMessagingConfiguration.Keys.applicationCodePersistingDisabled].unwrap(orDefault: false)
+        MobileMessaging.privacySettings.systemInfoSendingDisabled = configuration.privacySettings[RNMobileMessagingConfiguration.Keys.systemInfoSendingDisabled].unwrap(orDefault: false)
+        MobileMessaging.privacySettings.carrierInfoSendingDisabled = configuration.privacySettings[RNMobileMessagingConfiguration.Keys.carrierInfoSendingDisabled].unwrap(orDefault: false)
+        MobileMessaging.privacySettings.userDataPersistingDisabled = configuration.privacySettings[RNMobileMessagingConfiguration.Keys.userDataPersistingDisabled].unwrap(orDefault: false)
 
         var mobileMessaging = MobileMessaging.withApplicationCode(configuration.appCode, notificationType: configuration.notificationType, forceCleanup: configuration.forceCleanup)
 

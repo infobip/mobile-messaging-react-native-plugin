@@ -1,4 +1,4 @@
-package com.reactlibrary.datamappers;
+package org.infobip.reactlibrary.mobilemessaging.datamappers;
 
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.WritableMap;

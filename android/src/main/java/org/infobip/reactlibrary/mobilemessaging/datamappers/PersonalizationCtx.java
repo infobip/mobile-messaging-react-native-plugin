@@ -1,4 +1,4 @@
-package com.reactlibrary.datamappers;
+package org.infobip.reactlibrary.mobilemessaging.datamappers;
 
 import org.infobip.mobile.messaging.UserAttributes;
 import org.infobip.mobile.messaging.UserIdentity;

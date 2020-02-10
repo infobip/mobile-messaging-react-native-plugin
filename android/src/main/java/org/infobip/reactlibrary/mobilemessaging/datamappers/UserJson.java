@@ -1,4 +1,4 @@
-package com.reactlibrary.datamappers;
+package org.infobip.reactlibrary.mobilemessaging.datamappers;
 
 import org.infobip.mobile.messaging.CustomAttributeValue;
 import org.infobip.mobile.messaging.User;

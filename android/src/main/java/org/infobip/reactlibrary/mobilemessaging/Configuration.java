@@ -1,4 +1,4 @@
-package com.reactlibrary;
+package org.infobip.reactlibrary.mobilemessaging;
 
 import org.infobip.mobile.messaging.api.support.http.serialization.JsonSerializer;
 import org.json.JSONException;
