@@ -38,28 +38,8 @@ RCT_EXTERN_METHOD(defaultMessageStorage_find:(NSString *)messageId onSuccess:(RC
 RCT_EXTERN_METHOD(defaultMessageStorage_findAll:(RCTResponseSenderBlock)successCallback onError:(RCTResponseErrorBlock)errorCallback)
 RCT_EXTERN_METHOD(defaultMessageStorage_delete:(NSString *)messageId onSuccess:(RCTResponseSenderBlock)successCallback onError:(RCTResponseErrorBlock)errorCallback)
 RCT_EXTERN_METHOD(defaultMessageStorage_deleteAll:(RCTResponseSenderBlock)successCallback onError:(RCTResponseErrorBlock)errorCallback)
-
-
-- (NSArray<NSString *> *)supportedEvents
-{
-  return @[
-      @"tokenReceived",
-      @"registrationUpdated",
-      @"installationUpdated",
-      @"userUpdated",
-      @"personalized",
-      @"depersonalized",
-      @"geofenceEntered",
-      @"actionTapped",
-      @"notificationTapped",
-      @"messageReceived",
-      @"messageStorage.start",
-      @"messageStorage.stop",
-      @"messageStorage.save",
-      @"messageStorage.find",
-      @"messageStorage.findAll"
-  ];
-}
+RCT_EXTERN_METHOD(messageStorage_provideFindResult:(NSDictionary *)message)
+RCT_EXTERN_METHOD(messageStorage_provideFindAllResult:(NSArray *)message)
 
 @end
 

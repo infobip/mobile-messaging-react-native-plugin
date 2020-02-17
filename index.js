@@ -386,10 +386,11 @@ class MobileMessaging {
      *
      * @name markMessagesSeen
      * @param {Array} messageIds of identifiers of message to mark as seen
-     * @param {Function} callback will be called upon completion
+     * @param {Function} onSuccess will be called on success
+     * @param {Function} onError will be called on error
      */
-    markMessagesSeen(messageIds, callback) {
-        ReactNativeMobileMessaging.markMessagesSeen(messageIds, callback = function() {});
+    markMessagesSeen(messageIds, onSuccess = function() {}, onError = function() {}) {
+        ReactNativeMobileMessaging.markMessagesSeen(messageIds, onSuccess, onError);
     };
 
     defaultMessageStorage = function() {

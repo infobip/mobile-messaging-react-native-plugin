@@ -12,16 +12,16 @@ class RNMobileMessagingEventsManager {
     private var eventEmitter: RCTEventEmitter!
     
     private let supportedNotifications: [String: String] = [
-        "messageReceived": MMNotificationMessageReceived,
-        "tokenReceived":  MMNotificationDeviceTokenReceived,
-        "registrationUpdated":  MMNotificationRegistrationUpdated,
-        "geofenceEntered": MMNotificationGeographicalRegionDidEnter,
-        "notificationTapped": MMNotificationMessageTapped,
-        "actionTapped": MMNotificationActionTapped,
-        "depersonalized": MMNotificationDepersonalized,
-        "personalized": MMNotificationPersonalized,
-        "installationUpdated": MMNotificationInstallationSynced,
-        "userUpdated": MMNotificationUserSynced
+        EventName.messageReceived: MMNotificationMessageReceived,
+        EventName.tokenReceived:  MMNotificationDeviceTokenReceived,
+        EventName.registrationUpdated:  MMNotificationRegistrationUpdated,
+        EventName.geofenceEntered: MMNotificationGeographicalRegionDidEnter,
+        EventName.notificationTapped: MMNotificationMessageTapped,
+        EventName.actionTapped: MMNotificationActionTapped,
+        EventName.depersonalized: MMNotificationDepersonalized,
+        EventName.personalized: MMNotificationPersonalized,
+        EventName.installationUpdated: MMNotificationInstallationSynced,
+        EventName.userUpdated: MMNotificationUserSynced
     ]
 
     init(eventEmitter: RCTEventEmitter) {
@@ -48,32 +48,32 @@ class RNMobileMessagingEventsManager {
         var notificationResult: Any?
         switch notification.name.rawValue {
         case MMNotificationMessageReceived:
-            eventName = "messageReceived"
+            eventName = EventName.messageReceived
             if let message = notification.userInfo?[MMNotificationKeyMessage] as? MTMessage {
                 notificationResult = message.dictionary()
             }
         case MMNotificationDeviceTokenReceived:
-            eventName = "tokenReceived"
+            eventName = EventName.tokenReceived
             if let token = notification.userInfo?[MMNotificationKeyDeviceToken] as? String {
                 notificationResult = token
             }
         case MMNotificationRegistrationUpdated:
-            eventName = "registrationUpdated"
+            eventName = EventName.registrationUpdated
             if let internalId = notification.userInfo?[MMNotificationKeyRegistrationInternalId] as? String {
                 notificationResult = internalId
             }
-//        case MMNotificationGeographicalRegionDidEnter:
-//            eventName = "geofenceEntered"
+        case MMNotificationGeographicalRegionDidEnter:
+            eventName = EventName.geofenceEntered
 //            if let region = notification.userInfo?[MMNotificationKeyGeographicalRegion] as? MMRegion {
 //                notificationResult = region.dictionary()
 //            }
         case MMNotificationMessageTapped:
-            eventName = "notificationTapped"
+            eventName = EventName.notificationTapped
             if let message = notification.userInfo?[MMNotificationKeyMessage] as? MTMessage {
                 notificationResult = message.dictionary()
             }
         case MMNotificationActionTapped:
-            eventName = "actionTapped"
+            eventName = EventName.actionTapped
             if let message = notification.userInfo?[MMNotificationKeyMessage] as? MTMessage, let actionIdentifier = notification.userInfo?[MMNotificationKeyActionIdentifier] as? String {
                 var parameters = [message.dictionary(), actionIdentifier] as [Any]
                 if let textInput = notification.userInfo?[MMNotificationKeyActionTextInput] as? String {
@@ -82,15 +82,15 @@ class RNMobileMessagingEventsManager {
                 notificationResult = parameters
             }
         case MMNotificationDepersonalized:
-            eventName = "depersonalized"
+            eventName = EventName.depersonalized
         case MMNotificationPersonalized:
-            eventName = "personalized"
+            eventName = EventName.personalized
         case MMNotificationInstallationSynced, MMNotificationUserSynced :
-            eventName = "installationUpdated"
+            eventName = EventName.installationUpdated
             if let installation = notification.userInfo?[MMNotificationKeyInstallation] as? Installation {
                 notificationResult = installation.dictionaryRepresentation
             } else if let user = notification.userInfo?[MMNotificationKeyUser] as? User {
-                eventName = "userUpdated"
+                eventName = EventName.userUpdated
                 notificationResult = user.dictionaryRepresentation
             }
         default: break

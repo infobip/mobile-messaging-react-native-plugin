@@ -3,5 +3,5 @@ platform :ios, '9.0'
 use_frameworks!
 
 target 'ReactNativeMobileMessaging' do
-    pod 'MobileMessaging/Core', '6.0.0'
+    pod 'MobileMessaging/Core', '6.0.4'
 end

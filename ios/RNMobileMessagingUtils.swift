@@ -92,3 +92,21 @@ extension Optional {
         }
     }
 }
+
+struct EventName {
+    static let tokenReceived = "tokenReceived"
+    static let registrationUpdated = "registrationUpdated"
+    static let installationUpdated = "installationUpdated"
+    static let userUpdated = "userUpdated"
+    static let personalized = "personalized"
+    static let depersonalized = "depersonalized"
+    static let geofenceEntered = "geofenceEntered"
+    static let actionTapped = "actionTapped"
+    static let notificationTapped = "notificationTapped"
+    static let messageReceived = "messageReceived"
+    static let messageStorage_start = "messageStorage.start"
+    static let messageStorage_stop = "messageStorage.stop"
+    static let messageStorage_save = "messageStorage.save"
+    static let messageStorage_find = "messageStorage.find"
+    static let messageStorage_findAll = "messageStorage.findAll"
+}

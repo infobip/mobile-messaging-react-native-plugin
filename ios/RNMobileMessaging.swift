@@ -10,8 +10,29 @@ import MobileMessaging
 
 @objc(ReactNativeMobileMessaging)
 class ReactNativeMobileMessaging: RCTEventEmitter  {
-//    private var messageStorageAdapter: MessageStorageAdapter?
+    private var messageStorageAdapter: MessageStorageAdapter?
     private var eventsManager: RNMobileMessagingEventsManager?
+    
+    @objc
+    override func supportedEvents() -> [String]! {
+        return [
+            EventName.tokenReceived,
+            EventName.registrationUpdated,
+            EventName.installationUpdated,
+            EventName.userUpdated,
+            EventName.personalized,
+            EventName.depersonalized,
+            EventName.geofenceEntered,
+            EventName.actionTapped,
+            EventName.notificationTapped,
+            EventName.messageReceived,
+            EventName.messageStorage_start,
+            EventName.messageStorage_stop,
+            EventName.messageStorage_save,
+            EventName.messageStorage_find,
+            EventName.messageStorage_findAll
+        ]
+    }
     
     @objc
     override static func requiresMainQueueSetup() -> Bool {
@@ -21,7 +42,7 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
     override init() {
         super.init()
         self.eventsManager = RNMobileMessagingEventsManager(eventEmitter: self)
-//        self.messageStorageAdapter = MessageStorageAdapter(eventEmitter: self)
+        self.messageStorageAdapter = MessageStorageAdapter(eventEmitter: self)
     }
     
     deinit {
@@ -50,16 +71,15 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
 //            mobileMessaging = mobileMessaging?.withGeofencingService()
         }
         
-        //TODO: will be implemented later
-        /*if let storageAdapter = messageStorageAdapter, configuration.messageStorageEnabled {
+        if let storageAdapter = messageStorageAdapter, configuration.messageStorageEnabled {
             mobileMessaging = mobileMessaging?.withMessageStorage(storageAdapter)
-        } else */if configuration.defaultMessageStorage {
+        } else if configuration.defaultMessageStorage {
             mobileMessaging = mobileMessaging?.withDefaultMessageStorage()
         }
         if let categories = configuration.categories {
             mobileMessaging = mobileMessaging?.withInteractiveNotificationCategories(Set(categories))
         }
-        MobileMessaging.userAgent.cordovaPluginVersion = configuration.reactNativePluginVersion
+        MobileMessaging.userAgent.pluginVersion = "reactNative \(configuration.reactNativePluginVersion)"
         if (configuration.logging) {
             MobileMessaging.logger = MMDefaultLogger()
         }
@@ -255,6 +275,22 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
         MobileMessaging.defaultMessageStorage?.removeAllMessages() { _ in
             onSuccess(nil)
         }
+    }
+
+    /*
+       Custom message storage:
+       methods to provide results to Native Bridge.
+       Need to be called from JS part.
+    */
+    
+    @objc(messageStorage_provideFindResult:)
+    func messageStorage_provideFindResult(messageDict: [String: Any]?) {
+        self.messageStorageAdapter?.findResult(messageDict: messageDict)
+    }
+    
+    @objc(messageStorage_provideFindAllResult:)
+    func messageStorage_provideFindAllResult(messages: [Any]?) {
+        //not needed for iOS SDK
     }
 
 }

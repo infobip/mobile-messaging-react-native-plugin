@@ -13,6 +13,7 @@
 		A006028A23E9AACE007BE88B /* RNMobileMessagingConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = A006028923E9AACE007BE88B /* RNMobileMessagingConfiguration.swift */; };
 		A006028E23E9AB27007BE88B /* RNMobileMessagingEventsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A006028D23E9AB27007BE88B /* RNMobileMessagingEventsManager.swift */; };
 		A006029023E9AB3C007BE88B /* RNMobileMessagingUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = A006028F23E9AB3C007BE88B /* RNMobileMessagingUtils.swift */; };
+		A069E87E23F417870065188B /* RNMobileMessagingStorageAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A069E87D23F417870065188B /* RNMobileMessagingStorageAdapter.swift */; };
 		A4191FD891A477FDBFBEF666 /* Pods_ReactNativeMobileMessaging.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7DB59526382A8EF3D4E8E0EB /* Pods_ReactNativeMobileMessaging.framework */; };
 /* End PBXBuildFile section */
 
@@ -39,6 +40,7 @@
 		A006028923E9AACE007BE88B /* RNMobileMessagingConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNMobileMessagingConfiguration.swift; sourceTree = "<group>"; };
 		A006028D23E9AB27007BE88B /* RNMobileMessagingEventsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNMobileMessagingEventsManager.swift; sourceTree = "<group>"; };
 		A006028F23E9AB3C007BE88B /* RNMobileMessagingUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNMobileMessagingUtils.swift; sourceTree = "<group>"; };
+		A069E87D23F417870065188B /* RNMobileMessagingStorageAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNMobileMessagingStorageAdapter.swift; sourceTree = "<group>"; };
 		EA14A168725AAD7E4CD85E3A /* Pods-ReactNativeMobileMessaging.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ReactNativeMobileMessaging.release.xcconfig"; path = "Target Support Files/Pods-ReactNativeMobileMessaging/Pods-ReactNativeMobileMessaging.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -66,6 +68,7 @@
 			isa = PBXGroup;
 			children = (
 				A006028F23E9AB3C007BE88B /* RNMobileMessagingUtils.swift */,
+				A069E87D23F417870065188B /* RNMobileMessagingStorageAdapter.swift */,
 				76D6D32E239161D700F1E02B /* RNMobileMessagingBridge.m */,
 				A006027C23E9586B007BE88B /* RNMobileMessagingErrorExtension.swift */,
 				A006028D23E9AB27007BE88B /* RNMobileMessagingEventsManager.swift */,
@@ -185,6 +188,7 @@
 				A006028E23E9AB27007BE88B /* RNMobileMessagingEventsManager.swift in Sources */,
 				A006028A23E9AACE007BE88B /* RNMobileMessagingConfiguration.swift in Sources */,
 				76D6D32F239161D700F1E02B /* RNMobileMessagingBridge.m in Sources */,
+				A069E87E23F417870065188B /* RNMobileMessagingStorageAdapter.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

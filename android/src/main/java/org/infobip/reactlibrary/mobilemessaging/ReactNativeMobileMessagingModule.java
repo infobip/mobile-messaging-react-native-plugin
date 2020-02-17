@@ -540,13 +540,13 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
     /* Messages and Notifications management */
 
     @ReactMethod
-    public void markMessagesSeen(final ReadableArray args, final Callback callback) throws JSONException {
+    public void markMessagesSeen(final ReadableArray args, final Callback successCallback, final Callback errorCallback) throws JSONException {
         final String[] messageIds = Utils.resolveStringArray(args);
         runInBackground(new Runnable() {
             @Override
             public void run() {
                 mobileMessaging().setMessagesSeen(messageIds);
-                callback.invoke();
+                successCallback.invoke();
             }
         });
     }
