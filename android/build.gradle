@@ -1,22 +1,25 @@
-// android/build.gradle
+def defaultCompileSDKVersion = 28
+def defaultBuildToolsVersion = '28.0.3'
+def defaultMinSDKVersion = 16
+def defaultTargetSDKVersion = 28
 
-// based on:
-//
-// * https://github.com/facebook/react-native/blob/0.60-stable/template/android/build.gradle
-//   original location:
-//   - https://github.com/facebook/react-native/blob/0.58-stable/local-cli/templates/HelloWorld/android/build.gradle
-//
-// * https://github.com/facebook/react-native/blob/0.60-stable/template/android/app/build.gradle
-//   original location:
-//   - https://github.com/facebook/react-native/blob/0.58-stable/local-cli/templates/HelloWorld/android/app/build.gradle
+def getRootProjectProperty(property, fallback) {
+    rootProject.ext.has(property) ? rootProject.ext.get(property) : fallback
+}
 
-def DEFAULT_COMPILE_SDK_VERSION = 28
-def DEFAULT_BUILD_TOOLS_VERSION = '28.0.3'
-def DEFAULT_MIN_SDK_VERSION = 16
-def DEFAULT_TARGET_SDK_VERSION = 28
+def overrideAndroidSupportLibsVersion = getRootProjectProperty('overrideAndroidSupportLibsVersion', '')
+def overrideGmsVersion = getRootProjectProperty('overrideGmsVersion', '')
+def overrideFirebaseVersion = getRootProjectProperty('overrideFirebaseVersion', '')
+def overrideKotlinVersion = getRootProjectProperty('overrideKotlinVersion', '')
 
-def safeExtGet(prop, fallback) {
-    rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
+if (overrideAndroidSupportLibsVersion.empty || overrideAndroidSupportLibsVersion > "26") {
+    repositories {
+        mavenLocal()
+        maven {
+            url 'https://maven.google.com/'
+            name 'Google'
+        }
+    }
 }
 
 apply plugin: 'com.android.library'
@@ -34,7 +37,6 @@ buildscript {
         }
         dependencies {
             classpath 'com.android.tools.build:gradle:3.4.1'
-//            classpath 'com.google.gms:google-services:4.2.0'
         }
     }
 }
@@ -43,14 +45,15 @@ apply plugin: 'com.android.library'
 apply plugin: 'maven'
 
 android {
-    compileSdkVersion safeExtGet('compileSdkVersion', DEFAULT_COMPILE_SDK_VERSION)
-    buildToolsVersion safeExtGet('buildToolsVersion', DEFAULT_BUILD_TOOLS_VERSION)
+    compileSdkVersion getRootProjectProperty('compileSdkVersion', defaultCompileSDKVersion)
+    buildToolsVersion getRootProjectProperty('buildToolsVersion', defaultBuildToolsVersion)
     defaultConfig {
-        minSdkVersion safeExtGet('minSdkVersion', DEFAULT_MIN_SDK_VERSION)
-        targetSdkVersion safeExtGet('targetSdkVersion', DEFAULT_TARGET_SDK_VERSION)
+        minSdkVersion getRootProjectProperty('minSdkVersion', defaultMinSDKVersion)
+        targetSdkVersion getRootProjectProperty('targetSdkVersion', defaultTargetSDKVersion)
         versionCode 1
         versionName "1.0"
     }
+
     lintOptions {
         abortOnError false
     }
@@ -77,81 +80,33 @@ dependencies {
     implementation 'com.facebook.react:react-native:+'
     implementation "androidx.annotation:annotation:1.1.0"
 
-//    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation "org.infobip.mobile.messaging.api:infobip-mobile-messaging-android-geo-sdk:$mmVersion@aar"
     implementation ("org.infobip.mobile.messaging.api:infobip-mobile-messaging-android-sdk:$mmVersion@aar") {
         transitive = true;
-        exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk8';
-    }
-}
 
-def configureReactNativePom(def pom) {
-    def packageJson = new groovy.json.JsonSlurper().parseText(file('../package.json').text)
-
-    pom.project {
-        name packageJson.title
-        artifactId packageJson.name
-        version = packageJson.version
-        group = "org.infobip.reactlibrary.mobilemessaging"
-        description packageJson.description
-        url packageJson.repository.baseUrl
-
-        licenses {
-            license {
-                name packageJson.license
-                url packageJson.repository.baseUrl + '/blob/master/' + packageJson.licenseFilename
-                distribution 'repo'
-            }
+        if (!overrideKotlinVersion.empty) {
+            exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk8'
         }
 
-        developers {
-            developer {
-                id packageJson.author.username
-                name packageJson.author.name
-            }
+        if (!overrideAndroidSupportLibsVersion.empty) {
+            exclude group: 'com.android.support', module: 'support-v4'
+            exclude group: 'com.android.support', module: 'appcompat-v7'
+        }
+        if (!overrideGmsVersion.empty) {
+            exclude group: 'com.google.android.gms', module: 'play-services-location'
+        }
+        if (!overrideFirebaseVersion.empty) {
+            exclude group: 'com.google.firebase', module: 'firebase-messaging'
         }
     }
-}
-
-afterEvaluate { project ->
-    // some Gradle build hooks ref:
-    // https://www.oreilly.com/library/view/gradle-beyond-the/9781449373801/ch03.html
-    task androidJavadoc(type: Javadoc) {
-        source = android.sourceSets.main.java.srcDirs
-        classpath += files(android.bootClasspath)
-        classpath += files(project.getConfigurations().getByName('compile').asList())
-        include '**/*.java'
+    if (!overrideAndroidSupportLibsVersion.empty) {
+        implementation "com.android.support:support-v4:$overrideAndroidSupportLibsVersion"
+        implementation "com.android.support:appcompat-v7:$overrideAndroidSupportLibsVersion"
     }
-
-    task androidJavadocJar(type: Jar, dependsOn: androidJavadoc) {
-        classifier = 'javadoc'
-        from androidJavadoc.destinationDir
+    if (!overrideGmsVersion.empty) {
+        implementation "com.google.android.gms:play-services-location:$overrideGmsVersion"
     }
-
-    task androidSourcesJar(type: Jar) {
-        classifier = 'sources'
-        from android.sourceSets.main.java.srcDirs
-        include '**/*.java'
-    }
-
-    android.libraryVariants.all { variant ->
-        def name = variant.name.capitalize()
-        task "jar${name}"(type: Jar, dependsOn: variant.javaCompile) {
-            from variant.javaCompile.destinationDir
-        }
-    }
-
-    artifacts {
-        archives androidSourcesJar
-        archives androidJavadocJar
-    }
-
-    task installArchives(type: Upload) {
-        configuration = configurations.archives
-        repositories.mavenDeployer {
-            // Deploy to react-native-event-bridge/maven, ready to publish to npm
-            repository url: "file://${projectDir}/../android/maven"
-            configureReactNativePom pom
-        }
+    if (!overrideFirebaseVersion.empty) {
+        implementation "com.google.firebase:firebase-messaging:$overrideFirebaseVersion"
     }
 }
