@@ -2,26 +2,35 @@
   "name": "infobip-mobile-messaging-react-native-plugin",
   "title": "Infobip Mobile Messaging React Native Plugin",
   "version": "1.0.0",
-  "description": "TODO",
+  "description": "Infobip Mobile Messaging React Native Plugin",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/github_account/infobip-mobile-messaging-react-native-plugin.git",
-    "baseUrl": "https://github.com/github_account/infobip-mobile-messaging-react-native-plugin"
+    "url": "git+https://github.com/infobip/mobile-messaging-react-native-plugin.git",
+    "baseUrl": "https://github.com/infobip/mobile-messaging-react-native-plugin"
   },
   "keywords": [
-    "react-native"
+    "react-native",
+    "infobip",
+    "push",
+    "plugin",
+    "messaging",
+    "android",
+    "ios"
   ],
   "author": {
     "name": "Infobip Mobile Messaging Team",
-    "email": "olga.koroleva@infobip.com"
+    "email": "push.support@infobip.com"
   },
-  "license": "MIT",
-  "licenseFilename": "LICENSE",
+  "license": "Apache 2.0",
   "readmeFilename": "README.md",
+  "homepage": "https://github.com/infobip/mobile-messaging-react-native-plugin#readme",
+  "bugs": {
+    "url": "https://github.com/infobip/mobile-messaging-react-native-plugin/issues"
+  },
   "peerDependencies": {
     "react": "^16.8.1",
     "react-native": ">=0.59.0-rc.0 <1.0.x"
