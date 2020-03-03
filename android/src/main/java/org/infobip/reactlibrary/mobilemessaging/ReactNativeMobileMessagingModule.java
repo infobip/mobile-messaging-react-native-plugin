@@ -629,7 +629,6 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
      * Message store adapter for JS layer
      */
 
-    //TODO: CacheManager not used, mb needed?
     public static class MessageStoreAdapter implements MessageStore {
 
         //NOTE: 'stop' and 'find' events are not needed for android
