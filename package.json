@@ -25,7 +25,7 @@
     "name": "Infobip Mobile Messaging Team",
     "email": "push.support@infobip.com"
   },
-  "license": "Apache 2.0",
+  "license": "Apache-2.0",
   "readmeFilename": "README.md",
   "homepage": "https://github.com/infobip/mobile-messaging-react-native-plugin#readme",
   "bugs": {
