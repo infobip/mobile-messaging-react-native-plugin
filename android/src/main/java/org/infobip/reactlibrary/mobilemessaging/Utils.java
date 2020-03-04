@@ -2,10 +2,17 @@ package org.infobip.reactlibrary.mobilemessaging;
 
 import android.content.res.Resources;
 
+import androidx.annotation.Nullable;
+
+import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.WritableNativeMap;
 
 public class Utils {
     public static final String TAG = "RNMobileMessaging";
+    public static final int REQ_CODE_RESOLVE_GOOGLE_ERROR = 2;
 
     /**
      * Gets resource ID
@@ -38,5 +45,30 @@ public class Utils {
         }
 
         return array;
+    }
+
+    public static class ReactNativeCallContext {
+        Callback onSuccess;
+        Callback onError;
+
+        void reset() {
+            onSuccess = null;
+            onError = null;
+        }
+
+        boolean isValid() {
+            return onSuccess != null && onError != null;
+        }
+    }
+
+    public static WritableMap callbackError(String description, @Nullable Integer errorCode) {
+        WritableMap errorMap = new WritableNativeMap();
+        if (description != null && !description.isEmpty()) {
+            errorMap.putString("description", description);
+        }
+        if (errorCode != null) {
+            errorMap.putInt("code", errorCode);
+        }
+        return errorMap;
     }
 }

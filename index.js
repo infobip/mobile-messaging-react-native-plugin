@@ -157,7 +157,6 @@ class MobileMessaging {
                 messageStorage.start()
             });
 
-            //nobody sends this event on android
             this.eventEmitter.addListener('messageStorage.stop', () => {
                 messageStorage.stop();
             });
@@ -166,7 +165,6 @@ class MobileMessaging {
                 messageStorage.save(messages);
             });
 
-            //nobody sends this event on android
             this.eventEmitter.addListener('messageStorage.find', messageId => {
                 messageStorage.find(messageId, (message) => {
                     ReactNativeMobileMessaging.messageStorage_provideFindResult(message);
@@ -416,6 +414,18 @@ class MobileMessaging {
                 ReactNativeMobileMessaging.defaultMessageStorage_deleteAll(onSuccess, onError);
             }
         };
+    };
+
+    /**
+     * Displays built-in error dialog so that user can resolve errors during SDK initialization.
+     *
+     * @name showDialogForError
+     * @param {Int} errorCode to display dialog for
+     * @param {Function} onSuccess will be called upon completion
+     * @param {Function} onError will be called on error
+     */
+    showDialogForError(errorCode, onSuccess = function() {}, onError = function() {}) {
+    	ReactNativeMobileMessaging.showDialogForError(errorCode, onSuccess, onError)
     };
 
 }

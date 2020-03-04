@@ -50,9 +50,9 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
     }
 
     @objc(init:onSuccess:onError:)
-    func start(config: NSDictionary, onSuccess: @escaping RCTResponseSenderBlock, onError: @escaping RCTResponseErrorBlock) {
+    func start(config: NSDictionary, onSuccess: @escaping RCTResponseSenderBlock, onError: @escaping RCTResponseSenderBlock) {
         guard let config = config as? [String : AnyObject], let configuration = RNMobileMessagingConfiguration(rawConfig: config) else {
-            onError(NSError(type: .InvalidArguments))
+            onError([NSError(type: .InvalidArguments).reactNativeObject])
             return
         }
         start(configuration: configuration, onSuccess: onSuccess)
@@ -97,16 +97,16 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
     /*User Profile Management*/
 
     @objc(saveUser:onSuccess:onError:)
-    func saveUser(userData: NSDictionary, onSuccess: @escaping RCTResponseSenderBlock, onError: @escaping RCTResponseErrorBlock) {
+    func saveUser(userData: NSDictionary, onSuccess: @escaping RCTResponseSenderBlock, onError: @escaping RCTResponseSenderBlock) {
         guard let userDataDictionary = userData as? [String: Any], let user = User(dictRepresentation: userDataDictionary) else
         {
-            onError(NSError(type: .InvalidArguments))
+            onError([NSError(type: .InvalidArguments).reactNativeObject])
             return
         }
 
         MobileMessaging.saveUser(user, completion: { (error) in
             if let error = error {
-                onError(error)
+                onError([error.reactNativeObject])
             } else {
                 onSuccess([MobileMessaging.getUser()?.dictionaryRepresentation ?? [:]])
             }
@@ -114,10 +114,10 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
     }
 
     @objc(fetchUser:onError:)
-    func fetchUser(onSuccess: @escaping RCTResponseSenderBlock, onError: @escaping RCTResponseErrorBlock) {
+    func fetchUser(onSuccess: @escaping RCTResponseSenderBlock, onError: @escaping RCTResponseSenderBlock) {
         MobileMessaging.fetchUser(completion: { (user, error) in
             if let error = error {
-                onError(error)
+                onError([error.reactNativeObject])
             } else {
                 onSuccess([MobileMessaging.getUser()?.dictionaryRepresentation ?? [:]])
             }
@@ -130,16 +130,16 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
     }
 
     @objc(saveInstallation:onSuccess:onError:)
-    func saveInstallation(installation: NSDictionary, onSuccess: @escaping RCTResponseSenderBlock, onError: @escaping RCTResponseErrorBlock) {
+    func saveInstallation(installation: NSDictionary, onSuccess: @escaping RCTResponseSenderBlock, onError: @escaping RCTResponseSenderBlock) {
         guard let installationDictionary = installation as? [String: Any], let installation = Installation(dictRepresentation: installationDictionary) else
         {
-            onError(NSError(type: .InvalidArguments))
+            onError([NSError(type: .InvalidArguments).reactNativeObject])
             return
         }
 
         MobileMessaging.saveInstallation(installation, completion: { (error) in
             if let error = error {
-                onError(error)
+                onError([error.reactNativeObject])
             } else {
                 onSuccess([MobileMessaging.getInstallation()?.dictionaryRepresentation ?? [:]])
             }
@@ -147,10 +147,10 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
     }
 
     @objc(fetchInstallation:onError:)
-    func fetchInstallation(onSuccess: @escaping RCTResponseSenderBlock, onError: @escaping RCTResponseErrorBlock) {
+    func fetchInstallation(onSuccess: @escaping RCTResponseSenderBlock, onError: @escaping RCTResponseSenderBlock) {
         MobileMessaging.fetchInstallation(completion: { (installation, error) in
             if let error = error {
-                onError(error)
+                onError([error.reactNativeObject])
             } else {
                 onSuccess([MobileMessaging.getInstallation()?.dictionaryRepresentation ?? [:]])
             }
@@ -163,10 +163,10 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
     }
 
     @objc(setInstallationAsPrimary:primary:onSuccess:onError:)
-    func setInstallationAsPrimary(pushRegistrationId: NSString, primary: Bool, onSuccess: @escaping RCTResponseSenderBlock, onError: @escaping RCTResponseErrorBlock) {
+    func setInstallationAsPrimary(pushRegistrationId: NSString, primary: Bool, onSuccess: @escaping RCTResponseSenderBlock, onError: @escaping RCTResponseSenderBlock) {
         MobileMessaging.setInstallation(withPushRegistrationId: pushRegistrationId as String, asPrimary: primary, completion: { (installations, error) in
             if let error = error {
-                onError(error)
+                onError([error.reactNativeObject])
             } else {
                 onSuccess(installations?.map({ $0.dictionaryRepresentation }) ?? [])
             }
@@ -174,22 +174,22 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
     }
 
     @objc(personalize:onSuccess:onError:)
-    func personalize(context: NSDictionary, onSuccess: @escaping RCTResponseSenderBlock, onError: @escaping RCTResponseErrorBlock) {
+    func personalize(context: NSDictionary, onSuccess: @escaping RCTResponseSenderBlock, onError: @escaping RCTResponseSenderBlock) {
         guard let context = context as? [String: Any], let uiDict = context["userIdentity"] as? [String: Any] else
         {
-            onError(NSError(type: .InvalidArguments))
+            onError([NSError(type: .InvalidArguments).reactNativeObject])
             return
         }
         guard let ui = UserIdentity(phones: uiDict["phones"] as? [String], emails: uiDict["emails"] as? [String], externalUserId: uiDict["externalUserId"] as? String) else
         {
-            onError(NSError(type: .InvalidUserIdentity))
+            onError([NSError(type: .InvalidUserIdentity).reactNativeObject])
             return
         }
         let uaDict = context["userAttributes"] as? [String: Any]
         let ua = uaDict == nil ? nil : UserAttributes(dictRepresentation: uaDict!)
         MobileMessaging.personalize(withUserIdentity: ui, userAttributes: ua) { (error) in
             if let error = error {
-                onError(error)
+                onError([error.reactNativeObject])
             } else {
                 onSuccess([MobileMessaging.getUser()?.dictionaryRepresentation ?? [:]])
             }
@@ -197,12 +197,12 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
     }
 
     @objc(depersonalize:onError:)
-    func depersonalize(onSuccess: @escaping RCTResponseSenderBlock, onError: @escaping RCTResponseErrorBlock) {
+    func depersonalize(onSuccess: @escaping RCTResponseSenderBlock, onError: @escaping RCTResponseSenderBlock) {
         MobileMessaging.depersonalize(completion: { (status, error) in
             if (status == SuccessPending.pending) {
                 onSuccess(["pending"])
             } else if let error = error {
-                onError(error)
+                onError([error.reactNativeObject])
             } else {
                 onSuccess(["success"])
             }
@@ -210,10 +210,10 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
     }
 
     @objc(depersonalizeInstallation:onSuccess:onError:)
-    func depersonalizeInstallation(pushRegistrationId: NSString, onSuccess: @escaping RCTResponseSenderBlock, onError: @escaping RCTResponseErrorBlock) {
+    func depersonalizeInstallation(pushRegistrationId: NSString, onSuccess: @escaping RCTResponseSenderBlock, onError: @escaping RCTResponseSenderBlock) {
         MobileMessaging.depersonalizeInstallation(withPushRegistrationId: pushRegistrationId as String, completion: { (installations, error) in
             if let error = error {
-                onError(error)
+                onError([error.reactNativeObject])
             } else {
                 onSuccess(installations?.map({ $0.dictionaryRepresentation }) ?? [])
             }
@@ -223,9 +223,9 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
     /*Messages and Notifications*/
     
     @objc(markMessagesSeen:onSuccess:onError:)
-    func markMessagesSeen(messageIds: [String], onSuccess: @escaping RCTResponseSenderBlock, onError: RCTResponseErrorBlock) {
+    func markMessagesSeen(messageIds: [String], onSuccess: @escaping RCTResponseSenderBlock, onError: RCTResponseSenderBlock) {
         guard !messageIds.isEmpty else {
-            onError(NSError(type: .InvalidArguments))
+            onError([NSError(type: .InvalidArguments).reactNativeObject])
             return
         }
         MobileMessaging.setSeen(messageIds: messageIds, completion: {
@@ -234,9 +234,9 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
     }
     
     @objc(defaultMessageStorage_find:onSuccess:onError:)
-    func defaultMessageStorage_find(messageId: NSString, onSuccess: @escaping RCTResponseSenderBlock, onError: RCTResponseErrorBlock) {
+    func defaultMessageStorage_find(messageId: NSString, onSuccess: @escaping RCTResponseSenderBlock, onError: RCTResponseSenderBlock) {
         guard let storage = MobileMessaging.defaultMessageStorage else {
-            onError(NSError(type: .DefaultStorageNotInitialized))
+            onError([NSError(type: .DefaultStorageNotInitialized).reactNativeObject])
             return
         }
 
@@ -246,9 +246,9 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
     }
 
     @objc(defaultMessageStorage_findAll:onError:)
-    func defaultMessageStorage_findAll(onSuccess: @escaping RCTResponseSenderBlock, onError: RCTResponseErrorBlock) {
+    func defaultMessageStorage_findAll(onSuccess: @escaping RCTResponseSenderBlock, onError: RCTResponseSenderBlock) {
         guard let storage = MobileMessaging.defaultMessageStorage else {
-            onError(NSError(type: .DefaultStorageNotInitialized))
+            onError([NSError(type: .DefaultStorageNotInitialized).reactNativeObject])
             return
         }
 
@@ -259,9 +259,9 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
     }
 
     @objc(defaultMessageStorage_delete:onSuccess:onError:)
-    func defaultMessageStorage_delete(messageId: NSString, onSuccess: @escaping RCTResponseSenderBlock, onError: RCTResponseErrorBlock) {
+    func defaultMessageStorage_delete(messageId: NSString, onSuccess: @escaping RCTResponseSenderBlock, onError: RCTResponseSenderBlock) {
         guard let storage = MobileMessaging.defaultMessageStorage else {
-            onError(NSError(type: .DefaultStorageNotInitialized))
+            onError([NSError(type: .DefaultStorageNotInitialized).reactNativeObject])
             return
         }
 
@@ -271,7 +271,7 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
     }
 
     @objc(defaultMessageStorage_deleteAll:onError:)
-    func defaultMessageStorage_deleteAll(onSuccess: @escaping RCTResponseSenderBlock, onError: RCTResponseErrorBlock) {
+    func defaultMessageStorage_deleteAll(onSuccess: @escaping RCTResponseSenderBlock, onError: RCTResponseSenderBlock) {
         MobileMessaging.defaultMessageStorage?.removeAllMessages() { _ in
             onSuccess(nil)
         }
@@ -293,4 +293,11 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
         //not needed for iOS SDK
     }
 
+    /*
+     It's not supported for iOS, method created for compatibility
+     */
+    @objc(showDialogForError:onSuccess:onError:)
+    func showDialogForError(errorCode: Int, onSuccess: RCTResponseSenderBlock, onError: RCTResponseSenderBlock) {
+        onError([NSError(type: .NotSupported).reactNativeObject])
+    }
 }

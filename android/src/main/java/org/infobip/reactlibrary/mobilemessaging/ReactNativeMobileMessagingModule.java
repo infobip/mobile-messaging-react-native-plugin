@@ -1,10 +1,13 @@
 package org.infobip.reactlibrary.mobilemessaging;
 
+import android.app.Activity;
 import android.app.Application;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 
+import com.facebook.react.bridge.ActivityEventListener;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -29,8 +32,13 @@ import androidx.annotation.Nullable;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.WritableNativeArray;
 import com.facebook.react.bridge.WritableNativeMap;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
+
 import org.infobip.reactlibrary.mobilemessaging.datamappers.InstallationJson;
 import org.infobip.reactlibrary.mobilemessaging.datamappers.MessageJson;
 import org.infobip.reactlibrary.mobilemessaging.datamappers.PersonalizationCtx;
@@ -59,12 +67,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule implements LifecycleEventListener {
+public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule implements LifecycleEventListener, ActivityEventListener {
     public static final String MODULE_NAME = "ReactNativeMobileMessaging";
 
     private final ReactApplicationContext reactContext;
@@ -75,6 +84,8 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
         registerBroadcastReceiver();
         reactContext.addLifecycleEventListener(this);
     }
+
+    // LifecycleEventListener
 
     @Override
     public String getName() {
@@ -262,7 +273,7 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
 
             @Override
             public void onError(InternalSdkError e, @Nullable Integer googleErrorCode) {
-                errorCallback.invoke(e.get(), googleErrorCode);
+                errorCallback.invoke(Utils.callbackError(e.get(), googleErrorCode));
                 Log.e(Utils.TAG, "Cannot start SDK: " + e.get() + " errorCode: " + googleErrorCode);
             }
         });
@@ -337,7 +348,7 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
         Context context = reactContext.getCurrentActivity();
         MessageStore messageStore = MobileMessaging.getInstance(context).getMessageStore();
         if (messageStore == null) {
-            onError.invoke("Message store does not exist");
+            onError.invoke(Utils.callbackError("Message store does not exist", null));
             return;
         }
 
@@ -355,7 +366,7 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
         Context context = reactContext.getCurrentActivity();
         MessageStore messageStore = MobileMessaging.getInstance(context).getMessageStore();
         if (messageStore == null) {
-            onError.invoke("Message store does not exist");
+            onError.invoke(Utils.callbackError("Message store does not exist", null));
             return;
         }
         List<Message> messages = messageStore.findAll(context);
@@ -367,7 +378,7 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
         Context context = reactContext.getCurrentActivity();
         MessageStore messageStore = MobileMessaging.getInstance(context).getMessageStore();
         if (messageStore == null) {
-            onError.invoke("Message store does not exist");
+            onError.invoke(Utils.callbackError("Message store does not exist", null));
             return;
         }
 
@@ -388,7 +399,7 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
         Context context = reactContext.getCurrentActivity();
         MessageStore messageStore = MobileMessaging.getInstance(context).getMessageStore();
         if (messageStore == null) {
-            onError.invoke("Message store does not exist");
+            onError.invoke(Utils.callbackError("Message store does not exist", null));
             return;
         }
         messageStore.deleteAll(context);
@@ -418,7 +429,7 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
                     ReadableMap readableMap = UserJson.toReadableMap(result.getData());
                     successCallback.invoke(readableMap);
                 } else {
-                    errorCallback.invoke(result.getError().getMessage());
+                    errorCallback.invoke(Utils.callbackError(result.getError().getMessage(), null));
                 }
             }
         };
@@ -451,7 +462,7 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
                     ReadableMap readableMap = InstallationJson.toReadableMap(result.getData());
                     successCallback.invoke(readableMap);
                 } else {
-                    errorCallback.invoke(result.getError().getMessage());
+                    errorCallback.invoke(Utils.callbackError(result.getError().getMessage(), null));
                 }
             }
         };
@@ -474,7 +485,7 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
                     ReadableMap readableMap = UserJson.toReadableMap(result.getData());
                     successCallback.invoke(readableMap);
                 } else {
-                    errorCallback.invoke(result.getError().getMessage());
+                    errorCallback.invoke(Utils.callbackError(result.getError().getMessage(), null));
                 }
             }
         });
@@ -493,7 +504,7 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
                 if (result.isSuccess()) {
                     successCallback.invoke(depersonalizeStates.get(result.getData()));
                 } else {
-                    errorCallback.invoke(result.getError().getMessage());
+                    errorCallback.invoke(Utils.callbackError(result.getError().getMessage(), null));
                 }
             }
         });
@@ -502,7 +513,7 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
     @ReactMethod
     public void depersonalizeInstallation(final String pushRegistrationId, final Callback successCallback, final Callback errorCallback) {
         if (pushRegistrationId.isEmpty()) {
-            errorCallback.invoke("Cannot resolve pushRegistrationId from arguments");
+            errorCallback.invoke(Utils.callbackError("Cannot resolve pushRegistrationId from arguments", null));
             return;
         }
         mobileMessaging().depersonalizeInstallation(pushRegistrationId, installationsResultListener(successCallback, errorCallback));
@@ -512,7 +523,7 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
     public void setInstallationAsPrimary(final String pushRegistrationId, final Boolean primary, final Callback successCallback, final Callback errorCallback) {
 
         if (pushRegistrationId.isEmpty()) {
-            errorCallback.invoke("Cannot resolve pushRegistrationId from arguments");
+            errorCallback.invoke(Utils.callbackError("Cannot resolve pushRegistrationId from arguments", null));
             return;
         }
         mobileMessaging().setInstallationAsPrimary(pushRegistrationId, primary, installationsResultListener(successCallback, errorCallback));
@@ -527,7 +538,7 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
                     ReadableArray readableArray = InstallationJson.toReadableArray(result.getData());
                     successCallback.invoke(readableArray);
                 } else {
-                    errorCallback.invoke(result.getError().getMessage());
+                    errorCallback.invoke(Utils.callbackError(result.getError().getMessage(), null));
                 }
             }
         };
@@ -629,6 +640,7 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
      * Message store adapter for JS layer
      */
 
+    //TODO: CacheManager not used, mb needed?
     public static class MessageStoreAdapter implements MessageStore {
 
         //NOTE: 'stop' and 'find' events are not needed for android
@@ -702,6 +714,71 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
     @ReactMethod
     void messageStorage_provideFindResult(ReadableMap result) {
         //not needed for android
+    }
+
+    private final Utils.ReactNativeCallContext showErrorDialogContext = new Utils.ReactNativeCallContext();
+
+    // ActivityEventListener
+
+    @Override
+    public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
+        if (requestCode != Utils.REQ_CODE_RESOLVE_GOOGLE_ERROR) {
+            return;
+        }
+
+        if (!showErrorDialogContext.isValid()) {
+            Log.e(Utils.TAG, "Show dialog context is invalid, cannot forward information to React Native");
+            return;
+        }
+
+        Callback successCallback = showErrorDialogContext.onSuccess;
+        Callback errorCallback = showErrorDialogContext.onError;
+
+        showErrorDialogContext.reset();
+        reactContext.removeActivityEventListener(this);
+
+        GoogleApiAvailability googleApiAvailability = GoogleApiAvailability.getInstance();
+        int playServicesAvailabilityResult = googleApiAvailability.isGooglePlayServicesAvailable(getCurrentActivity());
+        if (playServicesAvailabilityResult != ConnectionResult.SUCCESS) {
+            try {
+                showDialogForError(playServicesAvailabilityResult, successCallback, errorCallback);
+            } catch (JSONException e) {
+                errorCallback.invoke(e.getMessage());
+            }
+        } else {
+            successCallback.invoke();
+        }
+    }
+
+    @Override
+    public void onNewIntent(Intent intent) {
+    }
+
+    @ReactMethod
+    void showDialogForError(final int errorCode, final Callback successCallback, final Callback errorCallback) throws JSONException {
+        GoogleApiAvailability googleApiAvailability = GoogleApiAvailability.getInstance();
+        if (!googleApiAvailability.isUserResolvableError(errorCode)) {
+            errorCallback.invoke(Utils.callbackError("Error code [" + errorCode + "] is not user resolvable", null));
+            return;
+        }
+
+        showErrorDialogContext.onSuccess = successCallback;
+        showErrorDialogContext.onError = errorCallback;
+        reactContext.addActivityEventListener(this);
+
+        googleApiAvailability
+                .getErrorDialog(
+                        reactContext.getCurrentActivity(),
+                        errorCode,
+                        Utils.REQ_CODE_RESOLVE_GOOGLE_ERROR,
+                        new DialogInterface.OnCancelListener() {
+                            @Override
+                            public void onCancel(DialogInterface dialog) {
+                                showErrorDialogContext.reset();
+                                errorCallback.invoke(Utils.callbackError("Error dialog was cancelled by user", null));
+                            }
+                        })
+                .show();
     }
 
 }

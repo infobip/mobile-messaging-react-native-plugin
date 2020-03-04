@@ -13,6 +13,7 @@ public enum RNMobileMessagingErrorType: Error {
     case InvalidArguments
     case InvalidUserIdentity
     case DefaultStorageNotInitialized
+    case NotSupported
     
     fileprivate var errorCode: Int {
         switch self {
@@ -22,11 +23,13 @@ public enum RNMobileMessagingErrorType: Error {
             return 1
         case .DefaultStorageNotInitialized:
             return 2
+        case .NotSupported:
+            return 3
         }
         
     }
-
-    var userInfo: [String: String] {
+    
+    fileprivate var errorDescription: String {
         var errorDescription: String = ""
         
         switch self {
@@ -36,8 +39,14 @@ public enum RNMobileMessagingErrorType: Error {
             errorDescription = NSLocalizedString("userIdentity must have at least one non-nil property.", comment: "")
         case .DefaultStorageNotInitialized:
             errorDescription = NSLocalizedString("Default storage not initialized.", comment: "")
+        case .NotSupported:
+            errorDescription = NSLocalizedString("Functionality is not supported.", comment: "")
         }
         
+        return errorDescription
+    }
+
+    var userInfo: [String: String] {
         return [NSLocalizedDescriptionKey: errorDescription]
     }
 
@@ -46,5 +55,13 @@ public enum RNMobileMessagingErrorType: Error {
 extension NSError {
     public convenience init(type: RNMobileMessagingErrorType) {
         self.init(domain: RNMobileMessagingErrorDomain, code: type.errorCode, userInfo: type.userInfo)
+    }
+    
+    var reactNativeObject: [String: Any?] {
+        return [
+            "description": localizedDescription,
+            "code": code,
+            "domain": domain
+        ]
     }
 }
