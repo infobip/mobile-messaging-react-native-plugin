@@ -1,6 +1,6 @@
 # Mobile Messaging SDK plugin for React Native
 
-[![npm](https://img.shields.io/npm/v/mobile-messaging-react-native-plugin.svg)](https://www.npmjs.com/package/mobile-messaging-react-native-plugin)
+[![npm](https://img.shields.io/npm/v/infobip-mobile-messaging-react-native-plugin.svg)](https://www.npmjs.com/package/infobip-mobile-messaging-react-native-plugin)
 
 Mobile Messaging SDK is designed and developed to easily enable push notification channel in your mobile application. In almost no time of implementation you get push notification in your application and access to the features of [Infobip IP Messaging Platform](https://portal.infobip.com/push/). 
 The document describes library integration steps for your React Native project.
