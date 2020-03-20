@@ -66,11 +66,10 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
 
         var mobileMessaging = MobileMessaging.withApplicationCode(configuration.appCode, notificationType: configuration.notificationType, forceCleanup: configuration.forceCleanup)
 
-        //TODO: will be implemented later
         if configuration.geofencingEnabled {
-//            mobileMessaging = mobileMessaging?.withGeofencingService()
+           mobileMessaging = mobileMessaging?.withGeofencingService()
         }
-        
+
         if let storageAdapter = messageStorageAdapter, configuration.messageStorageEnabled {
             mobileMessaging = mobileMessaging?.withMessageStorage(storageAdapter)
         } else if configuration.defaultMessageStorage {

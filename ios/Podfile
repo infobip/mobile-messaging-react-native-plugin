@@ -4,4 +4,5 @@ use_frameworks!
 
 target 'ReactNativeMobileMessaging' do
     pod 'MobileMessaging/Core', '6.0.8'
+    pod 'MobileMessaging/Geofencing', '6.0.8'
 end

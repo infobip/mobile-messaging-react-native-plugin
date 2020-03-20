@@ -20,6 +20,6 @@ Pod::Spec.new do |s|
 
   s.dependency "React"
   s.dependency "MobileMessaging/Core", "6.0.8"
+  s.dependency "MobileMessaging/Geofencing", "6.0.8"
 
 end
-

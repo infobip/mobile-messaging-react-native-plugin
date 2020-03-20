@@ -64,23 +64,23 @@ extension BaseMessage {
     }
 }
 
-//extension MMRegion {
-//    func dictionary() -> [String: Any] {
-//        var areaCenter = [String: Any]()
-//        areaCenter["lat"] = center.latitude
-//        areaCenter["lon"] = center.longitude
-//
-//        var area = [String: Any]()
-//        area["id"] = identifier
-//        area["center"] = areaCenter
-//        area["radius"] = radius
-//        area["title"] = title
-//
-//        var result = [String: Any]()
-//        result["area"] = area
-//        return result
-//    }
-//}
+extension MMRegion {
+   func dictionary() -> [String: Any] {
+       var areaCenter = [String: Any]()
+       areaCenter["lat"] = center.latitude
+       areaCenter["lon"] = center.longitude
+
+       var area = [String: Any]()
+       area["id"] = identifier
+       area["center"] = areaCenter
+       area["radius"] = radius
+       area["title"] = title
+
+       var result = [String: Any]()
+       result["area"] = area
+       return result
+   }
+}
 
 extension Optional {
     func unwrap<T>(orDefault fallbackValue: T) -> T {

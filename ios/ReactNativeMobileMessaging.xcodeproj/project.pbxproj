@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4B683FB1010A56E5C1748B1D /* Pods_ReactNativeMobileMessaging.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E00237C20633CB07301167F3 /* Pods_ReactNativeMobileMessaging.framework */; };
 		76D6D32D23915E1E00F1E02B /* RNMobileMessaging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76D6D32C23915E1E00F1E02B /* RNMobileMessaging.swift */; };
 		76D6D32F239161D700F1E02B /* RNMobileMessagingBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 76D6D32E239161D700F1E02B /* RNMobileMessagingBridge.m */; };
 		A006027D23E9586B007BE88B /* RNMobileMessagingErrorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A006027C23E9586B007BE88B /* RNMobileMessagingErrorExtension.swift */; };
@@ -14,7 +15,6 @@
 		A006028E23E9AB27007BE88B /* RNMobileMessagingEventsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A006028D23E9AB27007BE88B /* RNMobileMessagingEventsManager.swift */; };
 		A006029023E9AB3C007BE88B /* RNMobileMessagingUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = A006028F23E9AB3C007BE88B /* RNMobileMessagingUtils.swift */; };
 		A069E87E23F417870065188B /* RNMobileMessagingStorageAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A069E87D23F417870065188B /* RNMobileMessagingStorageAdapter.swift */; };
-		A4191FD891A477FDBFBEF666 /* Pods_ReactNativeMobileMessaging.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7DB59526382A8EF3D4E8E0EB /* Pods_ReactNativeMobileMessaging.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -30,18 +30,18 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		11F652C4653C3CB655EC3CB2 /* Pods-ReactNativeMobileMessaging.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ReactNativeMobileMessaging.debug.xcconfig"; path = "Target Support Files/Pods-ReactNativeMobileMessaging/Pods-ReactNativeMobileMessaging.debug.xcconfig"; sourceTree = "<group>"; };
+		0EA84B27F6E27B17A367FF7B /* Pods-ReactNativeMobileMessaging.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ReactNativeMobileMessaging.debug.xcconfig"; path = "Target Support Files/Pods-ReactNativeMobileMessaging/Pods-ReactNativeMobileMessaging.debug.xcconfig"; sourceTree = "<group>"; };
 		134814201AA4EA6300B7C361 /* libReactNativeMobileMessaging.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libReactNativeMobileMessaging.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		76D6D32B23915E1E00F1E02B /* ReactNativeMobileMessaging-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ReactNativeMobileMessaging-Bridging-Header.h"; sourceTree = "<group>"; };
 		76D6D32C23915E1E00F1E02B /* RNMobileMessaging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNMobileMessaging.swift; sourceTree = "<group>"; };
 		76D6D32E239161D700F1E02B /* RNMobileMessagingBridge.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNMobileMessagingBridge.m; sourceTree = "<group>"; };
-		7DB59526382A8EF3D4E8E0EB /* Pods_ReactNativeMobileMessaging.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ReactNativeMobileMessaging.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		A006027C23E9586B007BE88B /* RNMobileMessagingErrorExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNMobileMessagingErrorExtension.swift; sourceTree = "<group>"; };
 		A006028923E9AACE007BE88B /* RNMobileMessagingConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNMobileMessagingConfiguration.swift; sourceTree = "<group>"; };
 		A006028D23E9AB27007BE88B /* RNMobileMessagingEventsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNMobileMessagingEventsManager.swift; sourceTree = "<group>"; };
 		A006028F23E9AB3C007BE88B /* RNMobileMessagingUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNMobileMessagingUtils.swift; sourceTree = "<group>"; };
 		A069E87D23F417870065188B /* RNMobileMessagingStorageAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNMobileMessagingStorageAdapter.swift; sourceTree = "<group>"; };
-		EA14A168725AAD7E4CD85E3A /* Pods-ReactNativeMobileMessaging.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ReactNativeMobileMessaging.release.xcconfig"; path = "Target Support Files/Pods-ReactNativeMobileMessaging/Pods-ReactNativeMobileMessaging.release.xcconfig"; sourceTree = "<group>"; };
+		CEEB052400B05B1AC8F953D0 /* Pods-ReactNativeMobileMessaging.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ReactNativeMobileMessaging.release.xcconfig"; path = "Target Support Files/Pods-ReactNativeMobileMessaging/Pods-ReactNativeMobileMessaging.release.xcconfig"; sourceTree = "<group>"; };
+		E00237C20633CB07301167F3 /* Pods_ReactNativeMobileMessaging.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ReactNativeMobileMessaging.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -49,7 +49,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A4191FD891A477FDBFBEF666 /* Pods_ReactNativeMobileMessaging.framework in Frameworks */,
+				4B683FB1010A56E5C1748B1D /* Pods_ReactNativeMobileMessaging.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -77,14 +77,14 @@
 				134814211AA4EA7D00B7C361 /* Products */,
 				76D6D32B23915E1E00F1E02B /* ReactNativeMobileMessaging-Bridging-Header.h */,
 				BD6CA9645FA601D59D19D588 /* Pods */,
-				AC8ECABE79DA1B933BF601DA /* Frameworks */,
+				A3AAA86EF98E496C322000D8 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
-		AC8ECABE79DA1B933BF601DA /* Frameworks */ = {
+		A3AAA86EF98E496C322000D8 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				7DB59526382A8EF3D4E8E0EB /* Pods_ReactNativeMobileMessaging.framework */,
+				E00237C20633CB07301167F3 /* Pods_ReactNativeMobileMessaging.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -92,8 +92,8 @@
 		BD6CA9645FA601D59D19D588 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				11F652C4653C3CB655EC3CB2 /* Pods-ReactNativeMobileMessaging.debug.xcconfig */,
-				EA14A168725AAD7E4CD85E3A /* Pods-ReactNativeMobileMessaging.release.xcconfig */,
+				0EA84B27F6E27B17A367FF7B /* Pods-ReactNativeMobileMessaging.debug.xcconfig */,
+				CEEB052400B05B1AC8F953D0 /* Pods-ReactNativeMobileMessaging.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -105,7 +105,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 58B511EF1A9E6C8500147676 /* Build configuration list for PBXNativeTarget "ReactNativeMobileMessaging" */;
 			buildPhases = (
-				4C06714D85B0C2415D7424B4 /* [CP] Check Pods Manifest.lock */,
+				CA923B69B47BF81FD171C395 /* [CP] Check Pods Manifest.lock */,
 				58B511D71A9E6C8500147676 /* Sources */,
 				58B511D81A9E6C8500147676 /* Frameworks */,
 				58B511D91A9E6C8500147676 /* CopyFiles */,
@@ -153,7 +153,7 @@
 /* End PBXProject section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		4C06714D85B0C2415D7424B4 /* [CP] Check Pods Manifest.lock */ = {
+		CA923B69B47BF81FD171C395 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -290,7 +290,7 @@
 		};
 		58B511F01A9E6C8500147676 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 11F652C4653C3CB655EC3CB2 /* Pods-ReactNativeMobileMessaging.debug.xcconfig */;
+			baseConfigurationReference = 0EA84B27F6E27B17A367FF7B /* Pods-ReactNativeMobileMessaging.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				HEADER_SEARCH_PATHS = (
@@ -312,7 +312,7 @@
 		};
 		58B511F11A9E6C8500147676 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = EA14A168725AAD7E4CD85E3A /* Pods-ReactNativeMobileMessaging.release.xcconfig */;
+			baseConfigurationReference = CEEB052400B05B1AC8F953D0 /* Pods-ReactNativeMobileMessaging.release.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				HEADER_SEARCH_PATHS = (

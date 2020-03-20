@@ -181,12 +181,7 @@ class MobileMessaging {
         config.reactNativePluginVersion = require('./package').version;
 
         let geofencingEnabled = config.geofencingEnabled;
-        if (geofencingEnabled) {
-            if (Platform.OS === 'ios') {
-                console.log('[RNMobileMessaging] Geofencing is not supported for iOS platform.');
-                return;
-            }
-
+        if (geofencingEnabled && Platform.OS === 'android') {
             this.checkAndroidLocationPermission().then(granted => {
                 if (!granted) {
                     onError('Geofencing permission is not granted.');
