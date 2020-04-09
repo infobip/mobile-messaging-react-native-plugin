@@ -1,9 +1,6 @@
 package org.infobip.reactlibrary.mobilemessaging.datamappers;
 
-import org.infobip.mobile.messaging.CustomAttributeValue;
-import org.infobip.mobile.messaging.Installation;
-import org.infobip.mobile.messaging.InstallationMapper;
-import org.infobip.mobile.messaging.UserMapper;
+import org.infobip.mobile.messaging.*;
 import org.infobip.mobile.messaging.api.support.http.serialization.JsonSerializer;
 
 import org.json.JSONArray;
@@ -87,7 +84,7 @@ public class InstallationJson extends Installation {
                 Type type = new TypeToken<Map<String, Object>>() {
                 }.getType();
                 Map<String, Object> customAttributes = new JsonSerializer().deserialize(json.optString("customAttributes"), type);
-                installation.setCustomAttributes(UserMapper.customAttsFromBackend(customAttributes));
+                installation.setCustomAttributes(CustomAttributesMapper.customAttsFromBackend(customAttributes));
             }
         } catch (Exception e) {
             //error parsing
@@ -100,7 +97,7 @@ public class InstallationJson extends Installation {
         jsonObject.remove("map");
         if (jsonObject.has("customAttributes")) {
             if (customAttributes != null) {
-                jsonObject.put("customAttributes", new JSONObject(UserMapper.customAttsToBackend(customAttributes)));
+                jsonObject.put("customAttributes", new JSONObject(CustomAttributesMapper.customAttsToBackend(customAttributes)));
             }
         }
     }

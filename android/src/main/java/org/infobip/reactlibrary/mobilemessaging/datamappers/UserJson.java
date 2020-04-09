@@ -1,12 +1,8 @@
 package org.infobip.reactlibrary.mobilemessaging.datamappers;
 
-import org.infobip.mobile.messaging.CustomAttributeValue;
-import org.infobip.mobile.messaging.User;
+import org.infobip.mobile.messaging.*;
 
-import org.infobip.mobile.messaging.UserMapper;
 import org.infobip.mobile.messaging.api.appinstance.UserAtts;
-import org.infobip.mobile.messaging.UserAttributes;
-import org.infobip.mobile.messaging.UserIdentity;
 import org.infobip.mobile.messaging.api.shaded.google.gson.reflect.TypeToken;
 import org.infobip.mobile.messaging.api.support.http.serialization.JsonSerializer;
 
@@ -87,7 +83,7 @@ public class UserJson extends User {
             if (json.has(UserAtts.birthday)) {
                 Date bday = null;
                 try {
-                    bday = DateTimeUtil.DateFromYMDString(json.optString(UserAtts.birthday));
+                    bday = DateTimeUtil.dateFromYMDString(json.optString(UserAtts.birthday));
                     user.setBirthday(bday);
                 } catch (ParseException e) {
                 }
@@ -110,7 +106,7 @@ public class UserJson extends User {
                 Type type = new TypeToken<Map<String, Object>>() {
                 }.getType();
                 Map<String, Object> customAttributes = new JsonSerializer().deserialize(json.optString(UserAtts.customAttributes), type);
-                user.setCustomAttributes(UserMapper.customAttsFromBackend(customAttributes));
+                user.setCustomAttributes(CustomAttributesMapper.customAttsFromBackend(customAttributes));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -142,7 +138,7 @@ public class UserJson extends User {
             if (json.has(UserAtts.birthday)) {
                 Date bday = null;
                 try {
-                    bday = DateTimeUtil.DateFromYMDString(json.optString(UserAtts.birthday));
+                    bday = DateTimeUtil.dateFromYMDString(json.optString(UserAtts.birthday));
                     userAttributes.setBirthday(bday);
                 } catch (ParseException e) {
                 }
@@ -159,7 +155,7 @@ public class UserJson extends User {
                 Type type = new TypeToken<Map<String, Object>>() {
                 }.getType();
                 Map<String, Object> customAttributes = new JsonSerializer().deserialize(json.optString(UserAtts.customAttributes), type);
-                userAttributes.setCustomAttributes(UserMapper.customAttsFromBackend(customAttributes));
+                userAttributes.setCustomAttributes(CustomAttributesMapper.customAttsFromBackend(customAttributes));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -202,7 +198,7 @@ public class UserJson extends User {
         jsonObject.remove("map");
         if (jsonObject.has("customAttributes")) {
             if (customAttributes != null) {
-                jsonObject.put("customAttributes", new JSONObject(UserMapper.customAttsToBackend(customAttributes)));
+                jsonObject.put("customAttributes", new JSONObject(CustomAttributesMapper.customAttsToBackend(customAttributes)));
             }
         }
     }

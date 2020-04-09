@@ -19,7 +19,7 @@ Pod::Spec.new do |s|
   s.requires_arc = true
 
   s.dependency "React"
-  s.dependency "MobileMessaging/Core", "6.0.8"
-  s.dependency "MobileMessaging/Geofencing", "6.0.8"
+  s.dependency "MobileMessaging/Core", "6.2.1"
+  s.dependency "MobileMessaging/Geofencing", "6.2.1"
 
 end

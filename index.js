@@ -423,6 +423,48 @@ class MobileMessaging {
     	ReactNativeMobileMessaging.showDialogForError(errorCode, onSuccess, onError)
     };
 
+    /**
+     * Sends an event to the server eventually, handles possible errors and do retries for you.
+     *
+     * @name submitEvent
+     * @param {Object} eventData. An object containing event data
+     * {
+     *   definitionId: "eventDefinitionId"
+     *   properties: {
+     *     "stringAttribute": "string",
+     *     "numberAttribute": 1,
+     *     "dateAttribute": "2020-02-26T09:41:57Z",
+     *     "booleanAttribute": true
+     *   }
+     * }
+     * @param onError will be called on error
+     */
+    submitEvent(eventData, onError = function() {}) {
+        ReactNativeMobileMessaging.submitEvent(eventData, onError);
+    };
+
+    /**
+     * Sends an event to the server immediately.
+     * You have to handle possible connection or server errors, do retries yourself.
+     *
+     * @name submitEventImmediately
+     * @param {Object} eventData. An object containing event data
+     * {
+     *   definitionId: "eventDefinitionId"
+     *   properties: {
+     *     "stringAttribute": "string",
+     *     "numberAttribute": 1,
+     *     "dateAttribute": "2020-02-26T09:41:57Z",
+     *     "booleanAttribute": true
+     *   }
+     * }
+     * @param onSuccess will be called upon completion
+     * @param onError will be called on error
+     */
+    submitEventImmediately(eventData, onSuccess = function() {}, onError = function() {}) {
+        ReactNativeMobileMessaging.submitEventImmediately(eventData, onSuccess, onError);
+    };
+
 }
 
 export let mobileMessaging = new MobileMessaging();

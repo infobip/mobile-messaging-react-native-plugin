@@ -40,7 +40,9 @@ RCT_EXTERN_METHOD(defaultMessageStorage_delete:(NSString *)messageId onSuccess:(
 RCT_EXTERN_METHOD(defaultMessageStorage_deleteAll:(RCTResponseSenderBlock)successCallback onError:(RCTResponseSenderBlock)errorCallback)
 RCT_EXTERN_METHOD(messageStorage_provideFindResult:(NSDictionary *)message)
 RCT_EXTERN_METHOD(messageStorage_provideFindAllResult:(NSArray *)message)
-
+/*Events*/
+RCT_EXTERN_METHOD(submitEvent:(NSDictionary *)eventData onError:(RCTResponseSenderBlock)errorCallback)
+RCT_EXTERN_METHOD(submitEventImmediately:(NSDictionary *)eventData onSuccess:(RCTResponseSenderBlock)successCallback onError:(RCTResponseSenderBlock)errorCallback)
 /*
  It's not supported for iOS, created for compatibility
  */

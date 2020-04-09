@@ -12,7 +12,7 @@ import MobileMessaging
 class ReactNativeMobileMessaging: RCTEventEmitter  {
     private var messageStorageAdapter: MessageStorageAdapter?
     private var eventsManager: RNMobileMessagingEventsManager?
-    
+
     @objc
     override func supportedEvents() -> [String]! {
         return [
@@ -33,18 +33,18 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
             EventName.messageStorage_findAll
         ]
     }
-    
+
     @objc
     override static func requiresMainQueueSetup() -> Bool {
       return true
     }
-    
+
     override init() {
         super.init()
         self.eventsManager = RNMobileMessagingEventsManager(eventEmitter: self)
         self.messageStorageAdapter = MessageStorageAdapter(eventEmitter: self)
     }
-    
+
     deinit {
         self.eventsManager?.stop()
     }
@@ -57,7 +57,7 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
         }
         start(configuration: configuration, onSuccess: onSuccess)
     }
-    
+
     private func start(configuration: RNMobileMessagingConfiguration, onSuccess: @escaping RCTResponseSenderBlock) {
         MobileMessaging.privacySettings.applicationCodePersistingDisabled = configuration.privacySettings[RNMobileMessagingConfiguration.Keys.applicationCodePersistingDisabled].unwrap(orDefault: false)
         MobileMessaging.privacySettings.systemInfoSendingDisabled = configuration.privacySettings[RNMobileMessagingConfiguration.Keys.systemInfoSendingDisabled].unwrap(orDefault: false)
@@ -220,7 +220,7 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
     }
 
     /*Messages and Notifications*/
-    
+
     @objc(markMessagesSeen:onSuccess:onError:)
     func markMessagesSeen(messageIds: [String], onSuccess: @escaping RCTResponseSenderBlock, onError: RCTResponseSenderBlock) {
         guard !messageIds.isEmpty else {
@@ -231,7 +231,7 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
             onSuccess(messageIds);
         })
     }
-    
+
     @objc(defaultMessageStorage_find:onSuccess:onError:)
     func defaultMessageStorage_find(messageId: NSString, onSuccess: @escaping RCTResponseSenderBlock, onError: RCTResponseSenderBlock) {
         guard let storage = MobileMessaging.defaultMessageStorage else {
@@ -281,15 +281,45 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
        methods to provide results to Native Bridge.
        Need to be called from JS part.
     */
-    
+
     @objc(messageStorage_provideFindResult:)
     func messageStorage_provideFindResult(messageDict: [String: Any]?) {
         self.messageStorageAdapter?.findResult(messageDict: messageDict)
     }
-    
+
     @objc(messageStorage_provideFindAllResult:)
     func messageStorage_provideFindAllResult(messages: [Any]?) {
         //not needed for iOS SDK
+    }
+
+    /* Events */
+
+    @objc(submitEvent:onError:)
+    func submitEvent(eventData: NSDictionary, onError: @escaping RCTResponseSenderBlock) {
+        guard let eventDataDictionary = eventData as? [String: Any], let event = CustomEvent(dictRepresentation: eventDataDictionary) else
+        {
+            onError([NSError(type: .InvalidArguments).reactNativeObject])
+            return
+        }
+
+        MobileMessaging.submitEvent(event)
+    }
+
+    @objc(submitEventImmediately:onSuccess:onError:)
+    func submitEventImmediately(eventData: NSDictionary, onSuccess: @escaping RCTResponseSenderBlock, onError: @escaping RCTResponseSenderBlock) {
+        guard let eventDataDictionary = eventData as? [String: Any], let event = CustomEvent(dictRepresentation: eventDataDictionary) else
+        {
+            onError([NSError(type: .InvalidArguments).reactNativeObject])
+            return
+        }
+
+        MobileMessaging.submitEvent(event) { (error) in
+            if let error = error {
+                onError([error.reactNativeObject])
+            } else {
+                onSuccess(nil)
+            }
+        }
     }
 
     /*

@@ -1,56 +1,18 @@
 package org.infobip.reactlibrary.mobilemessaging;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Application;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-
-import com.facebook.react.bridge.ActivityEventListener;
-import com.facebook.react.bridge.LifecycleEventListener;
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
-import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.ReadableArray;
-import com.facebook.react.bridge.ReadableMap;
-
-import com.facebook.react.bridge.Callback;
-
-import org.infobip.mobile.messaging.Message;
-import org.infobip.mobile.messaging.MobileMessaging;
-import org.infobip.mobile.messaging.NotificationSettings;
-import org.infobip.mobile.messaging.storage.MessageStore;
-import org.infobip.mobile.messaging.storage.SQLiteMessageStore;
-
-import android.annotation.SuppressLint;
-import android.content.IntentFilter;
+import android.content.*;
 import android.graphics.Color;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import android.os.AsyncTask;
 import android.util.Log;
-
-import com.facebook.react.bridge.WritableArray;
-import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.bridge.WritableNativeArray;
-import com.facebook.react.bridge.WritableNativeMap;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import com.facebook.react.bridge.*;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
-
-import org.infobip.reactlibrary.mobilemessaging.datamappers.InstallationJson;
-import org.infobip.reactlibrary.mobilemessaging.datamappers.MessageJson;
-import org.infobip.reactlibrary.mobilemessaging.datamappers.PersonalizationCtx;
-import org.infobip.reactlibrary.mobilemessaging.datamappers.ReactNativeJson;
-import org.infobip.reactlibrary.mobilemessaging.datamappers.UserJson;
-
-import org.infobip.mobile.messaging.BroadcastParameter;
-import org.infobip.mobile.messaging.Event;
-import org.infobip.mobile.messaging.Installation;
-import org.infobip.mobile.messaging.MobileMessagingProperty;
-import org.infobip.mobile.messaging.SuccessPending;
-import org.infobip.mobile.messaging.User;
+import org.infobip.mobile.messaging.*;
 import org.infobip.mobile.messaging.geo.GeoEvent;
 import org.infobip.mobile.messaging.geo.MobileGeo;
 import org.infobip.mobile.messaging.interactive.InteractiveEvent;
@@ -59,19 +21,17 @@ import org.infobip.mobile.messaging.interactive.NotificationAction;
 import org.infobip.mobile.messaging.interactive.NotificationCategory;
 import org.infobip.mobile.messaging.logging.MobileMessagingLogger;
 import org.infobip.mobile.messaging.mobile.InternalSdkError;
-import org.infobip.mobile.messaging.mobile.Result;
 import org.infobip.mobile.messaging.mobile.MobileMessagingError;
+import org.infobip.mobile.messaging.mobile.Result;
+import org.infobip.mobile.messaging.storage.MessageStore;
+import org.infobip.mobile.messaging.storage.SQLiteMessageStore;
 import org.infobip.mobile.messaging.util.PreferenceHelper;
+import org.infobip.reactlibrary.mobilemessaging.datamappers.*;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule implements LifecycleEventListener, ActivityEventListener {
     public static final String MODULE_NAME = "ReactNativeMobileMessaging";
@@ -781,4 +741,29 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
                 .show();
     }
 
+    @ReactMethod
+    public void submitEvent(ReadableMap args, final Callback errorCallback) throws JSONException {
+        final CustomEvent event = CustomEventJson.fromJSON(ReactNativeJson.convertMapToJson(args));
+        mobileMessaging().submitEvent(event);
+    }
+
+    @ReactMethod
+    public void submitEventImmediately(ReadableMap args, final Callback successCallback, final Callback errorCallback) throws JSONException {
+        final CustomEvent customEvent = CustomEventJson.fromJSON(ReactNativeJson.convertMapToJson(args));
+        mobileMessaging().submitEvent(customEvent, customEventResultListener(successCallback, errorCallback));
+    }
+
+    @NonNull
+    private MobileMessaging.ResultListener<CustomEvent> customEventResultListener(final Callback successCallback, final Callback errorCallback) {
+        return new MobileMessaging.ResultListener<CustomEvent>() {
+            @Override
+            public void onResult(Result<CustomEvent, MobileMessagingError> result) {
+                if (result.isSuccess()) {
+                    successCallback.invoke();
+                } else {
+                    errorCallback.invoke(Utils.callbackError(result.getError().getMessage(), null));
+                }
+            }
+        };
+    }
 }

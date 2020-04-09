@@ -3,6 +3,6 @@ platform :ios, '9.0'
 use_frameworks!
 
 target 'ReactNativeMobileMessaging' do
-    pod 'MobileMessaging/Core', '6.0.8'
-    pod 'MobileMessaging/Geofencing', '6.0.8'
+    pod 'MobileMessaging/Core', '6.2.1'
+    pod 'MobileMessaging/Geofencing', '6.2.1'
 end
