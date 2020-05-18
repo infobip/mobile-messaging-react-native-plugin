@@ -9,7 +9,7 @@ Pod::Spec.new do |s|
   s.description  = <<-DESC
                   infobip-mobile-messaging-react-native-plugin
                    DESC
-  s.homepage     = "https://github.com/github_account/infobip-mobile-messaging-react-native-plugin"
+  s.homepage     = "https://github.com/infobip/mobile-messaging-react-native-plugin"
   s.license      = "MIT"
   s.authors      = { "Olga Koroleva" => "Push.Support@infobip.com" }
   s.platforms    = { :ios => "9.0" }
@@ -19,7 +19,7 @@ Pod::Spec.new do |s|
   s.requires_arc = true
 
   s.dependency "React"
-  s.dependency "MobileMessaging/Core", "6.2.1"
-  s.dependency "MobileMessaging/Geofencing", "6.2.1"
+  s.dependency "MobileMessaging/Core", "6.2.2"
+  s.dependency "MobileMessaging/Geofencing", "6.2.2"
 
 end
