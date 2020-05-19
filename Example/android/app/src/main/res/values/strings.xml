@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Example</string>
+    <string name="google_app_id">Your Sender Id</string>
+</resources>
