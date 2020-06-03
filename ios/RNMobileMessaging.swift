@@ -30,8 +30,19 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
             EventName.messageStorage_stop,
             EventName.messageStorage_save,
             EventName.messageStorage_find,
-            EventName.messageStorage_findAll
+            EventName.messageStorage_findAll,
+            EventName.inAppChat_availabilityUpdated
         ]
+    }
+    
+    override func startObserving() {
+        eventsManager?.startObserving()
+        super.startObserving()
+    }
+    
+    override func stopObserving() {
+        eventsManager?.stopObserving()
+        super.stopObserving()
     }
 
     @objc
@@ -79,9 +90,14 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
             mobileMessaging = mobileMessaging?.withInteractiveNotificationCategories(Set(categories))
         }
         MobileMessaging.userAgent.pluginVersion = "reactNative \(configuration.reactNativePluginVersion)"
-        if (configuration.logging) {
+        if configuration.logging {
             MobileMessaging.logger = MMDefaultLogger()
         }
+        
+        if configuration.inAppChatEnabled {
+            mobileMessaging = mobileMessaging?.withInAppChat()
+        }
+        
         mobileMessaging?.start({
             onSuccess(nil)
         })

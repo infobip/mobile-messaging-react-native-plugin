@@ -24,6 +24,7 @@ class RNMobileMessagingConfiguration {
         static let messageStorage = "messageStorage"
         static let reactNativePluginVersion = "reactNativePluginVersion"
         static let notificationCategories = "notificationCategories"
+        static let inAppChatEnabled = "inAppChatEnabled"
     }
 
     let appCode: String
@@ -36,6 +37,7 @@ class RNMobileMessagingConfiguration {
     let privacySettings: [String: Any]
     let reactNativePluginVersion: String
     let categories: [NotificationCategory]?
+    let inAppChatEnabled: Bool
 
     init?(rawConfig: [String: AnyObject]) {
         guard let appCode = rawConfig[RNMobileMessagingConfiguration.Keys.applicationCode] as? String,
@@ -50,6 +52,7 @@ class RNMobileMessagingConfiguration {
         self.logging = ios[RNMobileMessagingConfiguration.Keys.logging].unwrap(orDefault: false)
         self.defaultMessageStorage = rawConfig[RNMobileMessagingConfiguration.Keys.defaultMessageStorage].unwrap(orDefault: false)
         self.messageStorageEnabled = rawConfig[RNMobileMessagingConfiguration.Keys.messageStorage] != nil ? true : false
+        self.inAppChatEnabled = rawConfig[RNMobileMessagingConfiguration.Keys.inAppChatEnabled].unwrap(orDefault: false)
 
         if let rawPrivacySettings = rawConfig[RNMobileMessagingConfiguration.Keys.privacySettings] as? [String: Any] {
             var ps = [String: Any]()

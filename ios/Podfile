@@ -1,8 +1,0 @@
-source 'https://github.com/CocoaPods/Specs.git'
-platform :ios, '9.0'
-use_frameworks!
-
-target 'ReactNativeMobileMessaging' do
-    pod 'MobileMessaging/Core', '6.2.2'
-    pod 'MobileMessaging/Geofencing', '6.2.2'
-end

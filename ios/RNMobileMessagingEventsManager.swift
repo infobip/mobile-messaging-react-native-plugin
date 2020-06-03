@@ -10,7 +10,8 @@ import MobileMessaging
 
 class RNMobileMessagingEventsManager {
     private var eventEmitter: RCTEventEmitter!
-    
+    private var hasEventListeners = false
+
     private let supportedNotifications: [String: String] = [
         EventName.messageReceived: MMNotificationMessageReceived,
         EventName.tokenReceived:  MMNotificationDeviceTokenReceived,
@@ -21,8 +22,17 @@ class RNMobileMessagingEventsManager {
         EventName.depersonalized: MMNotificationDepersonalized,
         EventName.personalized: MMNotificationPersonalized,
         EventName.installationUpdated: MMNotificationInstallationSynced,
-        EventName.userUpdated: MMNotificationUserSynced
+        EventName.userUpdated: MMNotificationUserSynced,
+        EventName.inAppChat_availabilityUpdated: MMNotificationInAppChatAvailabilityUpdated
     ]
+
+    func startObserving() {
+        hasEventListeners = true
+    }
+
+    func stopObserving() {
+        hasEventListeners = false
+    }
 
     init(eventEmitter: RCTEventEmitter) {
         self.eventEmitter = eventEmitter
@@ -44,6 +54,10 @@ class RNMobileMessagingEventsManager {
     }
 
     @objc func handleMMNotification(notification: Notification) {
+        guard hasEventListeners else {
+            return
+        }
+
         var eventName: String?
         var notificationResult: Any?
         switch notification.name.rawValue {
@@ -93,6 +107,9 @@ class RNMobileMessagingEventsManager {
                 eventName = EventName.userUpdated
                 notificationResult = user.dictionaryRepresentation
             }
+        case MMNotificationInAppChatAvailabilityUpdated:
+            eventName = EventName.inAppChat_availabilityUpdated
+            notificationResult = notification.userInfo?[MMNotificationKeyInAppChatEnabled] as? Bool
         default: break
         }
 

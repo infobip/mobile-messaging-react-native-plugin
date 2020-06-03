@@ -1,11 +1,14 @@
+import React, { Component } from 'react'
+import PropTypes from 'prop-types';
 import {
     NativeEventEmitter,
     NativeModules,
     PermissionsAndroid,
-    Platform
+    Platform,
+    requireNativeComponent
 } from 'react-native';
 
-const { ReactNativeMobileMessaging } = NativeModules;
+const { ReactNativeMobileMessaging, RNMMChat } = NativeModules;
 
 export default ReactNativeMobileMessaging;
 
@@ -32,6 +35,10 @@ class MobileMessaging {
             'messageStorage.save',
             'messageStorage.find',
             'messageStorage.findAll'
+        ];
+
+        this.inAppChatEvents = [
+            'inAppChat.availabilityUpdated'
         ];
         this.eventEmitter = new NativeEventEmitter(ReactNativeMobileMessaging);
     }
@@ -420,7 +427,7 @@ class MobileMessaging {
      * @param {Function} onError will be called on error
      */
     showDialogForError(errorCode, onSuccess = function() {}, onError = function() {}) {
-    	ReactNativeMobileMessaging.showDialogForError(errorCode, onSuccess, onError)
+        ReactNativeMobileMessaging.showDialogForError(errorCode, onSuccess, onError)
     };
 
     /**
@@ -465,6 +472,54 @@ class MobileMessaging {
         ReactNativeMobileMessaging.submitEventImmediately(eventData, onSuccess, onError);
     };
 
+    /**
+     * Shows In-app chat screen.
+     * iOS - it's screen with top bar and `x` button on the right corner.
+     * Android - it's screen with top bar and back navigation button.
+     */
+    showChat() {
+        RNMMChat.showChat();
+    }
+
+    /**
+     * You can define custom appearance for iOS chat view by providing a chat settings.
+     * Chat settings format:
+     *	{
+     *		title: '<chat title>',
+     *	    sendButtonColor: '<hex color string>',
+     *	    navigationBarItemsColor:'<hex color string>',
+     *	    navigationBarColor:'<hex color string>',
+     *	    navigationBarTitleColor:'<hex color string>',
+     */
+    setupiOSChatSettings(chatSettings) {
+        if (Platform.OS === "ios") {
+            RNMMChat.setupChatSettings(chatSettings);
+        } else {
+            console.log("method setupiOSChatSettings isn't supported for Android, use settings.xml to provide appearance settings.");
+        }
+    }
 }
+
+export class ChatView extends React.Component {
+    render() {
+        return <RNMMChatView {...this.props} />
+    }
+}
+
+ChatView.propTypes = {
+    /**
+     * Send button color can be set in hex format.
+     * If it's not provided, color from Infobip Portal widget configuration will be set.
+     */
+    sendButtonColor: PropTypes.string
+}
+
+class ChatViewNotSupported extends React.Component {
+    render() {
+        return <UIView/>
+    }
+}
+
+let RNMMChatView = (Platform.OS === 'ios') ? requireNativeComponent('RNMMChatView', ChatView) : new ChatViewNotSupported();
 
 export let mobileMessaging = new MobileMessaging();

@@ -55,7 +55,8 @@ public class MessageJson {
                     .putOpt("contentUrl", message.getContentUrl())
                     .putOpt("seen", message.getSeenTimestamp() != 0)
                     .putOpt("seenDate", message.getSeenTimestamp())
-                    .putOpt("geo", hasGeo(message));
+                    .putOpt("geo", hasGeo(message))
+                    .putOpt("chat", message.isChatMessage());
         } catch (JSONException e) {
             Log.w(Utils.TAG, "Cannot convert message to JSON: " + e.getMessage());
             Log.d(Utils.TAG, Log.getStackTraceString(e));
