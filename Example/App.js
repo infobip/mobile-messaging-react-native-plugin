@@ -6,10 +6,50 @@
  * @flow strict-local
  */
 
-import React from 'react';
-import {StyleSheet, View, Text} from 'react-native';
+import * as React from 'react';
+import {StyleSheet, View, Text, Button} from 'react-native';
+import {NavigationContainer} from '@react-navigation/native';
+import {createStackNavigator} from '@react-navigation/stack';
 
-import {mobileMessaging} from 'infobip-mobile-messaging-react-native-plugin';
+import {
+  mobileMessaging,
+  ChatView,
+} from 'infobip-mobile-messaging-react-native-plugin';
+
+function homeScreen({navigation}) {
+  return (
+    <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+      <Text style={styles.info}>
+        Welcome to the{'\n'}
+        Mobile Messaging Example app!
+      </Text>
+      <Button
+        title="Show chat"
+        onPress={() => {
+          mobileMessaging.showChat();
+          mobileMessaging.setupiOSChatSettings({
+            //If these values commented out, configuration will be set from web widget settings from the Infobip Portal
+            // title: 'My Chat Title',
+            // sendButtonColor: '#FF0000',
+            // navigationBarColor: '#FF0000',
+            navigationBarTitleColor: '#FFFFFF',
+            navigationBarItemsColor: '#FFFFFF',
+          });
+        }}
+      />
+      <Button
+        title="Show chat as React component"
+        onPress={() => navigation.navigate('Chat')}
+      />
+    </View>
+  );
+}
+
+function chatScreen() {
+  return <ChatView style={{flex: 1}} sendButtonColor={'#FF0000'} />;
+}
+
+const Stack = createStackNavigator();
 
 export default class App extends React.Component {
   constructor() {
@@ -23,8 +63,7 @@ export default class App extends React.Component {
   componentDidMount() {
     mobileMessaging.supportedEvents.forEach((event) => {
       mobileMessaging.register(event, (value) => {
-        console.log('Event: ', JSON.stringify(value));
-        this.setState({logInfo: 'Event: ' + JSON.stringify(value)});
+        this.updateLogInfo('Event: ' + JSON.stringify(value));
       });
     });
   }
@@ -41,27 +80,45 @@ export default class App extends React.Component {
         applicationCode: '<Your Application Code>',
         ios: {
           notificationTypes: ['alert', 'badge', 'sound'],
+          logging: true,
         },
+        inAppChatEnabled: true,
       },
       () => {
-        console.log('MobileMessaging started');
-        this.setState({logInfo: 'MobileMessaging started'});
+        this.updateLogInfo('MobileMessaging started');
       },
       (error) => {
-        console.log('MobileMessaging error: ', error);
-        this.setState({logInfo: 'MobileMessaging error: ' + error});
+        this.updateLogInfo('MobileMessaging error: ' + error);
       },
     );
   }
 
+  updateLogInfo(info) {
+    console.log(info);
+    this.setState({logInfo: info});
+  }
+
   render() {
     return (
-      <View style={styles.container}>
-        <Text style={styles.info}>
-          Welcome to the Mobile Messaging Example app!
-        </Text>
-        <Text style={styles.info}>{this.state.logInfo}</Text>
-      </View>
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName="Home">
+          <Stack.Screen name="Home" component={homeScreen} />
+          <Stack.Screen
+            name="Chat"
+            component={chatScreen}
+            options={{
+              title: 'My Chat Title',
+              headerStyle: {
+                backgroundColor: '#FF0000',
+              },
+              headerTintColor: '#FFFFFF',
+              headerTitleStyle: {
+                fontWeight: 'bold',
+              },
+            }}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
     );
   }
 }

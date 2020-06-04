@@ -1,4 +1,4 @@
-platform :ios, '9.0'
+platform :ios, '10.0'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
 use_frameworks!
 
@@ -79,7 +79,7 @@ target 'Example' do
   pod 'Folly', :podspec => '../node_modules/react-native/third-party-podspecs/Folly.podspec'
 
   use_native_modules!
-  
+
   target 'MobileMessagingNotificationExtension' do
       inherit! :search_paths
   end

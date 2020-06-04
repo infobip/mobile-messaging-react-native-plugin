@@ -5,7 +5,7 @@ import {
     NativeModules,
     PermissionsAndroid,
     Platform,
-    requireNativeComponent
+    requireNativeComponent, Text, View,
 } from 'react-native';
 
 const { ReactNativeMobileMessaging, RNMMChat } = NativeModules;
@@ -502,7 +502,11 @@ class MobileMessaging {
 
 export class ChatView extends React.Component {
     render() {
-        return <RNMMChatView {...this.props} />
+        if (Platform.OS === 'ios') {
+            return <RNMMChatView {...this.props} />
+        } else {
+            return notSupportedScreen();
+        }
     }
 }
 
@@ -514,12 +518,14 @@ ChatView.propTypes = {
     sendButtonColor: PropTypes.string
 }
 
-class ChatViewNotSupported extends React.Component {
-    render() {
-        return <UIView/>
-    }
+function notSupportedScreen() {
+    return (
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+            <Text>Not supported</Text>
+        </View>
+    );
 }
 
-let RNMMChatView = (Platform.OS === 'ios') ? requireNativeComponent('RNMMChatView', ChatView) : new ChatViewNotSupported();
+let RNMMChatView = requireNativeComponent('RNMMChatView', ChatView);
 
 export let mobileMessaging = new MobileMessaging();
