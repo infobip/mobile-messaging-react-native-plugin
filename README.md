@@ -20,7 +20,8 @@ For iOS project:
 - Minimum deployment target 10.0
 
 For Android project:
-- Android Studio (v3.5.3)
+- Android Studio (v4.0)
+- Gradle (v3.6+)
 - API Level: 16 (Android 4.1 - Jelly Bean)
 
 ## Quick start guide
