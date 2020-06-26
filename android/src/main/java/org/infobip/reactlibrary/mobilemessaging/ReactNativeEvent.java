@@ -26,6 +26,9 @@ class ReactNativeEvent {
 
         try {
             for (Object value : objects) {
+                if (value == null) {
+                    continue;
+                }
                 if (value instanceof JSONObject) {
                     array.pushMap(ReactNativeJson.convertJsonToMap((JSONObject) value));
                 } else if (value instanceof JSONArray) {

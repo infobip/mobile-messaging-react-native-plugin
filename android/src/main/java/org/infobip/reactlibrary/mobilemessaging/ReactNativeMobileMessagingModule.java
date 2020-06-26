@@ -38,11 +38,21 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
 
     private final ReactApplicationContext reactContext;
 
+    private static volatile Boolean broadcastReceiverRegistered = false;
+
     public ReactNativeMobileMessagingModule(ReactApplicationContext reactContext) {
         super(reactContext);
         this.reactContext = reactContext;
-        registerBroadcastReceiver();
         reactContext.addLifecycleEventListener(this);
+    }
+
+    @Override
+    public void initialize() {
+        super.initialize();
+        for (CacheManager.Event event : CacheManager.loadEvents(reactContext)) {
+            ReactNativeEvent.send(event.type, reactContext, event.object, event.actionId, event.actionInputText);
+        }
+        registerBroadcastReceiver();
     }
 
     // LifecycleEventListener
@@ -62,8 +72,7 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
 
     @Override
     public void onHostDestroy() {
-        reactContext.unregisterReceiver(commonLibraryBroadcastReceiver);
-        reactContext.unregisterReceiver(messageActionReceiver);
+        unregisterBroadcastReceiver();
         reactContext.removeLifecycleEventListener(this);
     }
 
@@ -87,27 +96,65 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
         put(Event.PERSONALIZED.getKey(), EVENT_PERSONALIZED);
         put(Event.DEPERSONALIZED.getKey(), EVENT_DEPERSONALIZED);
         put(GeoEvent.GEOFENCE_AREA_ENTERED.getKey(), EVENT_GEOFENCE_ENTERED);
-        put(InteractiveEvent.NOTIFICATION_ACTION_TAPPED.getKey(), EVENT_NOTIFICATION_ACTION_TAPPED);
     }};
 
     private static final Map<String, String> messageBroadcastEventMap = new HashMap<String, String>() {{
         put(Event.MESSAGE_RECEIVED.getKey(), EVENT_MESSAGE_RECEIVED);
         put(Event.NOTIFICATION_TAPPED.getKey(), EVENT_NOTIFICATION_TAPPED);
+        put(InteractiveEvent.NOTIFICATION_ACTION_TAPPED.getKey(), EVENT_NOTIFICATION_ACTION_TAPPED);
     }};
 
     private final BroadcastReceiver messageActionReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            String event = messageBroadcastEventMap.get(intent.getAction());
+            String event = getMessageBroadcastEvent(intent);
             if (event == null) {
                 Log.w(Utils.TAG, "Cannot process event for broadcast: " + intent.getAction());
                 return;
             }
-
             JSONObject message = MessageJson.bundleToJSON(intent.getExtras());
-            ReactNativeEvent.send(event, reactContext, message);
+            if (InteractiveEvent.NOTIFICATION_ACTION_TAPPED.getKey().equals(intent.getAction())) {
+                NotificationAction notificationAction = NotificationAction.createFrom(intent.getExtras());
+                ReactNativeEvent.send(event, reactContext, message, notificationAction.getId(), notificationAction.getInputText());
+            } else {
+                ReactNativeEvent.send(event, reactContext, message);
+            }
         }
     };
+
+    private static String getMessageBroadcastEvent(Intent intent) {
+        if (intent == null || intent.getAction() == null) {
+            Log.w(Utils.TAG, "Cannot process event for broadcast, cause intent or action is null");
+            return null;
+        }
+        return messageBroadcastEventMap.get(intent.getAction());
+    }
+
+    /*
+    For event caching, if plugin not yet initialized
+    */
+
+    public static class MessageActionReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String event = getMessageBroadcastEvent(intent);
+            if (event == null) {
+                Log.w(Utils.TAG, "Cannot process event for broadcast: " + intent.getAction());
+                return;
+            }
+            JSONObject message = MessageJson.bundleToJSON(intent.getExtras());
+            if (!broadcastReceiverRegistered) {
+                String actionId = null;
+                String actionInputText = null;
+                if (InteractiveEvent.NOTIFICATION_ACTION_TAPPED.getKey().equals(intent.getAction())) {
+                    NotificationAction notificationAction = NotificationAction.createFrom(intent.getExtras());
+                    actionId = notificationAction.getId();
+                    actionInputText = notificationAction.getInputText();
+                }
+                CacheManager.saveEvent(context, event, message, actionId, actionInputText);
+            }
+        }
+    }
 
     private final BroadcastReceiver commonLibraryBroadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -123,13 +170,6 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
                 for (JSONObject geo : MessageJson.geosFromBundle(intent.getExtras())) {
                     ReactNativeEvent.send(event, reactContext, geo);
                 }
-                return;
-            }
-
-            if (InteractiveEvent.NOTIFICATION_ACTION_TAPPED.getKey().equals(intent.getAction())) {
-                Message message = Message.createFrom(intent.getExtras());
-                NotificationAction notificationAction = NotificationAction.createFrom(intent.getExtras());
-                ReactNativeEvent.send(event, reactContext, MessageJson.toJSON(message), notificationAction.getId(), notificationAction.getInputText());
                 return;
             }
 
@@ -254,7 +294,13 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
         }
 
         reactContext.registerReceiver(messageActionReceiver, messageActionIntentFilter);
+        broadcastReceiverRegistered = true;
+    }
 
+    private void unregisterBroadcastReceiver() {
+        reactContext.unregisterReceiver(commonLibraryBroadcastReceiver);
+        reactContext.unregisterReceiver(messageActionReceiver);
+        broadcastReceiverRegistered = false;
     }
 
     /**
