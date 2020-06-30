@@ -75,6 +75,17 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
+				A036A57D24AA7A2600B426EF /* MobileMessagingPlugin */,
+				134814211AA4EA7D00B7C361 /* Products */,
+				76D6D32B23915E1E00F1E02B /* ReactNativeMobileMessaging-Bridging-Header.h */,
+				BD6CA9645FA601D59D19D588 /* Pods */,
+				A3AAA86EF98E496C322000D8 /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		A036A57D24AA7A2600B426EF /* MobileMessagingPlugin */ = {
+			isa = PBXGroup;
+			children = (
 				A01DF5FB24802BDA00A65A31 /* RNMMChatViewManager.swift */,
 				A01DF5FC24802BDA00A65A31 /* RNMMChatViewManagerBridge.m */,
 				A01DF5F3247D2D6800A65A31 /* RNMMChat.swift */,
@@ -86,11 +97,8 @@
 				A006028D23E9AB27007BE88B /* RNMobileMessagingEventsManager.swift */,
 				76D6D32C23915E1E00F1E02B /* RNMobileMessaging.swift */,
 				A006028923E9AACE007BE88B /* RNMobileMessagingConfiguration.swift */,
-				134814211AA4EA7D00B7C361 /* Products */,
-				76D6D32B23915E1E00F1E02B /* ReactNativeMobileMessaging-Bridging-Header.h */,
-				BD6CA9645FA601D59D19D588 /* Pods */,
-				A3AAA86EF98E496C322000D8 /* Frameworks */,
 			);
+			path = MobileMessagingPlugin;
 			sourceTree = "<group>";
 		};
 		A3AAA86EF98E496C322000D8 /* Frameworks */ = {
