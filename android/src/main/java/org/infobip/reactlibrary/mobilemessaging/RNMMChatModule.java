@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableMap;
 
 import org.infobip.mobile.messaging.chat.InAppChat;
 
@@ -25,7 +26,7 @@ public class RNMMChatModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void showChat() {
+    public void showChat(ReadableMap args) {
         InAppChat.getInstance(reactContext).inAppChatView().show();
     }
 }

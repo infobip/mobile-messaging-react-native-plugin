@@ -56,7 +56,12 @@ public class MessageJson {
                     .putOpt("seen", message.getSeenTimestamp() != 0)
                     .putOpt("seenDate", message.getSeenTimestamp())
                     .putOpt("geo", hasGeo(message))
-                    .putOpt("chat", message.isChatMessage());
+                    .putOpt("chat", message.isChatMessage())
+                    .putOpt("browserUrl", message.getBrowserUrl())
+                    .putOpt("webViewUrl", message.getWebViewUrl())
+                    .putOpt("deeplink", message.getDeeplink())
+                    .putOpt("inAppOpenTitle", message.getInAppOpenTitle())
+                    .putOpt("inAppDismissTitle", message.getInAppDismissTitle());
         } catch (JSONException e) {
             Log.w(Utils.TAG, "Cannot convert message to JSON: " + e.getMessage());
             Log.d(Utils.TAG, Log.getStackTraceString(e));
@@ -118,6 +123,16 @@ public class MessageJson {
         message.setFrom(json.optString("from", null));
         message.setReceivedTimestamp(json.optLong("receivedTimestamp", 0));
         message.setCustomPayload(json.optJSONObject("customPayload"));
+        message.setContentUrl(json.optString("contentUrl", null));
+        message.setSeenTimestamp(json.optLong("seenDate", 0));
+        message.setBrowserUrl(json.optString("browserUrl", null));
+        message.setWebViewUrl(json.optString("webViewUrl", null));
+        message.setDeeplink(json.optString("deeplink", null));
+        message.setInAppOpenTitle(json.optString("inAppOpenTitle", null));
+        message.setInAppDismissTitle(json.optString("inAppDismissTitle", null));
+        if (json.optBoolean("chat", false)) {
+            message.setMessageType(Message.MESSAGE_TYPE_CHAT);
+        }
         return message;
     }
 

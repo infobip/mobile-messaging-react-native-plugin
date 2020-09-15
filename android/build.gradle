@@ -75,10 +75,11 @@ repositories {
 }
 
 dependencies {
-    def mmVersion = '3.0.3'
+    def mmVersion = '3.3.0'
 
     implementation 'com.facebook.react:react-native:+'
     implementation "androidx.annotation:annotation:1.1.0"
+    implementation 'com.google.android.material:material:1.0.0'
 
     implementation "org.infobip.mobile.messaging.api:infobip-mobile-messaging-android-resources:$mmVersion@aar"
     implementation "org.infobip.mobile.messaging.api:infobip-mobile-messaging-android-chat-sdk:$mmVersion@aar"

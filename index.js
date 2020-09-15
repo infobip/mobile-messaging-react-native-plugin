@@ -476,10 +476,20 @@ class MobileMessaging {
      * Shows In-app chat screen.
      * iOS - it's screen with top bar and `x` button on the right corner.
      * Android - it's screen with top bar and back navigation button.
+     * @name showChat
+     * @param {Object} presentingOptions. You can configure how chat will be presented.
+     * Now only one option for iOS is supported: `shouldBePresentedModally`, false by default.
+     * If it's true - in-app chat View Controller for iOS will be presented modally.
+     * example:
+     * {
+     *     ios: {
+     *         shouldBePresentedModally: true
+     *     }
+     * }
      */
-    showChat() {
-        RNMMChat.showChat();
-    }
+    showChat(presentingOptions= {}) {
+        RNMMChat.showChat(presentingOptions);
+    };
 
     /**
      * You can define custom appearance for iOS chat view by providing a chat settings.
@@ -497,7 +507,7 @@ class MobileMessaging {
         } else {
             console.log("method setupiOSChatSettings isn't supported for Android, use settings.xml to provide appearance settings.");
         }
-    }
+    };
 }
 
 export class ChatView extends React.Component {

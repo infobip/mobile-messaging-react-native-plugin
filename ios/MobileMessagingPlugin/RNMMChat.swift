@@ -10,11 +10,24 @@ import MobileMessaging
 
 @objc(RNMMChat)
 class RNMMChat: NSObject  {
-    @objc(showChat)
-    func showChat() {
-        let vc = ChatViewController.makeRootNavigationViewController()
-        vc.modalPresentationStyle = .fullScreen
-        RCTKeyWindow()?.rootViewController?.present(vc, animated: true, completion: nil)
+    
+    @objc(showChat:)
+    func showChat(presentingOptions: NSDictionary) {
+        var presentVCModally = false
+        if let presentingOptions = presentingOptions as? [String: Any],
+            let iosOptions = presentingOptions["ios"] as? [String: Any],
+            let shouldBePresentedModally = iosOptions["shouldBePresentedModally"] as? Bool {
+            presentVCModally = shouldBePresentedModally
+        }
+        let vc = presentVCModally ? ChatViewController.makeRootNavigationViewController(): ChatViewController.makeRootNavigationViewControllerWithCustomTransition()
+        if presentVCModally {
+            vc.modalPresentationStyle = .fullScreen
+        }
+        if let rootVc = RCTKeyWindow()?.rootViewController {
+            rootVc.present(vc, animated: true, completion: nil)
+        } else {
+            MMLogDebug("[InAppChat] could not define root vc to present in-app-chat")
+        }
     }
 
      @objc(setupChatSettings:)

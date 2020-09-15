@@ -23,9 +23,14 @@ extension MTMessage {
         result["seenDate"] = seenDate?.timeIntervalSince1970
         result["geo"] = isGeoMessage
         result["chat"] = isChatMessage
+        result["browserUrl"] = browserUrl?.absoluteString
+        result["deeplink"] = deeplink?.absoluteString
+        result["webViewUrl"] = webViewUrl?.absoluteString
+        result["inAppOpenTitle"] = inAppOpenTitle
+        result["inAppDismissTitle"] = inAppDismissTitle
         return result
     }
-
+    
     var isGeoMessage: Bool {
         let geoAreasDicts = (originalPayload["internalData"] as? [String: Any])?["geo"] as? [[String: Any]]
         return geoAreasDicts != nil
@@ -39,48 +44,48 @@ extension BaseMessage {
         {
             return nil
         }
-
+        
         return BaseMessage(messageId: messageId, direction: MessageDirection.MT, originalPayload: originalPayload, deliveryMethod: .undefined)
     }
-
+    
     func dictionary() -> [String: Any] {
         var result = [String: Any]()
         result["messageId"] = messageId
         result["customPayload"] = originalPayload["customPayload"]
         result["originalPayload"] = originalPayload
-
+        
         if let aps = originalPayload["aps"] as? StringKeyPayload {
             result["body"] = aps["body"]
             result["sound"] = aps["sound"]
         }
-
+        
         if let internalData = originalPayload["internalData"] as? StringKeyPayload,
             let _ = internalData["silent"] as? StringKeyPayload {
             result["silent"] = true
         } else if let silent = originalPayload["silent"] as? Bool {
             result["silent"] = silent
         }
-
+        
         return result
     }
 }
 
 extension MMRegion {
-   func dictionary() -> [String: Any] {
-       var areaCenter = [String: Any]()
-       areaCenter["lat"] = center.latitude
-       areaCenter["lon"] = center.longitude
-
-       var area = [String: Any]()
-       area["id"] = identifier
-       area["center"] = areaCenter
-       area["radius"] = radius
-       area["title"] = title
-
-       var result = [String: Any]()
-       result["area"] = area
-       return result
-   }
+    func dictionary() -> [String: Any] {
+        var areaCenter = [String: Any]()
+        areaCenter["lat"] = center.latitude
+        areaCenter["lon"] = center.longitude
+        
+        var area = [String: Any]()
+        area["id"] = identifier
+        area["center"] = areaCenter
+        area["radius"] = radius
+        area["title"] = title
+        
+        var result = [String: Any]()
+        result["area"] = area
+        return result
+    }
 }
 
 extension Optional {
