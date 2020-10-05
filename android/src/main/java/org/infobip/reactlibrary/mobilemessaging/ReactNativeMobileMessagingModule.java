@@ -42,6 +42,10 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
 
     public ReactNativeMobileMessagingModule(ReactApplicationContext reactContext) {
         super(reactContext);
+
+        while (getReactApplicationContext() == null);
+        reactContext = getReactApplicationContext();
+
         this.reactContext = reactContext;
         reactContext.addLifecycleEventListener(this);
     }
@@ -230,6 +234,12 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
             builder.withoutSystemInfo();
         }
 
+        if (reactContext == null) {
+            Log.i(Utils.TAG, "reactContext: IS NULL");
+        } else {
+            Log.i(Utils.TAG, "reactContext.toString():");
+            Log.i(Utils.TAG, reactContext.toString());
+        }
         if (configuration.messageStorage != null) {
             MessageStoreAdapter.reactContext = reactContext;
             builder.withMessageStore(MessageStoreAdapter.class);
