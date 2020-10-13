@@ -12,7 +12,7 @@
     "@react-native-community/masked-view": "^0.1.10",
     "@react-navigation/native": "^5.5.0",
     "@react-navigation/stack": "^5.4.1",
-    "infobip-mobile-messaging-react-native-plugin": "^2.0.2",
+    "infobip-mobile-messaging-react-native-plugin": "^2.1.1",
     "react": "16.11.0",
     "react-native": "0.62.2",
     "react-native-gesture-handler": "^1.6.1",
