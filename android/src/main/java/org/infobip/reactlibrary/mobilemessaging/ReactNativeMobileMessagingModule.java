@@ -7,11 +7,14 @@ import android.content.*;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 import com.facebook.react.bridge.*;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+
 import org.infobip.mobile.messaging.*;
 import org.infobip.mobile.messaging.geo.GeoEvent;
 import org.infobip.mobile.messaging.geo.MobileGeo;
@@ -27,9 +30,16 @@ import org.infobip.mobile.messaging.storage.MessageStore;
 import org.infobip.mobile.messaging.storage.SQLiteMessageStore;
 import org.infobip.mobile.messaging.util.PreferenceHelper;
 import org.infobip.reactlibrary.mobilemessaging.datamappers.*;
+import org.infobip.mobile.messaging.dal.bundle.MessageBundleMapper;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import android.os.Bundle;
+
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import java.util.*;
 
@@ -108,6 +118,13 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
         put(InteractiveEvent.NOTIFICATION_ACTION_TAPPED.getKey(), EVENT_NOTIFICATION_ACTION_TAPPED);
     }};
 
+    private static final Map<String, String> messageStorageEventMap = new HashMap<String, String>() {{
+        put(MessageStoreAdapter.EVENT_MESSAGESTORAGE_START, MessageStoreAdapter.EVENT_MESSAGESTORAGE_START);
+        put(MessageStoreAdapter.EVENT_MESSAGESTORAGE_SAVE, MessageStoreAdapter.EVENT_MESSAGESTORAGE_SAVE);
+        put(MessageStoreAdapter.EVENT_MESSAGESTORAGE_FIND_ALL, MessageStoreAdapter.EVENT_MESSAGESTORAGE_FIND_ALL);
+    }};
+
+
     private final BroadcastReceiver messageActionReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -126,12 +143,48 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
         }
     };
 
+    private final BroadcastReceiver messageStorageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String event = getMessageStorageBroadcastEvent(intent);
+            if (event == null) {
+                Log.w(Utils.TAG, "Cannot process event for messageStorageReceiver: " + intent.getAction());
+                return;
+            }
+            Log.i(Utils.TAG, "messageStorageReceiver event: " + event);
+            if (intent.getExtras() == null) {
+                ReactNativeEvent.send(event, reactContext);
+                return;
+            }
+            List<Message> messages = Message.createFrom(intent.<Bundle>getParcelableArrayListExtra(BroadcastParameter.EXTRA_MESSAGES));
+            if (messages == null) {
+                Log.w(Utils.TAG, "messageStorageReceiver messages is null");
+                ReactNativeEvent.send(event, reactContext);
+                return;
+            }
+            Log.i(Utils.TAG, "messageStorageReceiver messages: " + messages.toString());
+            try {
+                ReactNativeEvent.send(event, reactContext, ReactNativeJson.convertJsonToArray(MessageJson.toJSONArray(messages.toArray(new Message[messages.size()]))));
+            } catch (JSONException e) {
+                ReactNativeEvent.send(event, reactContext);
+            }
+        }
+    };
+
     private static String getMessageBroadcastEvent(Intent intent) {
+        if (intent == null || intent.getAction() == null) {
+            Log.w(Utils.TAG, "Cannot process event for broadcast (getMessageBroadcastEvent), cause intent or action is null");
+            return null;
+        }
+        return messageBroadcastEventMap.get(intent.getAction());
+    }
+
+    private static String getMessageStorageBroadcastEvent(Intent intent) {
         if (intent == null || intent.getAction() == null) {
             Log.w(Utils.TAG, "Cannot process event for broadcast, cause intent or action is null");
             return null;
         }
-        return messageBroadcastEventMap.get(intent.getAction());
+        return messageStorageEventMap.get(intent.getAction());
     }
 
     /*
@@ -234,14 +287,8 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
             builder.withoutSystemInfo();
         }
 
-        if (reactContext == null) {
-            Log.i(Utils.TAG, "reactContext: IS NULL");
-        } else {
-            Log.i(Utils.TAG, "reactContext.toString():");
-            Log.i(Utils.TAG, reactContext.toString());
-        }
         if (configuration.messageStorage != null) {
-            MessageStoreAdapter.reactContext = reactContext;
+            MessageStoreAdapter.init(context);
             builder.withMessageStore(MessageStoreAdapter.class);
         } else if (configuration.defaultMessageStorage) {
             builder.withMessageStore(SQLiteMessageStore.class);
@@ -303,13 +350,22 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
             messageActionIntentFilter.addAction(action);
         }
 
+        IntentFilter messageStorageIntentFilter = new IntentFilter();
+        for (String action : messageStorageEventMap.keySet()) {
+            messageStorageIntentFilter.addAction(action);
+        }
+
         reactContext.registerReceiver(messageActionReceiver, messageActionIntentFilter);
+        Context context = reactContext.getCurrentActivity();
+        LocalBroadcastManager.getInstance(context).registerReceiver(messageStorageReceiver, messageStorageIntentFilter);
         broadcastReceiverRegistered = true;
     }
 
     private void unregisterBroadcastReceiver() {
         reactContext.unregisterReceiver(commonLibraryBroadcastReceiver);
         reactContext.unregisterReceiver(messageActionReceiver);
+        Context context = reactContext.getCurrentActivity();
+        LocalBroadcastManager.getInstance(context).unregisterReceiver(messageStorageReceiver);
         broadcastReceiverRegistered = false;
     }
 
@@ -378,7 +434,7 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
     }
 
     @ReactMethod
-    public synchronized void defaultMessageStorage_findAll(final Callback onSuccess, final Callback onError) throws JSONException {
+    public void defaultMessageStorage_findAll(final Callback onSuccess, final Callback onError) throws JSONException {
         Context context = reactContext.getCurrentActivity();
         MessageStore messageStore = MobileMessaging.getInstance(context).getMessageStore();
         if (messageStore == null) {
@@ -656,7 +712,6 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
      * Message store adapter for JS layer
      */
 
-    //TODO: CacheManager not used, mb needed?
     public static class MessageStoreAdapter implements MessageStore {
 
         //NOTE: 'stop' and 'find' events are not needed for android
@@ -664,29 +719,27 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
         private static final String EVENT_MESSAGESTORAGE_SAVE = "messageStorage.save";
         private static final String EVENT_MESSAGESTORAGE_FIND_ALL = "messageStorage.findAll";
 
-        static ReactApplicationContext reactContext;
         private static final long SYNC_CALL_TIMEOUT_MS = 30000;
-        private static final List<JSONArray> messageStorage_findAllResults = new LinkedList<JSONArray>();
+        private static final CopyOnWriteArrayList<JSONArray> messageStorage_findAllResults = new CopyOnWriteArrayList<JSONArray>();
 
-        public MessageStoreAdapter() {
-            ReactNativeEvent.send(EVENT_MESSAGESTORAGE_START, reactContext);
+        public static void init(Context context) {
+            LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(EVENT_MESSAGESTORAGE_START));
         }
 
         @Override
         public List<Message> findAll(Context context) {
-            synchronized (messageStorage_findAllResults) {
-                messageStorage_findAllResults.clear();
-                ReactNativeEvent.send(EVENT_MESSAGESTORAGE_FIND_ALL, reactContext);
-                try {
-                    messageStorage_findAllResults.wait(SYNC_CALL_TIMEOUT_MS);
-                    if (!messageStorage_findAllResults.isEmpty()) {
-                        return MessageJson.resolveMessages(messageStorage_findAllResults.get(0));
-                    }
-                } catch (Exception e) {
-                    Log.e(Utils.TAG, "Cannot find messages: " + e);
+            Log.i(Utils.TAG, "MessageStoreAdapter findAll:");
+
+            messageStorage_findAllResults.clear();
+            LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(EVENT_MESSAGESTORAGE_FIND_ALL));
+            try {
+                if (!messageStorage_findAllResults.isEmpty()) {
+                    return MessageJson.resolveMessages(messageStorage_findAllResults.get(0));
                 }
-                return new ArrayList<Message>();
+            } catch (Exception e) {
+                Log.e(Utils.TAG, "Cannot find messages: " + e);
             }
+            return new CopyOnWriteArrayList<Message>();
         }
 
         @Override
@@ -696,11 +749,13 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
 
         @Override
         public void save(Context context, Message... messages) {
-            try {
-                ReactNativeEvent.send(EVENT_MESSAGESTORAGE_SAVE, reactContext, ReactNativeJson.convertJsonToArray(MessageJson.toJSONArray(messages)));
-            } catch (JSONException e) {
-                ReactNativeEvent.send(EVENT_MESSAGESTORAGE_SAVE, reactContext);
-            }
+            Log.i(Utils.TAG, "MessageStoreAdapter save messages");
+            Intent saveMessageIntent = new Intent(EVENT_MESSAGESTORAGE_SAVE);
+            saveMessageIntent
+                    .putParcelableArrayListExtra(BroadcastParameter.EXTRA_MESSAGES,
+                            MessageBundleMapper
+                                    .messagesToBundles(Arrays.asList(messages)));
+            LocalBroadcastManager.getInstance(context).sendBroadcast(saveMessageIntent);
         }
 
         @Override
@@ -717,14 +772,16 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
 
     @ReactMethod
     void messageStorage_provideFindAllResult(ReadableArray result) {
-        synchronized (MessageStoreAdapter.messageStorage_findAllResults) {
-            try {
-                MessageStoreAdapter.messageStorage_findAllResults.add(ReactNativeJson.convertArrayToJson(result));
-            } catch (JSONException e) {
-                Log.e(Utils.TAG, "Provided results can't be parsed");
-            }
-            MessageStoreAdapter.messageStorage_findAllResults.notifyAll();
+
+        Context context = getReactApplicationContext().getCurrentActivity();
+        MessageStoreAdapter.init(context);
+
+        try {
+            MessageStoreAdapter.messageStorage_findAllResults.addIfAbsent(ReactNativeJson.convertArrayToJson(result));
+        } catch (JSONException e) {
+            Log.e(Utils.TAG, "Provided results can't be parsed");
         }
+        MessageStoreAdapter.messageStorage_findAllResults.notifyAll();
     }
 
     @ReactMethod

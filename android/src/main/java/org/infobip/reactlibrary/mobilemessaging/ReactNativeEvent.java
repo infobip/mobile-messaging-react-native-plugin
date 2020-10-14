@@ -49,7 +49,6 @@ class ReactNativeEvent {
             Log.e(Utils.TAG, "Arguments can't be converted to JS types");
         }
         send(eventName, reactContext, array);
-
     }
 
     static void send(String eventName, ReactContext reactContext, ReadableMap map) {
