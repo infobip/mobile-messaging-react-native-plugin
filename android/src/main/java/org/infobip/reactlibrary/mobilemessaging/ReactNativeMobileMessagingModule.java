@@ -16,6 +16,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
 import org.infobip.mobile.messaging.*;
+import org.infobip.mobile.messaging.chat.InAppChat;
 import org.infobip.mobile.messaging.geo.GeoEvent;
 import org.infobip.mobile.messaging.geo.MobileGeo;
 import org.infobip.mobile.messaging.interactive.InteractiveEvent;
@@ -334,6 +335,10 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
                 Log.e(Utils.TAG, "Cannot start SDK: " + e.get() + " errorCode: " + googleErrorCode);
             }
         });
+
+        if (configuration.inAppChatEnabled) {
+            InAppChat.getInstance(context).activate();
+        }
     }
 
     private void registerBroadcastReceiver() {

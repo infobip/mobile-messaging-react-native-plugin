@@ -10,6 +10,7 @@ import * as React from 'react';
 import {StyleSheet, View, Text, Button} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
+import AsyncStorage from '@react-native-community/async-storage';
 
 import {
   mobileMessaging,
@@ -45,6 +46,61 @@ function homeScreen({navigation}) {
   );
 }
 
+const myMessageStorage = {
+    save: function (messages) {
+        for (const [index, message] of messages.entries()) {
+            AsyncStorage.setItem(message.messageId, JSON.stringify(message));
+        }
+        console.log(
+            '[CustomStorage] Saving messages: ' + JSON.stringify(messages),
+        );
+    },
+
+    find: async function (messageId, callback) {
+        console.log('[CustomStorage] Find message: ' + messageId);
+        let message = await AsyncStorage.getItem(messageId);
+        if (message) {
+            console.log('[CustomStorage] Found message: ' + message);
+            callback(JSON.parse(message));
+        } else {
+            callback({});
+        }
+    },
+
+    findAll: function (callback) {
+        console.log('[CustomStorage] Find all');
+        this.getAllMessages(values => {
+            console.log(
+                '[CustomStorage] Find all messages result: ',
+                values.toString(),
+            );
+            callback(values);
+        });
+    },
+
+    start: function () {
+        console.log('[CustomStorage] Start');
+    },
+
+    stop: function () {
+        console.log('[CustomStorage] Stop');
+    },
+
+    getAllMessages(callback) {
+        try {
+            AsyncStorage.getAllKeys().then(keys => {
+                console.log('Then AllKeys: ', keys);
+                AsyncStorage.multiGet(keys).then(values => {
+                    console.log('Then AllValues: ', values);
+                    callback(values);
+                });
+            });
+        } catch (error) {
+            console.log('[CustomStorage] Error: ', error);
+        }
+    },
+};
+
 function chatScreen() {
   return <ChatView style={{flex: 1}} sendButtonColor={'#FF0000'} />;
 }
@@ -75,14 +131,15 @@ export default class App extends React.Component {
   }
 
   initMobileMessaging(): void {
-    mobileMessaging.init(
+      mobileMessaging.init(
       {
         applicationCode: '<Your Application Code>',
         ios: {
-          notificationTypes: ['alert', 'badge', 'sound'],
-          logging: true,
+            notificationTypes: ['alert', 'badge', 'sound'],
+            logging: true,
         },
-        inAppChatEnabled: true,
+          messageStorage: myMessageStorage,
+          inAppChatEnabled: true,
       },
       () => {
         this.updateLogInfo('MobileMessaging started');

@@ -41,6 +41,7 @@ class Configuration {
     AndroidConfiguration android;
     String applicationCode;
     boolean geofencingEnabled;
+    boolean inAppChatEnabled;
     Map<String, ?> messageStorage;
     boolean defaultMessageStorage;
     boolean loggingEnabled;
