@@ -25,6 +25,7 @@ class RNMobileMessagingConfiguration {
         static let reactNativePluginVersion = "reactNativePluginVersion"
         static let notificationCategories = "notificationCategories"
         static let inAppChatEnabled = "inAppChatEnabled"
+        static let webViewSettings = "webViewSettings"
     }
 
     let appCode: String
@@ -38,6 +39,7 @@ class RNMobileMessagingConfiguration {
     let reactNativePluginVersion: String
     let categories: [NotificationCategory]?
     let inAppChatEnabled: Bool
+    let webViewSettings: [String: AnyObject]?
 
     init?(rawConfig: [String: AnyObject]) {
         guard let appCode = rawConfig[RNMobileMessagingConfiguration.Keys.applicationCode] as? String,
@@ -85,6 +87,12 @@ class RNMobileMessagingConfiguration {
             self.notificationType = UserNotificationType(options: options)
         } else {
             self.notificationType = UserNotificationType.none
+        }
+        
+        if let rawWebViewSettings = ios[RNMobileMessagingConfiguration.Keys.webViewSettings] as? [String: AnyObject] {
+            self.webViewSettings = rawWebViewSettings
+        } else {
+            self.webViewSettings = nil
         }
     }
 }

@@ -19,6 +19,7 @@
 		A01DF5FD24802BDA00A65A31 /* RNMMChatViewManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A01DF5FB24802BDA00A65A31 /* RNMMChatViewManager.swift */; };
 		A01DF5FE24802BDA00A65A31 /* RNMMChatViewManagerBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = A01DF5FC24802BDA00A65A31 /* RNMMChatViewManagerBridge.m */; };
 		A069E87E23F417870065188B /* RNMobileMessagingStorageAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A069E87D23F417870065188B /* RNMobileMessagingStorageAdapter.swift */; };
+		A0E4B444255A8992002D7C5B /* RNMMMessageHandlingDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0E4B443255A8992002D7C5B /* RNMMMessageHandlingDelegate.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -48,6 +49,7 @@
 		A01DF5FB24802BDA00A65A31 /* RNMMChatViewManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RNMMChatViewManager.swift; sourceTree = "<group>"; };
 		A01DF5FC24802BDA00A65A31 /* RNMMChatViewManagerBridge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNMMChatViewManagerBridge.m; sourceTree = "<group>"; };
 		A069E87D23F417870065188B /* RNMobileMessagingStorageAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNMobileMessagingStorageAdapter.swift; sourceTree = "<group>"; };
+		A0E4B443255A8992002D7C5B /* RNMMMessageHandlingDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNMMMessageHandlingDelegate.swift; sourceTree = "<group>"; };
 		CEEB052400B05B1AC8F953D0 /* Pods-ReactNativeMobileMessaging.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ReactNativeMobileMessaging.release.xcconfig"; path = "Target Support Files/Pods-ReactNativeMobileMessaging/Pods-ReactNativeMobileMessaging.release.xcconfig"; sourceTree = "<group>"; };
 		E00237C20633CB07301167F3 /* Pods_ReactNativeMobileMessaging.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ReactNativeMobileMessaging.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -97,6 +99,7 @@
 				A006028D23E9AB27007BE88B /* RNMobileMessagingEventsManager.swift */,
 				76D6D32C23915E1E00F1E02B /* RNMobileMessaging.swift */,
 				A006028923E9AACE007BE88B /* RNMobileMessagingConfiguration.swift */,
+				A0E4B443255A8992002D7C5B /* RNMMMessageHandlingDelegate.swift */,
 			);
 			path = MobileMessagingPlugin;
 			sourceTree = "<group>";
@@ -211,6 +214,7 @@
 				A006028A23E9AACE007BE88B /* RNMobileMessagingConfiguration.swift in Sources */,
 				A01DF5F6247D2D6900A65A31 /* RNMMChatBridge.m in Sources */,
 				76D6D32F239161D700F1E02B /* RNMobileMessagingBridge.m in Sources */,
+				A0E4B444255A8992002D7C5B /* RNMMMessageHandlingDelegate.swift in Sources */,
 				A01DF5FD24802BDA00A65A31 /* RNMMChatViewManager.swift in Sources */,
 				A069E87E23F417870065188B /* RNMobileMessagingStorageAdapter.swift in Sources */,
 			);

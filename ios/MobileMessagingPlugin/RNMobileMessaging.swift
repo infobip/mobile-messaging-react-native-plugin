@@ -98,6 +98,11 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
             mobileMessaging = mobileMessaging?.withInAppChat()
         }
         
+        MobileMessaging.messageHandlingDelegate = RNMMMessageHandlingDelegate()
+        
+        if let webViewSettings = configuration.webViewSettings {
+            mobileMessaging?.webViewSettings.configureWith(rawConfig: webViewSettings)
+        }
         mobileMessaging?.start({
             onSuccess(nil)
         })

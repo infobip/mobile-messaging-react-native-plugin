@@ -27,7 +27,7 @@ class RNMMChatViewManager: RCTViewManager {
     weak var viewController: ChatViewController?
     
     @objc func setSendButtonColor(_ colorString: NSString) {
-        MobileMessaging.inAppChat?.settings.sendButtonTintColor = UIColor(hexString: colorString as String)
+        MobileMessaging.inAppChat?.settings.configureWith(rawConfig: ["sendButtonColor": colorString])
     }
     
     override func layoutSubviews() {
