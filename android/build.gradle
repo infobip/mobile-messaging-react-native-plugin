@@ -75,7 +75,7 @@ repositories {
 }
 
 dependencies {
-    def mmVersion = '4.0.4'
+    def mmVersion = '4.0.6'
 
     implementation 'com.facebook.react:react-native:+'
     implementation "androidx.annotation:annotation:1.1.0"
