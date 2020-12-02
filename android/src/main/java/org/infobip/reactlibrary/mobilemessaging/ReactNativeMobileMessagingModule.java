@@ -488,8 +488,12 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
 
     @ReactMethod
     public void saveUser(ReadableMap args, final Callback successCallback, final Callback errorCallback) throws JSONException {
-        final User user = UserJson.resolveUser(ReactNativeJson.convertMapToJson(args));
-        mobileMessaging().saveUser(user, userResultListener(successCallback, errorCallback));
+        try {
+            final User user = UserJson.resolveUser(ReactNativeJson.convertMapToJson(args));
+            mobileMessaging().saveUser(user, userResultListener(successCallback, errorCallback));
+        } catch (IllegalArgumentException e) {
+            errorCallback.invoke(e.getMessage());
+        }
     }
 
     @ReactMethod
@@ -554,18 +558,22 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
 
     @ReactMethod
     public void personalize(ReadableMap args, final Callback successCallback, final Callback errorCallback) throws JSONException {
-        final PersonalizationCtx ctx = PersonalizationCtx.resolvePersonalizationCtx(ReactNativeJson.convertMapToJson(args));
-        mobileMessaging().personalize(ctx.userIdentity, ctx.userAttributes, ctx.forceDepersonalize, new MobileMessaging.ResultListener<User>() {
-            @Override
-            public void onResult(Result<User, MobileMessagingError> result) {
-                if (result.isSuccess()) {
-                    ReadableMap readableMap = UserJson.toReadableMap(result.getData());
-                    successCallback.invoke(readableMap);
-                } else {
-                    errorCallback.invoke(Utils.callbackError(result.getError().getMessage(), null));
+        try {
+            final PersonalizationCtx ctx = PersonalizationCtx.resolvePersonalizationCtx(ReactNativeJson.convertMapToJson(args));
+            mobileMessaging().personalize(ctx.userIdentity, ctx.userAttributes, ctx.forceDepersonalize, new MobileMessaging.ResultListener<User>() {
+                @Override
+                public void onResult(Result<User, MobileMessagingError> result) {
+                    if (result.isSuccess()) {
+                        ReadableMap readableMap = UserJson.toReadableMap(result.getData());
+                        successCallback.invoke(readableMap);
+                    } else {
+                        errorCallback.invoke(Utils.callbackError(result.getError().getMessage(), null));
+                    }
                 }
-            }
-        });
+            });
+        } catch (IllegalArgumentException e) {
+            errorCallback.invoke(e.getMessage());
+        }
     }
 
     private static final Map<SuccessPending, String> depersonalizeStates = new HashMap<SuccessPending, String>() {{

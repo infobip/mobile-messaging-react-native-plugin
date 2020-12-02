@@ -10,7 +10,7 @@ public class PersonalizationCtx {
     public UserAttributes userAttributes;
     public boolean forceDepersonalize;
 
-    public static PersonalizationCtx resolvePersonalizationCtx(JSONObject args) throws JSONException {
+    public static PersonalizationCtx resolvePersonalizationCtx(JSONObject args) throws JSONException, IllegalArgumentException {
         if (args == null) {
             throw new IllegalArgumentException("Cannot resolve personalization context from arguments");
         }

@@ -44,7 +44,7 @@ public class UserJson extends User {
     }
 
     @NonNull
-    public static User resolveUser(JSONObject args) throws JSONException {
+    public static User resolveUser(JSONObject args) throws IllegalArgumentException {
         if (args == null) {
             throw new IllegalArgumentException("Cannot resolve user from arguments");
         }
@@ -61,7 +61,7 @@ public class UserJson extends User {
         }
     }
 
-    private static User fromJSON(JSONObject json) {
+    private static User fromJSON(JSONObject json) throws IllegalArgumentException {
         User user = new User();
 
         try {
@@ -106,6 +106,9 @@ public class UserJson extends User {
                 Type type = new TypeToken<Map<String, Object>>() {
                 }.getType();
                 Map<String, Object> customAttributes = new JsonSerializer().deserialize(json.optString(UserAtts.customAttributes), type);
+                if (!CustomAttributesMapper.validate(customAttributes)) {
+                    throw new IllegalArgumentException("Custom attributes are invalid.");
+                }
                 user.setCustomAttributes(CustomAttributesMapper.customAttsFromBackend(customAttributes));
             }
         } catch (Exception e) {
@@ -115,7 +118,7 @@ public class UserJson extends User {
         return user;
     }
 
-    public static UserAttributes userAttributesFromJson(JSONObject json) {
+    public static UserAttributes userAttributesFromJson(JSONObject json) throws IllegalArgumentException {
         if (json == null) {
             return null;
         }
@@ -155,6 +158,9 @@ public class UserJson extends User {
                 Type type = new TypeToken<Map<String, Object>>() {
                 }.getType();
                 Map<String, Object> customAttributes = new JsonSerializer().deserialize(json.optString(UserAtts.customAttributes), type);
+                if (!CustomAttributesMapper.validate(customAttributes)) {
+                    throw new IllegalArgumentException("Custom attributes are invalid.");
+                }
                 userAttributes.setCustomAttributes(CustomAttributesMapper.customAttsFromBackend(customAttributes));
             }
         } catch (Exception e) {
