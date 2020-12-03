@@ -794,7 +794,6 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
         } catch (JSONException e) {
             Log.e(Utils.TAG, "Provided results can't be parsed");
         }
-        MessageStoreAdapter.messageStorage_findAllResults.notifyAll();
     }
 
     @ReactMethod
