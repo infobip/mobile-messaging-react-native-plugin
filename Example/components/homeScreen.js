@@ -47,21 +47,21 @@ class HomeScreen extends React.Component {
      */
 
     registerForDeeplinkEvents(): void {
-        mobileMessaging.register("notificationTapped", () => {
+        mobileMessaging.register('notificationTapped', (message) => {
             if (!message.deeplink) {
                 return;
             }
-            this.handleDeeplinkEvent(message.deeplink)
+            this.handleDeeplinkEvent(message.deeplink);
         });
-        mobileMessaging.register("notificationTapped", this.handleNotificationTappedEvent);
+        mobileMessaging.register('notificationTapped', this.handleNotificationTappedEvent);
         Linking.addEventListener('url', (initialUrlDict) => {
             this.handleDeeplinkEvent(initialUrlDict.url);
         });
     }
 
     unregisterFromDeeplinkEvents() {
-        mobileMessaging.unregister("notificationTapped", this.handleNotificationTappedEvent);
-        Linking.removeAllListeners('url')
+        mobileMessaging.unregister('notificationTapped', this.handleNotificationTappedEvent);
+        Linking.removeAllListeners('url');
     }
 
     handleInitialDeeplinkUrl() {
@@ -72,14 +72,14 @@ class HomeScreen extends React.Component {
             this.handleDeeplinkEvent(initialUrl);
         }).catch(error => {
             console.log('Initial URL is not provided');
-        })
+        });
     }
 
     handleNotificationTappedEvent = (message) => {
         if (!message.deeplink) {
             return;
         }
-        this.handleDeeplinkEvent(message.deeplink)
+        this.handleDeeplinkEvent(message.deeplink);
     };
 
     handleDeeplinkEvent = (deeplinkUrl) => {
@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
-    }
+    },
 });
 
 export default HomeScreen;
