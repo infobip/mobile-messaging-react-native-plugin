@@ -34,12 +34,12 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
             EventName.inAppChat_availabilityUpdated
         ]
     }
-    
+
     override func startObserving() {
         eventsManager?.startObserving()
         super.startObserving()
     }
-    
+
     override func stopObserving() {
         eventsManager?.stopObserving()
         super.stopObserving()
@@ -93,13 +93,11 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
         if configuration.logging {
             MobileMessaging.logger = MMDefaultLogger()
         }
-        
+
         if configuration.inAppChatEnabled {
             mobileMessaging = mobileMessaging?.withInAppChat()
         }
-        
-        MobileMessaging.messageHandlingDelegate = RNMMMessageHandlingDelegate()
-        
+
         if let webViewSettings = configuration.webViewSettings {
             mobileMessaging?.webViewSettings.configureWith(rawConfig: webViewSettings)
         }
