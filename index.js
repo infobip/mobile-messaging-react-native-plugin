@@ -5,7 +5,11 @@ import {
     NativeModules,
     PermissionsAndroid,
     Platform,
-    requireNativeComponent, Text, View,
+    requireNativeComponent,
+    Text,
+    View,
+    findNodeHandle,
+    UIManager,
 } from 'react-native';
 
 const { ReactNativeMobileMessaging, RNMMChat } = NativeModules;
@@ -511,12 +515,41 @@ class MobileMessaging {
 }
 
 export class ChatView extends React.Component {
+    androidViewId;
+
+    componentDidMount() {
+        this.add();
+    }
+
+    componentWillUnmount() {
+        this.remove();
+    }
+
+    add = () => {
+        this.androidViewId = findNodeHandle(this.refs.rnmmChatViewRef);
+        console.log('Native android viewId: ', this.androidViewId);
+
+        UIManager.dispatchViewManagerCommand(
+            this.androidViewId,
+            UIManager.RNMMChatView.Commands.add.toString(),
+            [this.androidViewId],
+        );
+    };
+
+    remove = () => {
+        UIManager.dispatchViewManagerCommand(
+            this.androidViewId,
+            UIManager.RNMMChatView.Commands.remove.toString(),
+            [this.androidViewId],
+        );
+    };
+
     render() {
-        if (Platform.OS === 'ios') {
-            return <RNMMChatView {...this.props} />
-        } else {
-            return notSupportedScreen();
-        }
+        return (
+            <RNMMChatView {...this.props}
+                          ref="rnmmChatViewRef"
+            />
+        );
     }
 }
 
@@ -525,17 +558,9 @@ ChatView.propTypes = {
      * Send button color can be set in hex format.
      * If it's not provided, color from Infobip Portal widget configuration will be set.
      */
-    sendButtonColor: PropTypes.string
+    sendButtonColor: PropTypes.string,
 }
 
-function notSupportedScreen() {
-    return (
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-            <Text>Not supported</Text>
-        </View>
-    );
-}
-
-let RNMMChatView = requireNativeComponent('RNMMChatView', ChatView);
+export let RNMMChatView = requireNativeComponent('RNMMChatView', ChatView);
 
 export let mobileMessaging = new MobileMessaging();

@@ -1,5 +1,9 @@
 package org.infobip.reactlibrary.mobilemessaging;
 
+import android.widget.FrameLayout;
+
+import androidx.annotation.NonNull;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -12,16 +16,19 @@ import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.bridge.JavaScriptModule;
 
 public class ReactNativeMobileMessagingPackage implements ReactPackage {
+
+    @NonNull
     @Override
-    public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
+    public List<NativeModule> createNativeModules(@NonNull ReactApplicationContext reactContext) {
         List<NativeModule> modules = new ArrayList<>();
         modules.add(new ReactNativeMobileMessagingModule(reactContext));
         modules.add(new RNMMChatModule(reactContext));
         return modules;
     }
 
+    @NonNull
     @Override
-    public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
-        return Collections.emptyList();
+    public List<ViewManager> createViewManagers(@NonNull ReactApplicationContext reactContext) {
+        return Arrays.<ViewManager>asList(new RNMMChatViewManager(reactContext));
     }
 }

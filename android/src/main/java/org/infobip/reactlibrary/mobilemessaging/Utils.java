@@ -1,10 +1,13 @@
 package org.infobip.reactlibrary.mobilemessaging;
 
 import android.content.res.Resources;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentActivity;
 
 import com.facebook.react.bridge.Callback;
+import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
@@ -12,6 +15,7 @@ import com.facebook.react.bridge.WritableNativeMap;
 
 public class Utils {
     public static final String TAG = "RNMobileMessaging";
+    public static final String RN_IN_APP_CHAT_FRAGMENT_TAG = "RN_IN_APP_CHAT_FRAGMENT";
     public static final int REQ_CODE_RESOLVE_GOOGLE_ERROR = 2;
 
     /**
@@ -70,5 +74,15 @@ public class Utils {
             errorMap.putInt("code", errorCode);
         }
         return errorMap;
+    }
+
+    @Nullable
+    public static FragmentActivity getFragmentActivity(ReactApplicationContext context) {
+        FragmentActivity fragmentActivity = (FragmentActivity) context.getCurrentActivity();
+        if (fragmentActivity == null) {
+            Log.e(Utils.TAG, "RNMMChatViewManager can't get fragmentActivity");
+            return null;
+        }
+        return fragmentActivity;
     }
 }
