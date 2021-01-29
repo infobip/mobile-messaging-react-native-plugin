@@ -18,10 +18,6 @@
 RCT_EXPORT_MODULE_NO_LOAD(RNMMChatView, RNMMChatViewManager)
 RCT_EXPORT_VIEW_PROPERTY(sendButtonColor, NSString *)
 
-//Empty methods for compatibility
-RCT_EXPORT_METHOD(remove:(nonnull NSNumber*) reactTag) {}
-RCT_EXPORT_METHOD(add:(nonnull NSNumber*) reactTag) {}
-
 - (dispatch_queue_t)methodQueue {
    return dispatch_get_main_queue();
 }

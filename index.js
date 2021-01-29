@@ -526,6 +526,10 @@ export class ChatView extends React.Component {
     }
 
     add = () => {
+        //not needed for iOS
+        if (Platform.OS === "ios") {
+            return;
+        }
         this.androidViewId = findNodeHandle(this.refs.rnmmChatViewRef);
         console.log('Native android viewId: ', this.androidViewId);
 
@@ -537,6 +541,10 @@ export class ChatView extends React.Component {
     };
 
     remove = () => {
+        //not needed for iOS
+        if (Platform.OS === "ios") {
+            return;
+        }
         UIManager.dispatchViewManagerCommand(
             this.androidViewId,
             UIManager.RNMMChatView.Commands.remove.toString(),
