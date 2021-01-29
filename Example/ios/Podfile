@@ -1,5 +1,6 @@
 platform :ios, '10.0'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
+
 use_frameworks!
 
 def add_flipper_pods!(versions = {})
@@ -92,15 +93,26 @@ target 'Example' do
   #post_install do |installer|
   #  flipper_post_install(installer)
   #end
-  
-  #Fix for Xcode 12
-  #https://www.jessesquires.com/blog/2020/07/20/xcode-12-drops-support-for-ios-8-fix-for-cocoapods/
-  post_install do |installer|
-    installer.pods_project.targets.each do |target|
-      target.build_configurations.each do |config|
-        config.build_settings.delete 'IPHONEOS_DEPLOYMENT_TARGET'
+
+    #Fix for Xcode 12
+    #https://www.jessesquires.com/blog/2020/07/20/xcode-12-drops-support-for-ios-8-fix-for-cocoapods/
+    #https://github.com/facebook/react-native/issues/29633#issuecomment-676487631
+    post_install do |installer|
+      installer.pods_project.targets.each do |target|
+        target.build_configurations.each do |config|
+          config.build_settings.delete 'IPHONEOS_DEPLOYMENT_TARGET'
+        end
+        if ['RNCAsyncStorage', 'RNGestureHandler', 'RNPermissions', 'RNReanimated', 'RNScreens', 'RNShare', 'react-native-netinfo', 'react-native-safe-area-context', 'react-native-webview', 'rn-fetch-blob', 'RNCMaskedView'].include?(target.name) #list all affected target in the array
+              target.build_phases.each do |build_phases|
+                if build_phases.display_name == 'Frameworks'
+                  file_ref = installer.pods_project.new(Xcodeproj::Project::Object::PBXFileReference)
+                  file_ref.path = 'React.framework'
+                  file_ref.source_tree = 'BUILT_PRODUCTS_DIR'
+                  build_phases.add_file_reference(file_ref)
+                end
+              end
+        end
       end
     end
-  end
-  
+
 end
