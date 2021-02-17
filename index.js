@@ -71,7 +71,7 @@ class MobileMessaging {
     }
 
     /**
-     * Un register from MobileMessaging library event.
+     * Unregister from MobileMessaging library event.
      *
      * @name unregister
      * @param {String} eventName
@@ -80,6 +80,16 @@ class MobileMessaging {
     unregister(eventName, handler) {
         this.eventEmitter.removeListener(eventName, handler);
     };
+
+    /**
+     * Unregister all handlers from MobileMessaging library event.
+     *
+     * @name unregisterAllHandlers
+     * @param {String} eventName
+     */
+    unregisterAllHandlers(eventName) {
+        this.eventEmitter.removeAllListeners(eventName);
+    }
 
     /**
      * Starts a new Mobile Messaging session.
