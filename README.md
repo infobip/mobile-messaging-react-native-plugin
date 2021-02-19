@@ -12,7 +12,7 @@ The document describes library integration steps for your React Native project.
 ## Requirements
 - node (v10.17.0 or higher)
 - watchman (v4.9.0 or higher)
-- React Native (v0.61.5)
+- React Native (v0.61.0)
 
 For iOS project:
 - Xcode and Command Line Tools (v11.4.1)
