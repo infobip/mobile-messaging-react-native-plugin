@@ -32,12 +32,12 @@ class RNMobileMessagingConfiguration {
     let geofencingEnabled: Bool
     let messageStorageEnabled: Bool
     let defaultMessageStorage: Bool
-    let notificationType: UserNotificationType
+    let notificationType: MMUserNotificationType
     let forceCleanup: Bool
     let logging: Bool
     let privacySettings: [String: Any]
     let reactNativePluginVersion: String
-    let categories: [NotificationCategory]?
+    let categories: [MMNotificationCategory]?
     let inAppChatEnabled: Bool
     let webViewSettings: [String: AnyObject]?
 
@@ -70,25 +70,25 @@ class RNMobileMessagingConfiguration {
 
         self.reactNativePluginVersion = rawConfig[RNMobileMessagingConfiguration.Keys.reactNativePluginVersion].unwrap(orDefault: "unknown")
 
-        self.categories = (rawConfig[RNMobileMessagingConfiguration.Keys.notificationCategories] as? [[String: Any]])?.compactMap(NotificationCategory.init)
+        self.categories = (rawConfig[RNMobileMessagingConfiguration.Keys.notificationCategories] as? [[String: Any]])?.compactMap(MMNotificationCategory.init)
 
         if let notificationTypeNames =  ios[RNMobileMessagingConfiguration.Keys.notificationTypes] as? [String] {
-            let options = notificationTypeNames.reduce([], { (result, notificationTypeName) -> [UserNotificationType] in
+            let options = notificationTypeNames.reduce([], { (result, notificationTypeName) -> [MMUserNotificationType] in
                 var result = result
                 switch notificationTypeName {
-                case "badge": result.append(UserNotificationType.badge)
-                case "sound": result.append(UserNotificationType.sound)
-                case "alert": result.append(UserNotificationType.alert)
+                case "badge": result.append(MMUserNotificationType.badge)
+                case "sound": result.append(MMUserNotificationType.sound)
+                case "alert": result.append(MMUserNotificationType.alert)
                 default: break
                 }
                 return result
             })
 
-            self.notificationType = UserNotificationType(options: options)
+            self.notificationType = MMUserNotificationType(options: options)
         } else {
-            self.notificationType = UserNotificationType.none
+            self.notificationType = MMUserNotificationType.none
         }
-        
+
         if let rawWebViewSettings = ios[RNMobileMessagingConfiguration.Keys.webViewSettings] as? [String: AnyObject] {
             self.webViewSettings = rawWebViewSettings
         } else {

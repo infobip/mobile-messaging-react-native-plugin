@@ -116,7 +116,7 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
 
     @objc(saveUser:onSuccess:onError:)
     func saveUser(userData: NSDictionary, onSuccess: @escaping RCTResponseSenderBlock, onError: @escaping RCTResponseSenderBlock) {
-        guard let userDataDictionary = userData as? [String: Any], let user = User(dictRepresentation: userDataDictionary) else
+        guard let userDataDictionary = userData as? [String: Any], let user = MMUser(dictRepresentation: userDataDictionary) else
         {
             onError([NSError(type: .InvalidArguments).reactNativeObject])
             return
@@ -149,7 +149,7 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
 
     @objc(saveInstallation:onSuccess:onError:)
     func saveInstallation(installation: NSDictionary, onSuccess: @escaping RCTResponseSenderBlock, onError: @escaping RCTResponseSenderBlock) {
-        guard let installationDictionary = installation as? [String: Any], let installation = Installation(dictRepresentation: installationDictionary) else
+        guard let installationDictionary = installation as? [String: Any], let installation = MMInstallation(dictRepresentation: installationDictionary) else
         {
             onError([NSError(type: .InvalidArguments).reactNativeObject])
             return
@@ -198,13 +198,13 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
             onError([NSError(type: .InvalidArguments).reactNativeObject])
             return
         }
-        guard let ui = UserIdentity(phones: uiDict["phones"] as? [String], emails: uiDict["emails"] as? [String], externalUserId: uiDict["externalUserId"] as? String) else
+        guard let ui = MMUserIdentity(phones: uiDict["phones"] as? [String], emails: uiDict["emails"] as? [String], externalUserId: uiDict["externalUserId"] as? String) else
         {
             onError([NSError(type: .InvalidUserIdentity).reactNativeObject])
             return
         }
         let uaDict = context["userAttributes"] as? [String: Any]
-        let ua = uaDict == nil ? nil : UserAttributes(dictRepresentation: uaDict!)
+        let ua = uaDict == nil ? nil : MMUserAttributes(dictRepresentation: uaDict!)
         MobileMessaging.personalize(withUserIdentity: ui, userAttributes: ua) { (error) in
             if let error = error {
                 onError([error.reactNativeObject])
@@ -217,7 +217,7 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
     @objc(depersonalize:onError:)
     func depersonalize(onSuccess: @escaping RCTResponseSenderBlock, onError: @escaping RCTResponseSenderBlock) {
         MobileMessaging.depersonalize(completion: { (status, error) in
-            if (status == SuccessPending.pending) {
+            if (status == MMSuccessPending.pending) {
                 onSuccess(["pending"])
             } else if let error = error {
                 onError([error.reactNativeObject])
@@ -315,7 +315,7 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
 
     @objc(submitEvent:onError:)
     func submitEvent(eventData: NSDictionary, onError: @escaping RCTResponseSenderBlock) {
-        guard let eventDataDictionary = eventData as? [String: Any], let event = CustomEvent(dictRepresentation: eventDataDictionary) else
+        guard let eventDataDictionary = eventData as? [String: Any], let event = MMCustomEvent(dictRepresentation: eventDataDictionary) else
         {
             onError([NSError(type: .InvalidArguments).reactNativeObject])
             return
@@ -326,7 +326,7 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
 
     @objc(submitEventImmediately:onSuccess:onError:)
     func submitEventImmediately(eventData: NSDictionary, onSuccess: @escaping RCTResponseSenderBlock, onError: @escaping RCTResponseSenderBlock) {
-        guard let eventDataDictionary = eventData as? [String: Any], let event = CustomEvent(dictRepresentation: eventDataDictionary) else
+        guard let eventDataDictionary = eventData as? [String: Any], let event = MMCustomEvent(dictRepresentation: eventDataDictionary) else
         {
             onError([NSError(type: .InvalidArguments).reactNativeObject])
             return

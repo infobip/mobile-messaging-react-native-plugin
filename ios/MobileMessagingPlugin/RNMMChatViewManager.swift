@@ -23,40 +23,40 @@ class RNMMChatViewManager: RCTViewManager {
      required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    weak var viewController: ChatViewController?
-    
+
+    weak var viewController: MMChatViewController?
+
     @objc func setSendButtonColor(_ colorString: NSString) {
         MobileMessaging.inAppChat?.settings.configureWith(rawConfig: ["sendButtonColor": colorString])
     }
-    
+
     override func layoutSubviews() {
         super.layoutSubviews()
         viewController?.view.frame = bounds
     }
-    
+
     override func didMoveToWindow() {
         embedViewController()
         super.didMoveToWindow()
     }
-    
+
     override func removeFromSuperview() {
         self.viewController?.removeFromParent()
         super.removeFromSuperview()
     }
-    
+
     private func embedViewController() {
         guard let parentVC = parentViewController else {
             return
         }
 
-        let vc = ChatViewController.makeModalViewController()
+        let vc = MMChatViewController.makeModalViewController()
         parentVC.addChild(vc)
         addSubview(vc.view)
         vc.didMove(toParent: parentVC)
         self.viewController = vc
     }
-    
+
 }
 
 extension UIView {

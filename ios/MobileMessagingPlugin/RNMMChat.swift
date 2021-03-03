@@ -10,7 +10,7 @@ import MobileMessaging
 
 @objc(RNMMChat)
 class RNMMChat: NSObject  {
-    
+
     @objc(showChat:)
     func showChat(presentingOptions: NSDictionary) {
         var presentVCModally = false
@@ -19,7 +19,7 @@ class RNMMChat: NSObject  {
             let shouldBePresentedModally = iosOptions["shouldBePresentedModally"] as? Bool {
             presentVCModally = shouldBePresentedModally
         }
-        let vc = presentVCModally ? ChatViewController.makeRootNavigationViewController(): ChatViewController.makeRootNavigationViewControllerWithCustomTransition()
+        let vc = presentVCModally ? MMChatViewController.makeRootNavigationViewController(): MMChatViewController.makeRootNavigationViewControllerWithCustomTransition()
         if presentVCModally {
             vc.modalPresentationStyle = .fullScreen
         }

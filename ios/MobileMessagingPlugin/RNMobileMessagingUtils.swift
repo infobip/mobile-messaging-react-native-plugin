@@ -8,7 +8,7 @@
 import Foundation
 import MobileMessaging
 
-extension MTMessage {
+extension MM_MTMessage {
     override func dictionary() -> [String: Any] {
         var result = [String: Any]()
         result["messageId"] = messageId
@@ -30,42 +30,42 @@ extension MTMessage {
         result["inAppDismissTitle"] = inAppDismissTitle
         return result
     }
-    
+
     var isGeoMessage: Bool {
         let geoAreasDicts = (originalPayload["internalData"] as? [String: Any])?["geo"] as? [[String: Any]]
         return geoAreasDicts != nil
     }
 }
 
-extension BaseMessage {
-    class func createFrom(dictionary: [String: Any]) -> BaseMessage? {
+extension MMBaseMessage {
+    class func createFrom(dictionary: [String: Any]) -> MMBaseMessage? {
         guard let messageId = dictionary["messageId"] as? String,
-            let originalPayload = dictionary["originalPayload"] as? StringKeyPayload else
+            let originalPayload = dictionary["originalPayload"] as? MMStringKeyPayload else
         {
             return nil
         }
-        
-        return BaseMessage(messageId: messageId, direction: MessageDirection.MT, originalPayload: originalPayload, deliveryMethod: .undefined)
+
+        return MMBaseMessage(messageId: messageId, direction: MMMessageDirection.MT, originalPayload: originalPayload, deliveryMethod: .undefined)
     }
-    
+
     func dictionary() -> [String: Any] {
         var result = [String: Any]()
         result["messageId"] = messageId
         result["customPayload"] = originalPayload["customPayload"]
         result["originalPayload"] = originalPayload
-        
-        if let aps = originalPayload["aps"] as? StringKeyPayload {
+
+        if let aps = originalPayload["aps"] as? MMStringKeyPayload {
             result["body"] = aps["body"]
             result["sound"] = aps["sound"]
         }
-        
-        if let internalData = originalPayload["internalData"] as? StringKeyPayload,
-            let _ = internalData["silent"] as? StringKeyPayload {
+
+        if let internalData = originalPayload["internalData"] as? MMStringKeyPayload,
+            let _ = internalData["silent"] as? MMStringKeyPayload {
             result["silent"] = true
         } else if let silent = originalPayload["silent"] as? Bool {
             result["silent"] = silent
         }
-        
+
         return result
     }
 }
@@ -75,13 +75,13 @@ extension MMRegion {
         var areaCenter = [String: Any]()
         areaCenter["lat"] = center.latitude
         areaCenter["lon"] = center.longitude
-        
+
         var area = [String: Any]()
         area["id"] = identifier
         area["center"] = areaCenter
         area["radius"] = radius
         area["title"] = title
-        
+
         var result = [String: Any]()
         result["area"] = area
         return result

@@ -63,7 +63,7 @@ class RNMobileMessagingEventsManager {
         switch notification.name.rawValue {
         case MMNotificationMessageReceived:
             eventName = EventName.messageReceived
-            if let message = notification.userInfo?[MMNotificationKeyMessage] as? MTMessage {
+            if let message = notification.userInfo?[MMNotificationKeyMessage] as? MM_MTMessage {
                 notificationResult = message.dictionary()
             }
         case MMNotificationDeviceTokenReceived:
@@ -83,12 +83,12 @@ class RNMobileMessagingEventsManager {
            }
         case MMNotificationMessageTapped:
             eventName = EventName.notificationTapped
-            if let message = notification.userInfo?[MMNotificationKeyMessage] as? MTMessage {
+            if let message = notification.userInfo?[MMNotificationKeyMessage] as? MM_MTMessage {
                 notificationResult = message.dictionary()
             }
         case MMNotificationActionTapped:
             eventName = EventName.actionTapped
-            if let message = notification.userInfo?[MMNotificationKeyMessage] as? MTMessage, let actionIdentifier = notification.userInfo?[MMNotificationKeyActionIdentifier] as? String {
+            if let message = notification.userInfo?[MMNotificationKeyMessage] as? MM_MTMessage, let actionIdentifier = notification.userInfo?[MMNotificationKeyActionIdentifier] as? String {
                 var parameters = [message.dictionary(), actionIdentifier] as [Any]
                 if let textInput = notification.userInfo?[MMNotificationKeyActionTextInput] as? String {
                     parameters.append(textInput)
@@ -101,9 +101,9 @@ class RNMobileMessagingEventsManager {
             eventName = EventName.personalized
         case MMNotificationInstallationSynced, MMNotificationUserSynced :
             eventName = EventName.installationUpdated
-            if let installation = notification.userInfo?[MMNotificationKeyInstallation] as? Installation {
+            if let installation = notification.userInfo?[MMNotificationKeyInstallation] as? MMInstallation {
                 notificationResult = installation.dictionaryRepresentation
-            } else if let user = notification.userInfo?[MMNotificationKeyUser] as? User {
+            } else if let user = notification.userInfo?[MMNotificationKeyUser] as? MMUser {
                 eventName = EventName.userUpdated
                 notificationResult = user.dictionaryRepresentation
             }
