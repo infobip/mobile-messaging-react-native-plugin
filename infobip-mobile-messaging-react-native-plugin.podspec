@@ -18,7 +18,7 @@ Pod::Spec.new do |s|
   s.source_files = "ios/**/*.{h,m,swift}"
   s.requires_arc = true
 
-  s.dependency "React"
+  s.dependency "React-Core"
   s.dependency "MobileMessaging/Core", "9.0.1"
   s.dependency "MobileMessaging/Geofencing", "9.0.1"
   s.dependency "MobileMessaging/InAppChat", "9.0.1"
