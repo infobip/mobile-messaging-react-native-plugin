@@ -367,6 +367,7 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
     }
 
     private void unregisterBroadcastReceiver() {
+        if (!broadcastReceiverRegistered) return;
         reactContext.unregisterReceiver(commonLibraryBroadcastReceiver);
         reactContext.unregisterReceiver(messageActionReceiver);
         Context context = reactContext.getCurrentActivity();
