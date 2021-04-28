@@ -15,6 +15,7 @@ def overrideKotlinVersion = getRootProjectProperty('overrideKotlinVersion', '')
 if (overrideAndroidSupportLibsVersion.empty || overrideAndroidSupportLibsVersion > "26") {
     repositories {
         mavenLocal()
+        mavenCentral()
         maven {
             url 'https://maven.google.com/'
             name 'Google'
@@ -34,6 +35,7 @@ buildscript {
         repositories {
             google()
             jcenter()
+            mavenCentral()
         }
         dependencies {
             classpath 'com.android.tools.build:gradle:3.6+'
@@ -62,6 +64,7 @@ android {
 repositories {
     // ref: https://www.baeldung.com/maven-local-repository
     mavenLocal()
+    mavenCentral()
     maven {
         // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
         url "$rootDir/../node_modules/react-native/android"
@@ -75,17 +78,17 @@ repositories {
 }
 
 dependencies {
-    def mmVersion = '5.0.1'
+    def mmVersion = '5.2.1'
 
     implementation 'com.facebook.react:react-native:+'
     implementation "androidx.annotation:annotation:1.1.0"
     implementation 'com.google.android.material:material:1.0.0'
     implementation 'androidx.exifinterface:exifinterface:1.1.0'
 
-    implementation "org.infobip.mobile.messaging.api:infobip-mobile-messaging-android-resources:$mmVersion@aar"
-    implementation "org.infobip.mobile.messaging.api:infobip-mobile-messaging-android-chat-sdk:$mmVersion@aar"
-    implementation "org.infobip.mobile.messaging.api:infobip-mobile-messaging-android-geo-sdk:$mmVersion@aar"
-    implementation ("org.infobip.mobile.messaging.api:infobip-mobile-messaging-android-sdk:$mmVersion@aar") {
+    implementation "com.infobip:infobip-mobile-messaging-android-resources:$mmVersion@aar"
+    implementation "com.infobip:infobip-mobile-messaging-android-chat-sdk:$mmVersion@aar"
+    implementation "com.infobip:infobip-mobile-messaging-android-geo-sdk:$mmVersion@aar"
+    implementation ("com.infobip:infobip-mobile-messaging-android-sdk:$mmVersion@aar") {
         transitive = true;
 
         if (!overrideKotlinVersion.empty) {
