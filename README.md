@@ -12,17 +12,17 @@ The document describes library integration steps for your React Native project.
 ## Requirements
 - node (v10.17.0 or higher)
 - watchman (v4.9.0 or higher)
-- React Native (v0.61.0)
+- React Native (v0.64.2)
 
 For iOS project:
-- Xcode and Command Line Tools (v11.4.1)
-- CocoaPods (v1.6.1)
+- Xcode and Command Line Tools (12.5)
+- CocoaPods (v1.10.1)
 - Minimum deployment target 10.0
 
 For Android project:
 - Android Studio (v4.0)
-- Gradle (v3.6+)
-- API Level: 16 (Android 4.1 - Jelly Bean)
+- Gradle (v4.1.0)
+- API Level: 21 (Android 5.0 - [Lollipop](https://developer.android.com/about/versions/lollipop))
 
 ## Quick start guide
 

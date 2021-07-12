@@ -43,3 +43,4 @@ buck-out/
 ios/Pods
 Podfile.lock
 *.tgz
+package-lock.json

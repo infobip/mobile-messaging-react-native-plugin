@@ -1,5 +1,5 @@
 /*
-    Example of in-app Chat screen as React Component, supported only for iOS
+    Example of in-app Chat screen as React Component
  */
 
 import React from 'react';
