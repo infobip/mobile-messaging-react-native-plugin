@@ -528,7 +528,13 @@ export class ChatView extends React.Component {
     androidViewId;
 
     componentDidMount() {
-        this.add();
+        if (Platform.OS === "ios") {
+            this.add();
+        } else {
+            //fix for android, sometimes it can't get parent view, which is needed for properly relayout
+            let _this = this;
+            setTimeout(function() { _this.add(); }, 100);
+        }
     }
 
     componentWillUnmount() {
