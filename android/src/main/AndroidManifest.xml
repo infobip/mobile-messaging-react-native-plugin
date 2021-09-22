@@ -20,42 +20,43 @@
         <!-- Mobile Messaging components -->
 
         <service
-            android:name="org.infobip.mobile.messaging.cloud.firebase.MobileMessagingFirebaseService"
-            android:exported="false" >
+                android:name="org.infobip.mobile.messaging.cloud.firebase.MobileMessagingFirebaseService"
+                android:exported="false" >
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT"/>
             </intent-filter>
         </service>
 
         <service
-            android:name="org.infobip.mobile.messaging.cloud.MobileMessagingCloudService"
-            android:permission="android.permission.BIND_JOB_SERVICE"
-            android:exported="false" >
+                android:name="org.infobip.mobile.messaging.cloud.MobileMessagingCloudService"
+                android:permission="android.permission.BIND_JOB_SERVICE"
+                android:exported="false" >
         </service>
 
         <service
-            android:name="org.infobip.mobile.messaging.platform.MobileMessagingJobService"
-            android:enabled="false"
-            android:exported="false"
-            android:permission="android.permission.BIND_JOB_SERVICE" />
+                android:name="org.infobip.mobile.messaging.platform.MobileMessagingJobService"
+                android:enabled="false"
+                android:exported="false"
+                android:permission="android.permission.BIND_JOB_SERVICE" />
 
         <receiver android:name="org.infobip.mobile.messaging.notification.NotificationTapReceiver" />
 
         <receiver
-            android:name="org.infobip.mobile.messaging.MobileMessagingConnectivityReceiver"
-            android:enabled="false"
-            android:exported="false">
+                android:name="org.infobip.mobile.messaging.MobileMessagingConnectivityReceiver"
+                android:enabled="false"
+                android:exported="false">
             <intent-filter>
                 <!-- Intent filter is for pre-7.0 Nougat devices -->
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
             </intent-filter>
         </receiver>
         <receiver android:name="org.infobip.mobile.messaging.interactive.notification.NotificationActionTapReceiver" />
-        <receiver android:name="org.infobip.reactlibrary.mobilemessaging.ReactNativeMobileMessagingModule$MessageActionReceiver" android:exported="false">
+        <receiver android:name="org.infobip.reactlibrary.mobilemessaging.ReactNativeMobileMessagingModule$MessageEventReceiver" android:exported="false">
             <intent-filter>
                 <action android:name="org.infobip.mobile.messaging.MESSAGE_RECEIVED" />
                 <action android:name="org.infobip.mobile.messaging.NOTIFICATION_TAPPED" />
                 <action android:name="org.infobip.mobile.messaging.interactive.NOTIFICATION_ACTION_TAPPED" />
+                <action android:name="org.infobip.mobile.messaging.chat.UNREAD_MESSAGES_COUNTER_UPDATED"/>
             </intent-filter>
         </receiver>
 

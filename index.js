@@ -42,8 +42,10 @@ class MobileMessaging {
         ];
 
         this.inAppChatEvents = [
-            'inAppChat.availabilityUpdated'
+            'inAppChat.availabilityUpdated',
+            'inAppChat.unreadMessageCounterUpdated'
         ];
+
         this.eventEmitter = new NativeEventEmitter(ReactNativeMobileMessaging);
     }
 
@@ -522,6 +524,23 @@ class MobileMessaging {
             console.log("method setupiOSChatSettings isn't supported for Android, use settings.xml to provide appearance settings.");
         }
     };
+
+    /**
+     * Returns unread in-app chat push messages counter.
+     * The counter increments each time the application receives in-app chat push message
+     * (this usually happens when chat screen is inactive or the application is in background/terminated state).
+     */
+    getMessageCounter(onResult) {
+        RNMMChat.getMessageCounter(onResult);
+    };
+
+    /**
+     * MobileMessaging plugin automatically resets the counter to 0 whenever user opens the in-app chat screen.
+     * However, use the following API in case you need to manually reset the counter.
+     */
+    resetMessageCounter() {
+        RNMMChat.resetMessageCounter();
+    }
 }
 
 export class ChatView extends React.Component {

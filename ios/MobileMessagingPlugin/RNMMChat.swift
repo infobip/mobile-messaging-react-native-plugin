@@ -15,8 +15,8 @@ class RNMMChat: NSObject  {
     func showChat(presentingOptions: NSDictionary) {
         var presentVCModally = false
         if let presentingOptions = presentingOptions as? [String: Any],
-            let iosOptions = presentingOptions["ios"] as? [String: Any],
-            let shouldBePresentedModally = iosOptions["shouldBePresentedModally"] as? Bool {
+           let iosOptions = presentingOptions["ios"] as? [String: Any],
+           let shouldBePresentedModally = iosOptions["shouldBePresentedModally"] as? Bool {
             presentVCModally = shouldBePresentedModally
         }
         let vc = presentVCModally ? MMChatViewController.makeRootNavigationViewController(): MMChatViewController.makeRootNavigationViewControllerWithCustomTransition()
@@ -30,10 +30,20 @@ class RNMMChat: NSObject  {
         }
     }
 
-     @objc(setupChatSettings:)
-     func setupChatSettings(settings: NSDictionary) {
-          if let chatSettings = settings as? [String: AnyObject] {
-               MobileMessaging.inAppChat?.settings.configureWith(rawConfig: chatSettings)
-          }
-      }
+    @objc(getMessageCounter:)
+    func getMessageCounter(onResult: @escaping RCTResponseSenderBlock) {
+        onResult([MobileMessaging.inAppChat?.getMessageCounter ?? 0])
+    }
+
+    @objc(resetMessageCounter)
+    func resetMessageCounter() {
+        MobileMessaging.inAppChat?.resetMessageCounter()
+    }
+
+    @objc(setupChatSettings:)
+    func setupChatSettings(settings: NSDictionary) {
+        if let chatSettings = settings as? [String: AnyObject] {
+            MobileMessaging.inAppChat?.settings.configureWith(rawConfig: chatSettings)
+        }
+    }
 }

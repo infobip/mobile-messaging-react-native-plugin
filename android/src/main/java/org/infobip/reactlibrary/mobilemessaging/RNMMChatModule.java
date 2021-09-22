@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
 import com.facebook.react.bridge.ActivityEventListener;
+import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -37,6 +38,16 @@ public class RNMMChatModule extends ReactContextBaseJavaModule implements Activi
     @ReactMethod
     public void showChat(ReadableMap args) {
         InAppChat.getInstance(reactContext).inAppChatView().show();
+    }
+
+    @ReactMethod
+    public void getMessageCounter(final Callback successCallback) {
+        successCallback.invoke(InAppChat.getInstance(reactContext).getMessageCounter());
+    }
+
+    @ReactMethod
+    public void resetMessageCounter() {
+        InAppChat.getInstance(reactContext).resetMessageCounter();
     }
 
     @Override

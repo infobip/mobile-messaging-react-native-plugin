@@ -3,11 +3,7 @@ package org.infobip.reactlibrary.mobilemessaging;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import android.util.Log;
 
-import com.facebook.react.bridge.ReactContext;
-
-import org.infobip.mobile.messaging.Message;
 import org.infobip.mobile.messaging.api.support.http.serialization.JsonSerializer;
 import org.infobip.mobile.messaging.dal.json.JSONArrayAdapter;
 import org.infobip.mobile.messaging.dal.json.JSONObjectAdapter;
@@ -26,15 +22,11 @@ class CacheManager {
 
     static class Event {
         String type;
-        JSONObject object;
-        String actionId = null;
-        String actionInputText = null;
+        Object[] objects = null;
 
-        Event(String type, JSONObject object, String actionId, String actionInputText) {
+        Event(String type, Object ... objects) {
             this.type = type;
-            this.object = object;
-            this.actionId = actionId;
-            this.actionInputText = actionInputText;
+            this.objects = objects;
         }
 
         @Override
@@ -45,6 +37,11 @@ class CacheManager {
 
     static void saveEvent(Context context, String event, JSONObject object, String actionId, String actionInputText) {
         String serialized = serializer.serialize(new Event(event, object, actionId, actionInputText));
+        saveStringsToSet(context, EVENTS_KEY, serialized);
+    }
+
+    static void saveEvent(Context context, String event, int unreadMessagesCounter) {
+        String serialized = serializer.serialize(new Event(event, unreadMessagesCounter));
         saveStringsToSet(context, EVENTS_KEY, serialized);
     }
 

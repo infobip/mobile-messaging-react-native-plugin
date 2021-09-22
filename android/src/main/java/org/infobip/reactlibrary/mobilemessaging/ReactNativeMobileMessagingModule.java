@@ -11,12 +11,14 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.facebook.react.ReactApplication;
 import com.facebook.react.bridge.*;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
 import org.infobip.mobile.messaging.*;
 import org.infobip.mobile.messaging.chat.InAppChat;
+import org.infobip.mobile.messaging.chat.core.InAppChatEvent;
 import org.infobip.mobile.messaging.geo.GeoEvent;
 import org.infobip.mobile.messaging.geo.MobileGeo;
 import org.infobip.mobile.messaging.interactive.InteractiveEvent;
@@ -50,11 +52,12 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
     private final ReactApplicationContext reactContext;
 
     private static volatile Boolean broadcastReceiverRegistered = false;
+    private static volatile Boolean pluginInitialized = false;
 
     public ReactNativeMobileMessagingModule(ReactApplicationContext reactContext) {
         super(reactContext);
 
-        while (getReactApplicationContext() == null);
+        while (getReactApplicationContext() == null) ;
         reactContext = getReactApplicationContext();
 
         this.reactContext = reactContext;
@@ -65,8 +68,9 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
     public void initialize() {
         super.initialize();
         for (CacheManager.Event event : CacheManager.loadEvents(reactContext)) {
-            ReactNativeEvent.send(event.type, reactContext, event.object, event.actionId, event.actionInputText);
+            ReactNativeEvent.send(event.type, reactContext, event.objects);
         }
+        pluginInitialized = true;
         registerBroadcastReceiver();
     }
 
@@ -87,6 +91,7 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
 
     @Override
     public void onHostDestroy() {
+        pluginInitialized = false;
         unregisterBroadcastReceiver();
         reactContext.removeLifecycleEventListener(this);
     }
@@ -102,6 +107,7 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
     private static final String EVENT_NOTIFICATION_TAPPED = "notificationTapped";
     private static final String EVENT_NOTIFICATION_ACTION_TAPPED = "actionTapped";
     private static final String EVENT_MESSAGE_RECEIVED = "messageReceived";
+    private static final String EVENT_INAPPCHAT_UNREAD_MESSAGES_COUNT_UPDATED = "inAppChat.unreadMessageCounterUpdated";
 
     private static final Map<String, String> broadcastEventMap = new HashMap<String, String>() {{
         put(Event.TOKEN_RECEIVED.getKey(), EVENT_TOKEN_RECEIVED);
@@ -117,6 +123,7 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
         put(Event.MESSAGE_RECEIVED.getKey(), EVENT_MESSAGE_RECEIVED);
         put(Event.NOTIFICATION_TAPPED.getKey(), EVENT_NOTIFICATION_TAPPED);
         put(InteractiveEvent.NOTIFICATION_ACTION_TAPPED.getKey(), EVENT_NOTIFICATION_ACTION_TAPPED);
+        put(InAppChatEvent.UNREAD_MESSAGES_COUNTER_UPDATED.getKey(), EVENT_INAPPCHAT_UNREAD_MESSAGES_COUNT_UPDATED);
     }};
 
     private static final Map<String, String> messageStorageEventMap = new HashMap<String, String>() {{
@@ -124,25 +131,6 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
         put(MessageStoreAdapter.EVENT_MESSAGESTORAGE_SAVE, MessageStoreAdapter.EVENT_MESSAGESTORAGE_SAVE);
         put(MessageStoreAdapter.EVENT_MESSAGESTORAGE_FIND_ALL, MessageStoreAdapter.EVENT_MESSAGESTORAGE_FIND_ALL);
     }};
-
-
-    private final BroadcastReceiver messageActionReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String event = getMessageBroadcastEvent(intent);
-            if (event == null) {
-                Log.w(Utils.TAG, "Cannot process event for broadcast: " + intent.getAction());
-                return;
-            }
-            JSONObject message = MessageJson.bundleToJSON(intent.getExtras());
-            if (InteractiveEvent.NOTIFICATION_ACTION_TAPPED.getKey().equals(intent.getAction())) {
-                NotificationAction notificationAction = NotificationAction.createFrom(intent.getExtras());
-                ReactNativeEvent.send(event, reactContext, message, notificationAction.getId(), notificationAction.getInputText());
-            } else {
-                ReactNativeEvent.send(event, reactContext, message);
-            }
-        }
-    };
 
     private final BroadcastReceiver messageStorageReceiver = new BroadcastReceiver() {
         @Override
@@ -192,7 +180,7 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
     For event caching, if plugin not yet initialized
     */
 
-    public static class MessageActionReceiver extends BroadcastReceiver {
+    public static class MessageEventReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
             String event = getMessageBroadcastEvent(intent);
@@ -200,17 +188,41 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
                 Log.w(Utils.TAG, "Cannot process event for broadcast: " + intent.getAction());
                 return;
             }
-            JSONObject message = MessageJson.bundleToJSON(intent.getExtras());
-            if (!broadcastReceiverRegistered) {
-                String actionId = null;
-                String actionInputText = null;
-                if (InteractiveEvent.NOTIFICATION_ACTION_TAPPED.getKey().equals(intent.getAction())) {
-                    NotificationAction notificationAction = NotificationAction.createFrom(intent.getExtras());
-                    actionId = notificationAction.getId();
-                    actionInputText = notificationAction.getInputText();
-                }
-                CacheManager.saveEvent(context, event, message, actionId, actionInputText);
+            if (InAppChatEvent.UNREAD_MESSAGES_COUNTER_UPDATED.getKey().equals(intent.getAction())) {
+                handleUnreadMessageCounterIntent(context, intent, event);
+                return;
             }
+            JSONObject message = MessageJson.bundleToJSON(intent.getExtras());
+            String actionId = null;
+            String actionInputText = null;
+            if (InteractiveEvent.NOTIFICATION_ACTION_TAPPED.getKey().equals(intent.getAction())) {
+                NotificationAction notificationAction = NotificationAction.createFrom(intent.getExtras());
+                actionId = notificationAction.getId();
+                actionInputText = notificationAction.getInputText();
+            }
+            if (!pluginInitialized) {
+                CacheManager.saveEvent(context, event, message, actionId, actionInputText);
+            } else {
+                ReactContext reactContext = getReactContext(context);
+                ReactNativeEvent.send(event, reactContext, message, actionId, actionInputText);
+            }
+        }
+
+        private void handleUnreadMessageCounterIntent(Context context, Intent intent, String event) {
+            int unreadChatMessagesCounter = intent.getIntExtra(BroadcastParameter.EXTRA_UNREAD_CHAT_MESSAGES_COUNT, 0);
+            if (!pluginInitialized) {
+                CacheManager.saveEvent(context, event, unreadChatMessagesCounter);
+            } else {
+                ReactContext reactContext = getReactContext(context);
+                ReactNativeEvent.send(event, reactContext, unreadChatMessagesCounter);
+            }
+        }
+
+        @Nullable
+        private ReactContext getReactContext(Context context) {
+            ReactApplication reactApplication = (ReactApplication) context.getApplicationContext();
+            if (reactApplication == null) return null;
+            return reactApplication.getReactNativeHost().getReactInstanceManager().getCurrentReactContext();
         }
     }
 
@@ -360,7 +372,6 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
             messageStorageIntentFilter.addAction(action);
         }
 
-        reactContext.registerReceiver(messageActionReceiver, messageActionIntentFilter);
         Context context = reactContext.getCurrentActivity();
         LocalBroadcastManager.getInstance(context).registerReceiver(messageStorageReceiver, messageStorageIntentFilter);
         broadcastReceiverRegistered = true;
@@ -369,7 +380,6 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
     private void unregisterBroadcastReceiver() {
         if (!broadcastReceiverRegistered) return;
         reactContext.unregisterReceiver(commonLibraryBroadcastReceiver);
-        reactContext.unregisterReceiver(messageActionReceiver);
         Context context = reactContext.getCurrentActivity();
         LocalBroadcastManager.getInstance(context).unregisterReceiver(messageStorageReceiver);
         broadcastReceiverRegistered = false;

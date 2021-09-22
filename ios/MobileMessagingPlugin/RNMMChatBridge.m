@@ -17,6 +17,8 @@
 @implementation RNMMChat (RCTExternModule)
 RCT_EXPORT_MODULE_NO_LOAD(RNMMChat, RNMMChat)
 RCT_EXTERN_METHOD(showChat:)
+RCT_EXTERN_METHOD(getMessageCounter:(RCTResponseSenderBlock)resultCallback)
+RCT_EXTERN_METHOD(resetMessageCounter)
 RCT_EXTERN_METHOD(setupChatSettings:)
 
 - (dispatch_queue_t)methodQueue {
