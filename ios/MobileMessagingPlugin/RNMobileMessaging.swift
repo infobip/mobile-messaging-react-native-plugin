@@ -105,7 +105,6 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
         mobileMessaging?.start({
             onSuccess(nil)
         })
-        MobileMessaging.sync()
     }
 
     private func stop() {
