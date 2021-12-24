@@ -11,6 +11,7 @@ import MobileMessaging
 class RNMobileMessagingEventsManager {
     private var eventEmitter: RCTEventEmitter!
     private var hasEventListeners = false
+    private var cachedMobileMessagingNotifications = [Notification]()
 
     private let supportedNotifications: [String: String] = [
         EventName.messageReceived: MMNotificationMessageReceived,
@@ -29,6 +30,10 @@ class RNMobileMessagingEventsManager {
 
     func startObserving() {
         hasEventListeners = true
+        cachedMobileMessagingNotifications.forEach { (notification) in
+            handleMMNotification(notification: notification)
+        }
+        cachedMobileMessagingNotifications = []
     }
 
     func stopObserving() {
@@ -42,6 +47,7 @@ class RNMobileMessagingEventsManager {
 
     func stop() {
         setupObservingMMNotifications(stopObservations: true)
+        cachedMobileMessagingNotifications = []
     }
 
     private func setupObservingMMNotifications(stopObservations: Bool = false) {
@@ -56,6 +62,7 @@ class RNMobileMessagingEventsManager {
 
     @objc func handleMMNotification(notification: Notification) {
         guard hasEventListeners else {
+            cachedMobileMessagingNotifications.append(notification)
             return
         }
 

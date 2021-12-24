@@ -20,6 +20,7 @@ import ChatScreen from './components/chatScreen.js';
 import {
   mobileMessaging,
 } from 'infobip-mobile-messaging-react-native-plugin';
+import {Platform} from "react-native";
 
 const myMessageStorage = {
   save: function (messages) {
@@ -93,11 +94,21 @@ export default class App extends React.Component {
     mobileMessaging.supportedEvents.forEach((event) => {
       mobileMessaging.register(event, this.handleMobileMessagingEvent);
     });
+
+    mobileMessaging.register("notificationTapped", (eventData) => {
+        let message = eventData[1];
+
+        // Check that message came for in-app chat
+        // Notice: for Android chat screen opens automatically
+        if (message != null && message["chat"] === true && Platform.OS === 'ios') {
+            mobileMessaging.showChat(null)
+        }
+    })
   }
 
   componentWillUnmount() {
     mobileMessaging.supportedEvents.forEach((event) => {
-      mobileMessaging.unregister(event, this.handleMobileMessagingEvent);
+      mobileMessaging.unregisterAllHandlers(event);
     });
   }
 

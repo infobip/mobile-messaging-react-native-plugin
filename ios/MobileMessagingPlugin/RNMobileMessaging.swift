@@ -12,6 +12,7 @@ import MobileMessaging
 class ReactNativeMobileMessaging: RCTEventEmitter  {
     private var messageStorageAdapter: MessageStorageAdapter?
     private var eventsManager: RNMobileMessagingEventsManager?
+    private var isStarted: Bool = false
 
     @objc
     override func supportedEvents() -> [String]! {
@@ -55,6 +56,7 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
         super.init()
         self.eventsManager = RNMobileMessagingEventsManager(eventEmitter: self)
         self.messageStorageAdapter = MessageStorageAdapter(eventEmitter: self)
+        performEarlyStartIfPossible()
     }
 
     deinit {
@@ -67,7 +69,28 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
             onError([NSError(type: .InvalidArguments).reactNativeObject])
             return
         }
-        start(configuration: configuration, onSuccess: onSuccess)
+
+        let cachedConfigDict = RNMobileMessagingConfiguration.getRawConfigFromDefaults()
+        if let cachedConfigDict = cachedConfigDict, (config as NSDictionary) != (cachedConfigDict as NSDictionary)
+        {
+            stop()
+            start(configuration: configuration, onSuccess: onSuccess)
+        } else if cachedConfigDict == nil {
+            start(configuration: configuration, onSuccess: onSuccess)
+        }
+
+        RNMobileMessagingConfiguration.saveConfigToDefaults(rawConfig: config)
+        isStarted = true
+        onSuccess(nil)
+    }
+
+    private func performEarlyStartIfPossible() {
+        if let cachedConfigDict = RNMobileMessagingConfiguration.getRawConfigFromDefaults(),
+           let configuration = RNMobileMessagingConfiguration(rawConfig: cachedConfigDict),
+           !self.isStarted
+        {
+            self.start(configuration: configuration) { response in }
+        }
     }
 
     private func start(configuration: RNMobileMessagingConfiguration, onSuccess: @escaping RCTResponseSenderBlock) {

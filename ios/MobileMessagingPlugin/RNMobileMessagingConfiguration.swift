@@ -9,6 +9,8 @@ import Foundation
 import MobileMessaging
 
 class RNMobileMessagingConfiguration {
+    static let userDefaultsConfigKey = "com.mobile-messaging.reactNativePluginConfiguration"
+
     struct Keys {
         static let privacySettings = "privacySettings"
         static let userDataPersistingDisabled = "userDataPersistingDisabled"
@@ -94,5 +96,18 @@ class RNMobileMessagingConfiguration {
         } else {
             self.webViewSettings = nil
         }
+    }
+
+    static func saveConfigToDefaults(rawConfig: [String: AnyObject]) {
+        let data: Data = NSKeyedArchiver.archivedData(withRootObject: rawConfig)
+        UserDefaults.standard.set(data, forKey: userDefaultsConfigKey)
+    }
+
+    static func getRawConfigFromDefaults() -> [String: AnyObject]? {
+        let data = UserDefaults.standard.data(forKey: userDefaultsConfigKey)
+        guard let data = data else {
+            return nil
+        }
+        return NSKeyedUnarchiver.unarchiveObject(with: data) as? [String : AnyObject]
     }
 }
