@@ -21,6 +21,12 @@ import org.json.JSONObject;
 
 class ReactNativeEvent {
     static void send(String eventName, ReactContext reactContext, Object... objects) {
+        if (objects == null) {
+            Log.d(Utils.TAG, "objects are null, so another method should be used");
+            send(eventName, reactContext);
+            return;
+        }
+
         WritableArray array = new WritableNativeArray();
         array.pushString(eventName);
 
