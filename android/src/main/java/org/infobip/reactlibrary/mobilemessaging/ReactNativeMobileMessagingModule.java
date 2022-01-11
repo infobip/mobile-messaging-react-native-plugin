@@ -71,6 +71,7 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
             ReactNativeEvent.send(event.type, reactContext, event.objects);
         }
         pluginInitialized = true;
+        registerBroadcastReceiver();
     }
 
     // LifecycleEventListener
@@ -829,13 +830,11 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
         Callback successCallback = showErrorDialogContext.onSuccess;
         Callback errorCallback = showErrorDialogContext.onError;
 
-        registerBroadcastReceiver();
-
         showErrorDialogContext.reset();
         reactContext.removeActivityEventListener(this);
 
         GoogleApiAvailability googleApiAvailability = GoogleApiAvailability.getInstance();
-        int playServicesAvailabilityResult = googleApiAvailability.isGooglePlayServicesAvailable(reactContext.getCurrentActivity());
+        int playServicesAvailabilityResult = googleApiAvailability.isGooglePlayServicesAvailable(getCurrentActivity());
         if (playServicesAvailabilityResult != ConnectionResult.SUCCESS) {
             try {
                 showDialogForError(playServicesAvailabilityResult, successCallback, errorCallback);
