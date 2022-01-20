@@ -10,6 +10,7 @@ import {
     View,
     findNodeHandle,
     UIManager,
+    EmitterSubscription,
 } from 'react-native';
 
 const { ReactNativeMobileMessaging, RNMMChat } = NativeModules;
@@ -67,6 +68,7 @@ class MobileMessaging {
      * @name register
      * @param {String} eventName
      * @param {Function} handler will be called when event occurs
+     * @deprecated For react-native version >= 0.65 use `subscribe` instead.
      */
     register(eventName, handler) {
         this.eventEmitter.addListener(eventName, handler);
@@ -74,14 +76,51 @@ class MobileMessaging {
 
     /**
      * Unregister from MobileMessaging library event.
-     *
+     * This method left for compatibility with react-native versions < 0.65, for versions >=0.65 it'll not work.
      * @name unregister
      * @param {String} eventName
      * @param {Function} handler will be unregistered from event
+     * @deprecated For react-native version >= 0.65 use `unsubscribe` instead.
      */
     unregister(eventName, handler) {
         this.eventEmitter.removeListener(eventName, handler);
     };
+
+    /**
+     * Add subscription to event coming from MobileMessaging library.
+     * The following events are supported:
+     *
+     *   - messageReceived
+     *   - notificationTapped
+     *   - tokenReceived
+     *   - registrationUpdated
+     *	 - geofenceEntered
+     *	 - actionTapped
+     *	 - installationUpdated
+     *	 - userUpdated
+     *   - personalized
+     *   - depersonalized
+     *   - inAppChat.availabilityUpdated
+     *   - inAppChat.unreadMessageCounterUpdated
+     *
+     * @name subscribe
+     * @param {String} eventName
+     * @param {Function} handler will be called when event occurs
+     * @return {EmitterSubscription} subscription, to unregister from this subscription call `unsubscribe(subscription)`
+     */
+    subscribe(eventName, handler) : EmitterSubscription {
+        return this.eventEmitter.addListener(eventName, handler);
+    }
+
+    /**
+     * Unsubscribe from MobileMessaging library event.
+     * This method should be used for react-native versions >= 0.65.
+     * @name unsubscribe
+     * @param {EmitterSubscription} subscription
+     */
+    unsubscribe(subscription) {
+        subscription.remove();
+    }
 
     /**
      * Unregister all handlers from MobileMessaging library event.

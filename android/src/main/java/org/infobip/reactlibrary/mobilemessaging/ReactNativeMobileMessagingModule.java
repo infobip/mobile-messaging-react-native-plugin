@@ -96,6 +96,16 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
         reactContext.removeLifecycleEventListener(this);
     }
 
+    @ReactMethod
+    public void addListener(String eventName) {
+        // Keep: Required for RN built in Event Emitter Calls.
+    }
+
+    @ReactMethod
+    public void removeListeners(Integer count) {
+        // Keep: Required for RN built in Event Emitter Calls.
+    }
+
     private static final String EVENT_TOKEN_RECEIVED = "tokenReceived";
     private static final String EVENT_REGISTRATION_UPDATED = "registrationUpdated";
     private static final String EVENT_INSTALLATION_UPDATED = "installationUpdated";

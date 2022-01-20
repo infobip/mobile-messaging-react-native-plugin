@@ -1,7 +1,7 @@
-def defaultCompileSDKVersion = 28
-def defaultBuildToolsVersion = '28.0.3'
-def defaultMinSDKVersion = 16
-def defaultTargetSDKVersion = 28
+def defaultCompileSDKVersion = 30
+def defaultBuildToolsVersion = '30.0.2'
+def defaultMinSDKVersion = 21
+def defaultTargetSDKVersion = 30
 
 def getRootProjectProperty(property, fallback) {
     rootProject.ext.has(property) ? rootProject.ext.get(property) : fallback
@@ -38,7 +38,7 @@ buildscript {
             mavenCentral()
         }
         dependencies {
-            classpath 'com.android.tools.build:gradle:3.6+'
+            classpath 'com.android.tools.build:gradle:4.2+'
         }
     }
 }
