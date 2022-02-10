@@ -382,16 +382,14 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
             messageStorageIntentFilter.addAction(action);
         }
 
-        Context context = reactContext.getCurrentActivity();
-        LocalBroadcastManager.getInstance(context).registerReceiver(messageStorageReceiver, messageStorageIntentFilter);
+        LocalBroadcastManager.getInstance(reactContext).registerReceiver(messageStorageReceiver, messageStorageIntentFilter);
         broadcastReceiverRegistered = true;
     }
 
     private void unregisterBroadcastReceiver() {
         if (!broadcastReceiverRegistered) return;
         reactContext.unregisterReceiver(commonLibraryBroadcastReceiver);
-        Context context = reactContext.getCurrentActivity();
-        LocalBroadcastManager.getInstance(context).unregisterReceiver(messageStorageReceiver);
+        LocalBroadcastManager.getInstance(reactContext).unregisterReceiver(messageStorageReceiver);
         broadcastReceiverRegistered = false;
     }
 
@@ -443,14 +441,13 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
 
     @ReactMethod
     public synchronized void defaultMessageStorage_find(String messageId, final Callback onSuccess, final Callback onError) throws JSONException {
-        Context context = reactContext.getCurrentActivity();
-        MessageStore messageStore = MobileMessaging.getInstance(context).getMessageStore();
+        MessageStore messageStore = MobileMessaging.getInstance(reactContext).getMessageStore();
         if (messageStore == null) {
             onError.invoke(Utils.callbackError("Message store does not exist", null));
             return;
         }
 
-        for (Message m : messageStore.findAll(context)) {
+        for (Message m : messageStore.findAll(reactContext)) {
             if (messageId.equals(m.getMessageId())) {
                 onSuccess.invoke(ReactNativeJson.convertJsonToMap(MessageJson.toJSON(m)));
                 return;
@@ -461,46 +458,43 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
 
     @ReactMethod
     public void defaultMessageStorage_findAll(final Callback onSuccess, final Callback onError) throws JSONException {
-        Context context = reactContext.getCurrentActivity();
-        MessageStore messageStore = MobileMessaging.getInstance(context).getMessageStore();
+        MessageStore messageStore = MobileMessaging.getInstance(reactContext).getMessageStore();
         if (messageStore == null) {
             onError.invoke(Utils.callbackError("Message store does not exist", null));
             return;
         }
-        List<Message> messages = messageStore.findAll(context);
+        List<Message> messages = messageStore.findAll(reactContext);
         onSuccess.invoke(ReactNativeJson.convertJsonToArray(MessageJson.toJSONArray(messages.toArray(new Message[messages.size()]))));
     }
 
     @ReactMethod
     public synchronized void defaultMessageStorage_delete(String messageId, final Callback onSuccess, final Callback onError) throws JSONException {
-        Context context = reactContext.getCurrentActivity();
-        MessageStore messageStore = MobileMessaging.getInstance(context).getMessageStore();
+        MessageStore messageStore = MobileMessaging.getInstance(reactContext).getMessageStore();
         if (messageStore == null) {
             onError.invoke(Utils.callbackError("Message store does not exist", null));
             return;
         }
 
         List<Message> messagesToKeep = new ArrayList<Message>();
-        for (Message m : messageStore.findAll(context)) {
+        for (Message m : messageStore.findAll(reactContext)) {
             if (messageId.equals(m.getMessageId())) {
                 continue;
             }
             messagesToKeep.add(m);
         }
-        messageStore.deleteAll(context);
-        messageStore.save(context, messagesToKeep.toArray(new Message[messagesToKeep.size()]));
+        messageStore.deleteAll(reactContext);
+        messageStore.save(reactContext, messagesToKeep.toArray(new Message[messagesToKeep.size()]));
         onSuccess.invoke();
     }
 
     @ReactMethod
     public synchronized void defaultMessageStorage_deleteAll(final Callback onSuccess, final Callback onError) {
-        Context context = reactContext.getCurrentActivity();
-        MessageStore messageStore = MobileMessaging.getInstance(context).getMessageStore();
+        MessageStore messageStore = MobileMessaging.getInstance(reactContext).getMessageStore();
         if (messageStore == null) {
             onError.invoke(Utils.callbackError("Message store does not exist", null));
             return;
         }
-        messageStore.deleteAll(context);
+        messageStore.deleteAll(reactContext);
         onSuccess.invoke();
     }
 
@@ -681,14 +675,13 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
 
     @ReactMethod
     public synchronized void defaultMessageStorage_find(String messageId, final Callback callback) throws JSONException {
-        Context context = reactContext.getCurrentActivity();
-        MessageStore messageStore = MobileMessaging.getInstance(context).getMessageStore();
+        MessageStore messageStore = MobileMessaging.getInstance(reactContext).getMessageStore();
         if (messageStore == null) {
             callback.invoke();
             return;
         }
 
-        for (Message m : messageStore.findAll(context)) {
+        for (Message m : messageStore.findAll(reactContext)) {
             if (messageId.equals(m.getMessageId())) {
                 callback.invoke(ReactNativeJson.convertJsonToMap(MessageJson.toJSON(m)));
                 return;
@@ -699,46 +692,43 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
 
     @ReactMethod
     public synchronized void defaultMessageStorage_findAll(final Callback callback) throws JSONException {
-        Context context = reactContext.getCurrentActivity();
-        MessageStore messageStore = MobileMessaging.getInstance(context).getMessageStore();
+        MessageStore messageStore = MobileMessaging.getInstance(reactContext).getMessageStore();
         if (messageStore == null) {
             callback.invoke();
             return;
         }
-        List<Message> messages = messageStore.findAll(context);
+        List<Message> messages = messageStore.findAll(reactContext);
         callback.invoke(ReactNativeJson.convertJsonToArray(MessageJson.toJSONArray(messages.toArray(new Message[messages.size()]))));
     }
 
     @ReactMethod
     public synchronized void defaultMessageStorage_delete(String messageId, final Callback callback) throws JSONException {
-        Context context = reactContext.getCurrentActivity();
-        MessageStore messageStore = MobileMessaging.getInstance(context).getMessageStore();
+        MessageStore messageStore = MobileMessaging.getInstance(reactContext).getMessageStore();
         if (messageStore == null) {
             callback.invoke();
             return;
         }
 
         List<Message> messagesToKeep = new ArrayList<Message>();
-        for (Message m : messageStore.findAll(context)) {
+        for (Message m : messageStore.findAll(reactContext)) {
             if (messageId.equals(m.getMessageId())) {
                 continue;
             }
             messagesToKeep.add(m);
         }
-        messageStore.deleteAll(context);
-        messageStore.save(context, messagesToKeep.toArray(new Message[messagesToKeep.size()]));
+        messageStore.deleteAll(reactContext);
+        messageStore.save(reactContext, messagesToKeep.toArray(new Message[messagesToKeep.size()]));
         callback.invoke();
     }
 
     @ReactMethod
     public synchronized void defaultMessageStorage_deleteAll(final Callback callback) {
-        Context context = reactContext.getCurrentActivity();
-        MessageStore messageStore = MobileMessaging.getInstance(context).getMessageStore();
+        MessageStore messageStore = MobileMessaging.getInstance(reactContext).getMessageStore();
         if (messageStore == null) {
             callback.invoke();
             return;
         }
-        messageStore.deleteAll(context);
+        messageStore.deleteAll(reactContext);
         callback.invoke();
     }
 
@@ -807,8 +797,7 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
     @ReactMethod
     void messageStorage_provideFindAllResult(ReadableArray result) {
 
-        Context context = getReactApplicationContext().getCurrentActivity();
-        MessageStoreAdapter.init(context);
+        MessageStoreAdapter.init(getReactApplicationContext());
 
         try {
             MessageStoreAdapter.messageStorage_findAllResults.addIfAbsent(ReactNativeJson.convertArrayToJson(result));
@@ -844,7 +833,7 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
         reactContext.removeActivityEventListener(this);
 
         GoogleApiAvailability googleApiAvailability = GoogleApiAvailability.getInstance();
-        int playServicesAvailabilityResult = googleApiAvailability.isGooglePlayServicesAvailable(getCurrentActivity());
+        int playServicesAvailabilityResult = googleApiAvailability.isGooglePlayServicesAvailable(reactContext);
         if (playServicesAvailabilityResult != ConnectionResult.SUCCESS) {
             try {
                 showDialogForError(playServicesAvailabilityResult, successCallback, errorCallback);
