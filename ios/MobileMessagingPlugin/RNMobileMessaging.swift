@@ -70,18 +70,22 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
             return
         }
 
+        let successCallback: RCTResponseSenderBlock = { [weak self] response in
+            RNMobileMessagingConfiguration.saveConfigToDefaults(rawConfig: config)
+            self?.isStarted = true
+            onSuccess(response)
+        }
+
         let cachedConfigDict = RNMobileMessagingConfiguration.getRawConfigFromDefaults()
         if let cachedConfigDict = cachedConfigDict, (config as NSDictionary) != (cachedConfigDict as NSDictionary)
         {
             stop()
-            start(configuration: configuration, onSuccess: onSuccess)
+            start(configuration: configuration, onSuccess: successCallback)
         } else if cachedConfigDict == nil {
-            start(configuration: configuration, onSuccess: onSuccess)
+            start(configuration: configuration, onSuccess: successCallback)
+        } else {
+            successCallback(nil)
         }
-
-        RNMobileMessagingConfiguration.saveConfigToDefaults(rawConfig: config)
-        isStarted = true
-        onSuccess(nil)
     }
 
     private func performEarlyStartIfPossible() {
