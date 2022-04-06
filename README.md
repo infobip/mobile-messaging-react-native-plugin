@@ -10,17 +10,18 @@ The document describes library integration steps for your React Native project.
 * [Initialization configuration](#initialization-configuration)
 
 ## Requirements
-- node (v10.17.0 or higher)
-- React Native (v0.66.3)
+- node (v16.10.0 or higher)
+- ruby (2.7.4)
+- React Native (v0.67.4)
 
 For iOS project:
-- Xcode and Command Line Tools (13.1)
-- CocoaPods (v1.10.1)
+- Xcode and Command Line Tools (13.2.1)
+- CocoaPods (v1.11.3)
 - Minimum deployment target 11.0
 
 For Android project:
-- Android Studio (v4.0)
-- Gradle (v4.2.0)
+- Android Studio (Bumblebee | 2021.1.1)
+- Gradle (v7.2.0)
 - Minimum API Level: 21 (Android 5.0 - [Lollipop](https://developer.android.com/about/versions/lollipop))
 
 ## Quick start guide

@@ -5,6 +5,7 @@
         <!-- Customize your theme here. -->
     </style>
     <style name="IB_AppTheme.Chat">
+        <item name="android:editTextBackground">@drawable/rn_edit_text_material</item>
         <!--  If these values commented out, configuration will be set from web widget settings from the Infobip Portal-->
         <!--        <item name="colorPrimary">#FF0000</item> &lt;!&ndash; color of toolbar background and send chat button tint &ndash;&gt;-->
         <!--        <item name="colorPrimaryDark">#FF0000</item> &lt;!&ndash; color of status / notification bar &ndash;&gt;-->
