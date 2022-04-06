@@ -1,7 +1,7 @@
 {
   "name": "infobip-mobile-messaging-react-native-plugin",
   "title": "Infobip Mobile Messaging React Native Plugin",
-  "version": "5.0.1",
+  "version": "5.1.0",
   "description": "Infobip Mobile Messaging React Native Plugin",
   "main": "index.js",
   "scripts": {
