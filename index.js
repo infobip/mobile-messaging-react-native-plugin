@@ -12,6 +12,8 @@ import {
     UIManager,
     EmitterSubscription,
 } from 'react-native';
+import type {Rationale} from "react-native/Libraries/PermissionsAndroid/PermissionsAndroid";
+import {Permission} from "react-native";
 
 const { ReactNativeMobileMessaging, RNMMChat } = NativeModules;
 
@@ -146,8 +148,14 @@ class MobileMessaging {
      *		ios: {
      *			notificationTypes: ['alert', 'sound', 'badge'],
      *			forceCleanup: <Boolean>,
-     *          logging: <Boolean>
+     *			logging: <Boolean>
      *		},
+     *	    android: {
+     *			notificationIcon: <String>,
+     *			multipleNotifications: <Boolean>,
+     *			notificationAccentColor: <String>
+     *			firebaseOptions: <Object>
+     *	    }
      *		privacySettings: {
      *			applicationCodePersistingDisabled: <Boolean>,
      *			userDataPersistingDisabled: <Boolean>,
@@ -242,33 +250,7 @@ class MobileMessaging {
 
         config.reactNativePluginVersion = require('./package').version;
 
-        let geofencingEnabled = config.geofencingEnabled;
-        if (geofencingEnabled && Platform.OS === 'android') {
-            this.checkAndroidLocationPermission().then(granted => {
-                if (!granted) {
-                    onError('Geofencing permission is not granted.');
-                    return;
-                }
-                ReactNativeMobileMessaging.init(config, onSuccess, onError);
-            })
-        } else {
-            ReactNativeMobileMessaging.init(config, onSuccess, onError);
-        }
-    };
-
-    async checkAndroidLocationPermission(): Promise<Boolean> {
-        const locationPermissionGranted = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION);
-        if (locationPermissionGranted) {
-            return true;
-        } else {
-            try {
-                const granted = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION);
-                return granted === PermissionsAndroid.RESULTS.GRANTED;
-            } catch (err) {
-                console.error('[RNMobileMessaging] Can\'t check android permission', err);
-                return false;
-            }
-        }
+        ReactNativeMobileMessaging.init(config, onSuccess, onError);
     };
 
     /**
@@ -580,6 +562,64 @@ class MobileMessaging {
     resetMessageCounter() {
         RNMMChat.resetMessageCounter();
     }
+
+    /* Geofencing permissions */
+
+    /**
+     * This is used for requesting Location permissions for Android
+     * @param rationale rationale to display if it's needed. Describing why this permissions required.
+     * Mobile Messaging SDK requires following permissions to be able to send geo targeted notifications, even if application is killed or on background.
+     * ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION, ACCESS_BACKGROUND_LOCATION
+     * @return {Promise<boolean>}
+     */
+    async requestAndroidPermissions(rationale?: Rationale): Promise<Boolean> {
+        const requiredPermissions = await this.requiredAndroidLocationPermissions();
+        if (requiredPermissions.length === 0) {
+            return Promise.resolve(true);
+        }
+
+        return this.checkAndroidLocationPermission(requiredPermissions, rationale).then(granted => {
+            if (!granted) {
+                return Promise.resolve(false);
+            } else {
+                return this.requestAndroidPermissions(rationale);
+            }
+        });
+    };
+
+    async checkAndroidLocationPermission(permissions: Array<Permission>, rationale?: Rationale): Promise<Boolean> {
+        for (permission of permissions) {
+            const granted = await PermissionsAndroid.request(permission, rationale);
+            if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
+                console.log("Permissions Result != Granted ", permission, granted);
+                return Promise.resolve(false);
+            }
+        }
+        console.log("Permissions Result == Granted ");
+        return Promise.resolve(true);
+    };
+
+    async requiredAndroidLocationPermissions(): Promise<Array<Permission>> {
+        let permissions: Array<Permission> = [];
+        const fineLocationGranted = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION);
+        if (!fineLocationGranted) {
+            if (Platform.Version > 29) {
+                permissions = [PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION, PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION];
+            } else if (Platform.Version === 29) {
+                permissions = [PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION, PermissionsAndroid.PERMISSIONS.ACCESS_BACKGROUND_LOCATION];
+            } else {
+                permissions = [PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION];
+            }
+        } else {
+            const backgroundLocationGranted = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.ACCESS_BACKGROUND_LOCATION);
+            if (!backgroundLocationGranted && Platform.Version > 29) {
+                permissions = [PermissionsAndroid.PERMISSIONS.ACCESS_BACKGROUND_LOCATION];
+            }
+        }
+
+        return Promise.resolve(permissions);
+    };
+
 }
 
 export class ChatView extends React.Component {

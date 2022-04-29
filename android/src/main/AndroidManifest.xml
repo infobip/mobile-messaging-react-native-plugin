@@ -39,8 +39,6 @@
                 android:exported="false"
                 android:permission="android.permission.BIND_JOB_SERVICE" />
 
-        <receiver android:name="org.infobip.mobile.messaging.notification.NotificationTapReceiver" />
-
         <receiver
                 android:name="org.infobip.mobile.messaging.MobileMessagingConnectivityReceiver"
                 android:enabled="false"
@@ -50,8 +48,11 @@
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
             </intent-filter>
         </receiver>
-        <receiver android:name="org.infobip.mobile.messaging.interactive.notification.NotificationActionTapReceiver" />
-        <receiver android:name="org.infobip.reactlibrary.mobilemessaging.ReactNativeMobileMessagingModule$MessageEventReceiver" android:exported="false">
+        <receiver android:name="org.infobip.mobile.messaging.interactive.notification.NotificationActionTapReceiver"
+            android:exported="false"/>
+
+        <receiver android:name="org.infobip.reactlibrary.mobilemessaging.ReactNativeMobileMessagingModule$MessageEventReceiver"
+                  android:exported="false">
             <intent-filter>
                 <action android:name="org.infobip.mobile.messaging.MESSAGE_RECEIVED" />
                 <action android:name="org.infobip.mobile.messaging.NOTIFICATION_TAPPED" />

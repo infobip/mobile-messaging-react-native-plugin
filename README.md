@@ -12,7 +12,7 @@ The document describes library integration steps for your React Native project.
 ## Requirements
 - node (v16.10.0 or higher)
 - ruby (2.7.4)
-- React Native (v0.67.4)
+- React Native (v0.68.0)
 
 For iOS project:
 - Xcode and Command Line Tools (13.2.1)
@@ -21,7 +21,7 @@ For iOS project:
 
 For Android project:
 - Android Studio (Bumblebee | 2021.1.1)
-- Gradle (v7.2.0)
+- Gradle (v7.3.3)
 - Minimum API Level: 21 (Android 5.0 - [Lollipop](https://developer.android.com/about/versions/lollipop))
 
 ## Quick start guide
@@ -40,10 +40,10 @@ This guide is designed to get you up and running with Mobile Messaging SDK plugi
     - **iOS**
         1. Add `use_frameworks!` into `/ios/Podfile` (required for Swift frameworks such as our Mobile Messaging SDK)
         2. Run `pod install` from `/ios` folder (installs Mobile Messaging native SDK)
-        3. Import MobileMessaging `@import MobileMessaging;` and add `[MobileMessagingPluginApplicationDelegate install];` into `/ios/<ProjectName>/AppDelegate.m` (this is required for OS callbacks such as `didRegisterForRemoteNotifications` to be intercepted by native MobileMessaging SDK)
+        3. Import following header `#import <MobileMessaging/MobileMessagingPluginApplicationDelegate.h>` and add `[MobileMessagingPluginApplicationDelegate install];` into `/ios/<ProjectName>/AppDelegate.m` (this is required for OS callbacks such as `didRegisterForRemoteNotifications` to be intercepted by native MobileMessaging SDK)
         ```objective-c
             ...
-            @import MobileMessaging;
+            #import <MobileMessaging/MobileMessagingPluginApplicationDelegate.h>
       
             @implementation AppDelegate
 
@@ -67,13 +67,21 @@ This guide is designed to get you up and running with Mobile Messaging SDK plugi
         export PATH=$PATH:$ANDROID_HOME/tools/bin
         export PATH=$PATH:$ANDROID_HOME/platform-tools
         ```
-        2. Add [Firebase Sender Id](https://www.infobip.com/docs/mobile-app-messaging/fcm-server-api-key-setup-guide) to the `/android/app/src/main/res/values/strings.xml`
-        ```xml
-        <resources>
-            ...
-            <string name="google_app_id">your google app id</string>
-        </resources>
+        2. Add 'com.google.gms:google-services' to `android/build.gradle` file
+        ```groovy
+        buildscript {
+           ...
+           dependencies {
+               ...
+              //GMS Gradle plugin
+              classpath 'com.google.gms:google-services:4.3.10'
+           }
+        }
         ```
+        And add `apply plugin: 'com.google.gms.google-services'` at the end of your `android/app/build.gradle` in order to apply [Google Services Gradle Plugin](https://developers.google.com/android/guides/google-services-plugin)
+       3. Add a Firebase configuration file (google-services.json) as described in <a href="https://firebase.google.com/docs/android/setup#add-config-file" target="_blank">`Firebase documentation`</a>
+      > ### Notice:
+      > Check <a href="https://github.com/infobip/mobile-messaging-react-native-plugin/wiki/Applying-Firebase-configuration-in-MobileMessaging-SDK">Applying Firebase configuration in MobileMessaging SDK Guide</a> for alternatives.
 
 ## Initialization configuration
 

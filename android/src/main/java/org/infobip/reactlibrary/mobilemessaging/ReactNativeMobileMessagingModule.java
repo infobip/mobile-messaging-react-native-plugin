@@ -31,6 +31,8 @@ import org.infobip.mobile.messaging.mobileapi.MobileMessagingError;
 import org.infobip.mobile.messaging.mobileapi.Result;
 import org.infobip.mobile.messaging.storage.MessageStore;
 import org.infobip.mobile.messaging.storage.SQLiteMessageStore;
+import org.infobip.mobile.messaging.util.Cryptor;
+import org.infobip.mobile.messaging.util.DeviceInformation;
 import org.infobip.mobile.messaging.util.PreferenceHelper;
 import org.infobip.reactlibrary.mobilemessaging.datamappers.*;
 import org.infobip.mobile.messaging.dal.bundle.MessageBundleMapper;
@@ -333,6 +335,24 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
                 notificationBuilder.withColor(color);
             }
             builder.withDisplayNotification(notificationBuilder.build());
+
+            if (configuration.android.firebaseOptions != null) {
+                builder.withFirebaseOptions(configuration.android.firebaseOptions);
+            }
+        }
+
+        // Checking do we need to migrate data saved with old cryptor,
+        // if withCryptorMigration project ext property is set, ECBCryptorImpl class will exist.
+        Cryptor cryptor = null;
+        try {
+            Class cls = Class.forName("org.infobip.mobile.messaging.cryptor.ECBCryptorImpl");
+            cryptor = (Cryptor) cls.getDeclaredConstructor(String.class).newInstance(DeviceInformation.getDeviceID(context));
+        } catch (Exception e) {
+            Log.d(Utils.TAG, "Will not migrate cryptor :");
+            e.printStackTrace();
+        }
+        if (cryptor != null) {
+            builder.withCryptorMigration(cryptor);
         }
 
         builder.build(new MobileMessaging.InitListener() {

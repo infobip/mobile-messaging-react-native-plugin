@@ -1,7 +1,5 @@
 package org.infobip.reactlibrary.mobilemessaging;
 
-import android.widget.FrameLayout;
-
 import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
@@ -13,7 +11,6 @@ import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.ViewManager;
-import com.facebook.react.bridge.JavaScriptModule;
 
 public class ReactNativeMobileMessagingPackage implements ReactPackage {
 

@@ -1,32 +1,16 @@
-def defaultCompileSDKVersion = 30
-def defaultBuildToolsVersion = '30.0.2'
+def defaultCompileSDKVersion = 31
+def defaultBuildToolsVersion = '31.0.0'
 def defaultMinSDKVersion = 21
-def defaultTargetSDKVersion = 30
+def defaultTargetSDKVersion = 31
 
 def getRootProjectProperty(property, fallback) {
     rootProject.ext.has(property) ? rootProject.ext.get(property) : fallback
 }
 
-def overrideAndroidSupportLibsVersion = getRootProjectProperty('overrideAndroidSupportLibsVersion', '')
 def overrideGmsVersion = getRootProjectProperty('overrideGmsVersion', '')
 def overrideFirebaseVersion = getRootProjectProperty('overrideFirebaseVersion', '')
 def overrideKotlinVersion = getRootProjectProperty('overrideKotlinVersion', '')
-
-if (overrideAndroidSupportLibsVersion.empty || overrideAndroidSupportLibsVersion > "26") {
-    repositories {
-        mavenCentral {
-            // We don't want to fetch react-native from Maven Central as there are
-            // older versions over there.
-            content {
-                excludeGroup "com.facebook.react"
-            }
-        }
-        maven {
-            url 'https://maven.google.com/'
-            name 'Google'
-        }
-    }
-}
+def withCryptorMigration = getRootProjectProperty('withCryptorMigration', false)
 
 apply plugin: 'com.android.library'
 apply plugin: 'maven-publish'
@@ -39,6 +23,7 @@ buildscript {
     if (project == rootProject) {
         repositories {
             google()
+            mavenLocal()
             mavenCentral {
                 // We don't want to fetch react-native from Maven Central as there are
                 // older versions over there.
@@ -89,15 +74,17 @@ repositories {
         }
     }
     google()
+    mavenLocal()
 }
 
 dependencies {
-    def mmVersion = '5.3.6'
+    def mmVersion = '6.2.1'
 
     implementation 'com.facebook.react:react-native:+'
     implementation "androidx.annotation:annotation:1.1.0"
-    implementation 'com.google.android.material:material:1.0.0'
-    implementation 'androidx.exifinterface:exifinterface:1.1.0'
+
+    implementation 'com.google.android.material:material:1.4.0'
+    implementation 'androidx.exifinterface:exifinterface:1.3.3'
 
     implementation "com.infobip:infobip-mobile-messaging-android-resources:$mmVersion@aar"
     implementation "com.infobip:infobip-mobile-messaging-android-chat-sdk:$mmVersion@aar"
@@ -109,10 +96,6 @@ dependencies {
             exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk8'
         }
 
-        if (!overrideAndroidSupportLibsVersion.empty) {
-            exclude group: 'com.android.support', module: 'support-v4'
-            exclude group: 'com.android.support', module: 'appcompat-v7'
-        }
         if (!overrideGmsVersion.empty) {
             exclude group: 'com.google.android.gms', module: 'play-services-location'
         }
@@ -120,14 +103,14 @@ dependencies {
             exclude group: 'com.google.firebase', module: 'firebase-messaging'
         }
     }
-    if (!overrideAndroidSupportLibsVersion.empty) {
-        implementation "com.android.support:support-v4:$overrideAndroidSupportLibsVersion"
-        implementation "com.android.support:appcompat-v7:$overrideAndroidSupportLibsVersion"
-    }
     if (!overrideGmsVersion.empty) {
         implementation "com.google.android.gms:play-services-location:$overrideGmsVersion"
     }
     if (!overrideFirebaseVersion.empty) {
         implementation "com.google.firebase:firebase-messaging:$overrideFirebaseVersion"
+    }
+
+    if (withCryptorMigration.toBoolean()) {
+        implementation "com.infobip:infobip-mobile-messaging-android-cryptor-migration:$mmVersion@aar"
     }
 }

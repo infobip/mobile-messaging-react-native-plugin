@@ -10,12 +10,15 @@ import java.util.Map;
 
 import androidx.annotation.NonNull;
 
+import com.google.firebase.FirebaseOptions;
+
 class Configuration {
 
     class AndroidConfiguration {
         String notificationIcon;
         boolean multipleNotifications;
         String notificationAccentColor;
+        FirebaseOptions firebaseOptions;
     }
 
     class PrivacySettings {
