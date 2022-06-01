@@ -34,6 +34,7 @@ This guide is designed to get you up and running with Mobile Messaging SDK plugi
     ```bash
     $ npm install infobip-mobile-messaging-react-native-plugin
     ```
+   TypeScript's definitions are included into npm package
 
 3. Configure platforms
 
@@ -109,6 +110,34 @@ someMethod(): void {
     );
 }
 ```
+<details><summary>expand to see TypeScript code</summary>
+<p>
+
+```typescript
+import { mobileMessaging } from 'infobip-mobile-messaging-react-native-plugin';
+ 
+someMethod(): void {
+...
+ 
+    mobileMessaging.init(
+      {
+            applicationCode: '<your app code>',
+            ios: {
+                notificationTypes: ['alert', 'badge', 'sound'],
+            },
+      },
+      () => {
+        console.log('MobileMessaging started');
+      }, 
+      (error: MobileMessagingError) => {
+        console.log('MobileMessaging error: ', error);
+      },
+    );
+}
+```
+
+</p>
+</details>
 
 #### More details on SDK features and FAQ you can find on [Wiki](https://github.com/infobip/mobile-messaging-react-native-plugin/wiki)
 
