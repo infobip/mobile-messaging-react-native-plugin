@@ -17,12 +17,12 @@ The document describes library integration steps for your React Native project.
 For iOS project:
 - Xcode and Command Line Tools (13.2.1)
 - CocoaPods (v1.11.3)
-- Minimum deployment target 11.0
+- Minimum deployment target 12.0
 
 For Android project:
 - Android Studio (Bumblebee | 2021.1.1)
 - Gradle (v7.3.3)
-- Minimum API Level: 21 (Android 5.0 - [Lollipop](https://developer.android.com/about/versions/lollipop))
+- Supported API Levels: 21 (Android 5.0 - [Lollipop](https://developer.android.com/about/versions/lollipop)) - 31 (Android 12.0)
 
 ## Quick start guide
 
@@ -39,9 +39,10 @@ This guide is designed to get you up and running with Mobile Messaging SDK plugi
 3. Configure platforms
 
    - **iOS**
-      1. Add `use_frameworks!` into `/ios/Podfile` (required for Swift frameworks such as our Mobile Messaging SDK)
-      2. Run `pod install` from `/ios` folder (installs Mobile Messaging native SDK)
-      3. Import following header `#import <MobileMessaging/MobileMessagingPluginApplicationDelegate.h>` and add `[MobileMessagingPluginApplicationDelegate install];` into `/ios/<ProjectName>/AppDelegate.m` (this is required for OS callbacks such as `didRegisterForRemoteNotifications` to be intercepted by native MobileMessaging SDK)
+      > ### Notice
+      > Starting from the [6.2.0](https://github.com/infobip/mobile-messaging-react-native-plugin/releases/tag/6.1.0) plugin version it's not mandatory to add `use_frameworks!` to the `Podfile`, check the [Migration guide](https://github.com/infobip/mobile-messaging-react-native-plugin/wiki/Migration-guides#migration-from-610-to-620-in-case-you-are-getting-rid-of-use_frameworks-in-the-podfile) if you want to get rid of it.
+      1. Run `pod install` from `/ios` folder (installs Mobile Messaging native SDK)
+      2. Import following header `#import <MobileMessaging/MobileMessagingPluginApplicationDelegate.h>` and add `[MobileMessagingPluginApplicationDelegate install];` into `/ios/<ProjectName>/AppDelegate.m` (this is required for OS callbacks such as `didRegisterForRemoteNotifications` to be intercepted by native MobileMessaging SDK)
        ```objective-c
            ...
            #import <MobileMessaging/MobileMessagingPluginApplicationDelegate.h>
@@ -55,8 +56,8 @@ This guide is designed to get you up and running with Mobile Messaging SDK plugi
            }
            ...
        ```
-      4. Configure your project to support Push Notification as described in item 2 of [iOS integration quick start guide](https://github.com/infobip/mobile-messaging-sdk-ios#quick-start-guide)
-      5. [Integrate Notification Service Extension](https://github.com/infobip/mobile-messaging-sdk-ios/wiki/Notification-Service-Extension-for-Rich-Notifications-and-better-delivery-reporting-on-iOS-10) into your app in order to obtain:
+      3. Configure your project to support Push Notification as described in item 2 of [iOS integration quick start guide](https://github.com/infobip/mobile-messaging-sdk-ios#quick-start-guide)
+      4. [Integrate Notification Service Extension](https://github.com/infobip/mobile-messaging-react-native-plugin/wiki/Delivery-improvements-and-rich-content-notifications#setting-up-ios-part) into your app in order to obtain:
          - more accurate processing of messages and delivery stats
          - support of rich notifications on the lock screen
    - **Android**

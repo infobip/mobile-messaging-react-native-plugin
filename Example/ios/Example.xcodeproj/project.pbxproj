@@ -8,15 +8,16 @@
 
 /* Begin PBXBuildFile section */
 		00E356F31AD99517003FC87E /* ExampleTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* ExampleTests.m */; };
-		07BAD744A59407F706DC6BE3 /* Pods_Example_ExampleTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 813839F4070D45187A5A944A /* Pods_Example_ExampleTests.framework */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
-		4482C4E78C418A676AD7ABDC /* Pods_MobileMessagingNotificationExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 512AD6D3E2829EFC3B0FABE4 /* Pods_MobileMessagingNotificationExtension.framework */; };
 		58E56C287B7BD8DFD5DD01DB /* MobileMessagingNotificationExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = EA632FC3C453C7F1DEF89EBA /* MobileMessagingNotificationExtension.appex */; };
+		761D043865BC613A072C943A /* libPods-Example.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C346AC67178AD8D191D145F /* libPods-Example.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		915B9CE94A6924337370E858 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 631F7D0BB15FD4CF53452793 /* NotificationService.swift */; };
+		A05426AD28522881004498E4 /* libMobileMessaging.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A05426AC28522881004498E4 /* libMobileMessaging.a */; };
 		A0C821A627FD8F290061B187 /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = A0C821A527FD8F290061B187 /* AppDelegate.mm */; };
-		B75944EDC1D33E2851B5A8E7 /* Pods_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E3DF8E422B41BF0220B0572A /* Pods_Example.framework */; };
+		B80A446985FFE84DE1C6EE3E /* libPods-MobileMessagingNotificationExtension.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 96310E2DDE83A37DC381FCF7 /* libPods-MobileMessagingNotificationExtension.a */; };
+		C7D4A826ADA26A02E6A0D890 /* libPods-Example-ExampleTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A4CD183364A829F9222B0583 /* libPods-Example-ExampleTests.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -60,21 +61,22 @@
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = Example/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Example/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = Example/main.m; sourceTree = "<group>"; };
-		14BB8CAA36D6D1BF6F028E1C /* Pods-Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Example.debug.xcconfig"; path = "Target Support Files/Pods-Example/Pods-Example.debug.xcconfig"; sourceTree = "<group>"; };
-		23696B55ECFC110E47AF47E4 /* Pods-Example-ExampleTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Example-ExampleTests.debug.xcconfig"; path = "Target Support Files/Pods-Example-ExampleTests/Pods-Example-ExampleTests.debug.xcconfig"; sourceTree = "<group>"; };
-		28484F7DE23B875FB676A046 /* Pods-MobileMessagingNotificationExtension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MobileMessagingNotificationExtension.release.xcconfig"; path = "Target Support Files/Pods-MobileMessagingNotificationExtension/Pods-MobileMessagingNotificationExtension.release.xcconfig"; sourceTree = "<group>"; };
-		295FC6B8A3AF1D909F008B13 /* Pods-MobileMessagingNotificationExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MobileMessagingNotificationExtension.debug.xcconfig"; path = "Target Support Files/Pods-MobileMessagingNotificationExtension/Pods-MobileMessagingNotificationExtension.debug.xcconfig"; sourceTree = "<group>"; };
-		44323103C48C423F5970404E /* Pods-Example-ExampleTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Example-ExampleTests.release.xcconfig"; path = "Target Support Files/Pods-Example-ExampleTests/Pods-Example-ExampleTests.release.xcconfig"; sourceTree = "<group>"; };
-		4FC94E8BBDC8913038944779 /* Pods-Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Example.release.xcconfig"; path = "Target Support Files/Pods-Example/Pods-Example.release.xcconfig"; sourceTree = "<group>"; };
-		512AD6D3E2829EFC3B0FABE4 /* Pods_MobileMessagingNotificationExtension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MobileMessagingNotificationExtension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		3EA9F6033ADDAF6EF0756392 /* Pods-MobileMessagingNotificationExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MobileMessagingNotificationExtension.debug.xcconfig"; path = "Target Support Files/Pods-MobileMessagingNotificationExtension/Pods-MobileMessagingNotificationExtension.debug.xcconfig"; sourceTree = "<group>"; };
+		5C346AC67178AD8D191D145F /* libPods-Example.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Example.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		631F7D0BB15FD4CF53452793 /* NotificationService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		684883DD5C78E4CFD2B42E05 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS12.2.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
-		813839F4070D45187A5A944A /* Pods_Example_ExampleTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Example_ExampleTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		6E38064F3A185755E15E014D /* Pods-Example-ExampleTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Example-ExampleTests.release.xcconfig"; path = "Target Support Files/Pods-Example-ExampleTests/Pods-Example-ExampleTests.release.xcconfig"; sourceTree = "<group>"; };
+		78B72CB20E066FDF5A2AC929 /* Pods-Example-ExampleTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Example-ExampleTests.debug.xcconfig"; path = "Target Support Files/Pods-Example-ExampleTests/Pods-Example-ExampleTests.debug.xcconfig"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = Example/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		96310E2DDE83A37DC381FCF7 /* libPods-MobileMessagingNotificationExtension.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-MobileMessagingNotificationExtension.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		976AF4CF5DE5150480946B83 /* Pods-MobileMessagingNotificationExtension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MobileMessagingNotificationExtension.release.xcconfig"; path = "Target Support Files/Pods-MobileMessagingNotificationExtension/Pods-MobileMessagingNotificationExtension.release.xcconfig"; sourceTree = "<group>"; };
 		A050BD992693469300C26352 /* Example.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = Example.entitlements; path = Example/Example.entitlements; sourceTree = "<group>"; };
+		A05426AC28522881004498E4 /* libMobileMessaging.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libMobileMessaging.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		A0C821A527FD8F290061B187 /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppDelegate.mm; path = Example/AppDelegate.mm; sourceTree = "<group>"; };
+		A4CD183364A829F9222B0583 /* libPods-Example-ExampleTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Example-ExampleTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		A569067A0DD98FFCB57BA76F /* Pods-Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Example.debug.xcconfig"; path = "Target Support Files/Pods-Example/Pods-Example.debug.xcconfig"; sourceTree = "<group>"; };
+		A5C2508131D7EE37D106F8B6 /* Pods-Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Example.release.xcconfig"; path = "Target Support Files/Pods-Example/Pods-Example.release.xcconfig"; sourceTree = "<group>"; };
 		E0B902BCD33065756BEA4CC1 /* MobileMessagingNotificationServiceExtension.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = MobileMessagingNotificationServiceExtension.plist; sourceTree = "<group>"; };
-		E3DF8E422B41BF0220B0572A /* Pods_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		EA632FC3C453C7F1DEF89EBA /* MobileMessagingNotificationExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MobileMessagingNotificationExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
@@ -84,7 +86,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				07BAD744A59407F706DC6BE3 /* Pods_Example_ExampleTests.framework in Frameworks */,
+				C7D4A826ADA26A02E6A0D890 /* libPods-Example-ExampleTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -92,7 +94,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B75944EDC1D33E2851B5A8E7 /* Pods_Example.framework in Frameworks */,
+				761D043865BC613A072C943A /* libPods-Example.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -100,7 +102,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4482C4E78C418A676AD7ABDC /* Pods_MobileMessagingNotificationExtension.framework in Frameworks */,
+				A05426AD28522881004498E4 /* libMobileMessaging.a in Frameworks */,
+				B80A446985FFE84DE1C6EE3E /* libPods-MobileMessagingNotificationExtension.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -149,11 +152,12 @@
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				A05426AC28522881004498E4 /* libMobileMessaging.a */,
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
 				0A5C644D2963D91D56855F30 /* iOS */,
-				E3DF8E422B41BF0220B0572A /* Pods_Example.framework */,
-				813839F4070D45187A5A944A /* Pods_Example_ExampleTests.framework */,
-				512AD6D3E2829EFC3B0FABE4 /* Pods_MobileMessagingNotificationExtension.framework */,
+				5C346AC67178AD8D191D145F /* libPods-Example.a */,
+				A4CD183364A829F9222B0583 /* libPods-Example-ExampleTests.a */,
+				96310E2DDE83A37DC381FCF7 /* libPods-MobileMessagingNotificationExtension.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -161,12 +165,12 @@
 		6E7ABF9A4B503A3A6717B874 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				14BB8CAA36D6D1BF6F028E1C /* Pods-Example.debug.xcconfig */,
-				4FC94E8BBDC8913038944779 /* Pods-Example.release.xcconfig */,
-				23696B55ECFC110E47AF47E4 /* Pods-Example-ExampleTests.debug.xcconfig */,
-				44323103C48C423F5970404E /* Pods-Example-ExampleTests.release.xcconfig */,
-				28484F7DE23B875FB676A046 /* Pods-MobileMessagingNotificationExtension.release.xcconfig */,
-				295FC6B8A3AF1D909F008B13 /* Pods-MobileMessagingNotificationExtension.debug.xcconfig */,
+				A569067A0DD98FFCB57BA76F /* Pods-Example.debug.xcconfig */,
+				A5C2508131D7EE37D106F8B6 /* Pods-Example.release.xcconfig */,
+				78B72CB20E066FDF5A2AC929 /* Pods-Example-ExampleTests.debug.xcconfig */,
+				6E38064F3A185755E15E014D /* Pods-Example-ExampleTests.release.xcconfig */,
+				976AF4CF5DE5150480946B83 /* Pods-MobileMessagingNotificationExtension.release.xcconfig */,
+				3EA9F6033ADDAF6EF0756392 /* Pods-MobileMessagingNotificationExtension.debug.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -222,11 +226,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "ExampleTests" */;
 			buildPhases = (
-				DE5E07B5232FA61A1FCA62A0 /* [CP] Check Pods Manifest.lock */,
+				9F1CD5C9FE8498591EACAF7D /* [CP] Check Pods Manifest.lock */,
 				00E356EA1AD99517003FC87E /* Sources */,
 				00E356EB1AD99517003FC87E /* Frameworks */,
 				00E356EC1AD99517003FC87E /* Resources */,
-				A1B2307DDD38CA232667ACDE /* [CP] Embed Pods Frameworks */,
+				ABA3819D4C85140ECDE1FB03 /* [CP] Embed Pods Frameworks */,
+				1ED8476447C996FFF85C59F7 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -242,14 +247,15 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "Example" */;
 			buildPhases = (
-				24E4AC4029FDE69938A9A340 /* [CP] Check Pods Manifest.lock */,
+				F667F49C1EF9F2E30C68C911 /* [CP] Check Pods Manifest.lock */,
 				FD10A7F022414F080027D42C /* Start Packager */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				1A7F8CF93C0A9D5D318CD4D7 /* Embed App Extensions */,
-				413AC1D24DA09E7CEE3E8464 /* [CP] Embed Pods Frameworks */,
+				13F390D46CC6EB196C596333 /* [CP] Embed Pods Frameworks */,
+				55603F9409B2273255DE365A /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -265,7 +271,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = B29BCDFD9561CA3B0AB87346 /* Build configuration list for PBXNativeTarget "MobileMessagingNotificationExtension" */;
 			buildPhases = (
-				BFEC1A27F51238CB18184702 /* [CP] Check Pods Manifest.lock */,
+				BC756FC25E632A2D425BFA17 /* [CP] Check Pods Manifest.lock */,
 				FBD63B769207481EA5FF8990 /* Sources */,
 				41EDDFCD721902B11BBB345B /* Frameworks */,
 				EFADF056DB0BBDC7B5D389C5 /* Resources */,
@@ -381,29 +387,7 @@
 			shellPath = /bin/sh;
 			shellScript = "set -e\n\nexport NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh\n";
 		};
-		24E4AC4029FDE69938A9A340 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-Example-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		413AC1D24DA09E7CEE3E8464 /* [CP] Embed Pods Frameworks */ = {
+		13F390D46CC6EB196C596333 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -420,7 +404,63 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Example/Pods-Example-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		A1B2307DDD38CA232667ACDE /* [CP] Embed Pods Frameworks */ = {
+		1ED8476447C996FFF85C59F7 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Example-ExampleTests/Pods-Example-ExampleTests-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Example-ExampleTests/Pods-Example-ExampleTests-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Example-ExampleTests/Pods-Example-ExampleTests-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		55603F9409B2273255DE365A /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Example/Pods-Example-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Example/Pods-Example-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Example/Pods-Example-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		9F1CD5C9FE8498591EACAF7D /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-Example-ExampleTests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		ABA3819D4C85140ECDE1FB03 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -437,7 +477,7 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Example-ExampleTests/Pods-Example-ExampleTests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		BFEC1A27F51238CB18184702 /* [CP] Check Pods Manifest.lock */ = {
+		BC756FC25E632A2D425BFA17 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -459,7 +499,7 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		DE5E07B5232FA61A1FCA62A0 /* [CP] Check Pods Manifest.lock */ = {
+		F667F49C1EF9F2E30C68C911 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -474,7 +514,7 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-Example-ExampleTests-checkManifestLockResult.txt",
+				"$(DERIVED_FILE_DIR)/Pods-Example-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -547,7 +587,7 @@
 /* Begin XCBuildConfiguration section */
 		00E356F61AD99517003FC87E /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 23696B55ECFC110E47AF47E4 /* Pods-Example-ExampleTests.debug.xcconfig */;
+			baseConfigurationReference = 78B72CB20E066FDF5A2AC929 /* Pods-Example-ExampleTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -574,7 +614,7 @@
 		};
 		00E356F71AD99517003FC87E /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 44323103C48C423F5970404E /* Pods-Example-ExampleTests.release.xcconfig */;
+			baseConfigurationReference = 6E38064F3A185755E15E014D /* Pods-Example-ExampleTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
@@ -598,7 +638,7 @@
 		};
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 14BB8CAA36D6D1BF6F028E1C /* Pods-Example.debug.xcconfig */;
+			baseConfigurationReference = A569067A0DD98FFCB57BA76F /* Pods-Example.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -607,7 +647,7 @@
 				DEVELOPMENT_TEAM = T6U248P7YM;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Example/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -627,7 +667,7 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 4FC94E8BBDC8913038944779 /* Pods-Example.release.xcconfig */;
+			baseConfigurationReference = A5C2508131D7EE37D106F8B6 /* Pods-Example.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -635,7 +675,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = T6U248P7YM;
 				INFOPLIST_FILE = Example/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -654,14 +694,20 @@
 		};
 		1CC3DC5CD5FD0672F7591FAA /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 295FC6B8A3AF1D909F008B13 /* Pods-MobileMessagingNotificationExtension.debug.xcconfig */;
+			baseConfigurationReference = 3EA9F6033ADDAF6EF0756392 /* Pods-MobileMessagingNotificationExtension.debug.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = "$(PROJECT_DIR)/MobileMessagingNotificationExtension.entitlements";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				DEVELOPMENT_TEAM = T6U248P7YM;
 				INFOPLIST_FILE = "$(PROJECT_DIR)/NotificationExtension/MobileMessagingNotificationServiceExtension.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/../../Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(SDKROOT)/usr/lib/swift",
+					"\"$(TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)\"",
+					"\"$(inherited)\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/MobileMessaging\"",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.infobip.mobilemessaging.reactnative.test.notification-extension";
 				PRODUCT_NAME = MobileMessagingNotificationExtension;
 				SDKROOT = iphoneos;
@@ -671,14 +717,20 @@
 		};
 		2B8E5A6750910F3E6191B834 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 28484F7DE23B875FB676A046 /* Pods-MobileMessagingNotificationExtension.release.xcconfig */;
+			baseConfigurationReference = 976AF4CF5DE5150480946B83 /* Pods-MobileMessagingNotificationExtension.release.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = "$(PROJECT_DIR)/MobileMessagingNotificationExtension.entitlements";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				DEVELOPMENT_TEAM = T6U248P7YM;
 				INFOPLIST_FILE = "$(PROJECT_DIR)/NotificationExtension/MobileMessagingNotificationServiceExtension.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/../../Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(SDKROOT)/usr/lib/swift",
+					"\"$(TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)\"",
+					"\"$(inherited)\"",
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/MobileMessaging\"",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.infobip.mobilemessaging.reactnative.test.notification-extension";
 				PRODUCT_NAME = MobileMessagingNotificationExtension;
 				SDKROOT = iphoneos;
@@ -736,7 +788,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					/usr/lib/swift,
 					"$(inherited)",
@@ -794,7 +846,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					/usr/lib/swift,
 					"$(inherited)",
