@@ -22,10 +22,12 @@ class CacheManager {
 
     static class Event {
         String type;
+        JSONObject jsonObject;
         Object[] objects = null;
 
-        Event(String type, Object ... objects) {
+        Event(String type, JSONObject object, Object ... objects) {
             this.type = type;
+            this.jsonObject = object;
             this.objects = objects;
         }
 
@@ -33,6 +35,7 @@ class CacheManager {
         public String toString() {
             return type;
         }
+
     }
 
     static void saveEvent(Context context, String event, JSONObject object, String actionId, String actionInputText) {
@@ -41,7 +44,8 @@ class CacheManager {
     }
 
     static void saveEvent(Context context, String event, int unreadMessagesCounter) {
-        String serialized = serializer.serialize(new Event(event, unreadMessagesCounter));
+        //int `unreadMessagesCounter` isn't a JSONObject, so it'll go as a second argument
+        String serialized = serializer.serialize(new Event(event, null, unreadMessagesCounter));
         saveStringsToSet(context, EVENTS_KEY, serialized);
     }
 

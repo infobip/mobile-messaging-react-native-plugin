@@ -2,16 +2,13 @@ package org.infobip.reactlibrary.mobilemessaging;
 
 import android.util.Log;
 
-import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
-import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeArray;
-import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
-import com.google.gson.JsonIOException;
+
 import org.infobip.reactlibrary.mobilemessaging.datamappers.ReactNativeJson;
 
 import org.json.JSONArray;
@@ -20,8 +17,13 @@ import org.json.JSONObject;
 
 
 class ReactNativeEvent {
+
     static void send(String eventName, ReactContext reactContext, Object... objects) {
-        if (objects == null) {
+        send(eventName, reactContext, null, objects);
+    }
+
+    static void send(String eventName, ReactContext reactContext, JSONObject jsonObject, Object... objects) {
+        if (jsonObject == null && objects == null) {
             Log.d(Utils.TAG, "objects are null, so another method should be used");
             send(eventName, reactContext);
             return;
@@ -31,6 +33,11 @@ class ReactNativeEvent {
         array.pushString(eventName);
 
         try {
+
+            if (jsonObject != null) {
+                array.pushMap(ReactNativeJson.convertJsonToMap(jsonObject));
+            }
+
             for (Object value : objects) {
                 if (value == null) {
                     continue;

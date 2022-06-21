@@ -70,7 +70,7 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
     public void initialize() {
         super.initialize();
         for (CacheManager.Event event : CacheManager.loadEvents(reactContext)) {
-            ReactNativeEvent.send(event.type, reactContext, event.objects);
+            ReactNativeEvent.send(event.type, reactContext, event.jsonObject, event.objects);
         }
         pluginInitialized = true;
         registerBroadcastReceiver();
