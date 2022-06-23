@@ -50,6 +50,10 @@ public class RNMMChatModule extends ReactContextBaseJavaModule implements Activi
         InAppChat.getInstance(reactContext).resetMessageCounter();
     }
 
+    @ReactMethod
+    public void setLanguage(String localeString){
+        InAppChat.getInstance(reactContext).setLanguage(localeString);
+    }
     @Override
     public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
         FragmentActivity fragmentActivity = Utils.getFragmentActivity(reactContext);

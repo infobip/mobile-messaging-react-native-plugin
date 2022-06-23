@@ -461,6 +461,13 @@ declare namespace MobileMessagingReactNative {
         setupiOSChatSettings(settings: ChatSettingsIOS): void;
 
         /**
+         * Set chat language
+         *
+         * @param localeString
+         */
+        setLanguage(localeString: string): void;
+
+        /**
          * Returns unread in-app chat push messages counter.
          * The counter increments each time the application receives in-app chat push message
          * (this usually happens when chat screen is inactive or the application is in background/terminated state).

@@ -20,6 +20,7 @@ RCT_EXTERN_METHOD(showChat:)
 RCT_EXTERN_METHOD(getMessageCounter:(RCTResponseSenderBlock)resultCallback)
 RCT_EXTERN_METHOD(resetMessageCounter)
 RCT_EXTERN_METHOD(setupChatSettings:)
+RCT_EXTERN_METHOD(setLanguage:)
 
 - (dispatch_queue_t)methodQueue {
    return dispatch_get_main_queue();

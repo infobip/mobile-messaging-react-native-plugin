@@ -25,6 +25,7 @@ class HomeScreen extends React.Component {
         <Button
           title="Show chat (native VC/Activity)"
           onPress={() => {
+            mobileMessaging.setLanguage('en');
             mobileMessaging.showChat();
             mobileMessaging.setupiOSChatSettings({
               //If these values are commented out, configuration will be set from web widget settings from the Infobip Portal
@@ -37,7 +38,7 @@ class HomeScreen extends React.Component {
           }}
         />
         <Button
-          title="Show chat(React Component)"
+          title="Show chat (React Component)"
           onPress={() => this.props.navigation.navigate('Chat')}
         />
       </View>

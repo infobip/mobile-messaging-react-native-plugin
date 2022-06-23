@@ -547,6 +547,15 @@ class MobileMessaging {
     };
 
     /**
+     * The predefined messages prompted within the In-app chat (such as status updates, button titles, input field prompt) by default are 
+     * localized using system locale setting, but can be easily changed providing your locale string with the following formats:
+     *  "es_ES", "es-ES" or "es"
+     */
+    setLanguage(localeString) {
+        RNMMChat.setLanguage(localeString);
+    };
+
+    /**
      * Returns unread in-app chat push messages counter.
      * The counter increments each time the application receives in-app chat push message
      * (this usually happens when chat screen is inactive or the application is in background/terminated state).

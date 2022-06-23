@@ -46,4 +46,9 @@ class RNMMChat: NSObject  {
             MobileMessaging.inAppChat?.settings.configureWith(rawConfig: chatSettings)
         }
     }
+    
+    @objc(setLanguage:)
+    func setLanguage(localeString: String) {
+        MobileMessaging.inAppChat?.setLanguage(localeString)
+    }
 }
