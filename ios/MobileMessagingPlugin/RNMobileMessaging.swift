@@ -8,6 +8,10 @@
 import Foundation
 import MobileMessaging
 
+// It may happen that RN call module initialization more than once,
+// Not needed to perform early start more than once per application session.
+var isEarlyStartPerformed = false;
+
 @objc(ReactNativeMobileMessaging)
 class ReactNativeMobileMessaging: RCTEventEmitter  {
     private var messageStorageAdapter: MessageStorageAdapter?
@@ -47,6 +51,13 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
         super.stopObserving()
     }
 
+    override func sendEvent(withName name: String!, body: Any!) {
+        guard let _eventsManager = eventsManager, _eventsManager.hasEventListeners == true else {
+            return
+        }
+        super.sendEvent(withName: name, body: body)
+    }
+
     @objc
     override static func requiresMainQueueSetup() -> Bool {
       return true
@@ -79,8 +90,9 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
         let cachedConfigDict = RNMobileMessagingConfiguration.getRawConfigFromDefaults()
         if let cachedConfigDict = cachedConfigDict, (config as NSDictionary) != (cachedConfigDict as NSDictionary)
         {
-            stop()
-            start(configuration: configuration, onSuccess: successCallback)
+            stop {
+                self.start(configuration: configuration, onSuccess: successCallback)
+            }
         } else if cachedConfigDict == nil {
             start(configuration: configuration, onSuccess: successCallback)
         } else {
@@ -91,9 +103,12 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
     private func performEarlyStartIfPossible() {
         if let cachedConfigDict = RNMobileMessagingConfiguration.getRawConfigFromDefaults(),
            let configuration = RNMobileMessagingConfiguration(rawConfig: cachedConfigDict),
-           !self.isStarted
+           !self.isStarted,
+           !isEarlyStartPerformed
         {
-            self.start(configuration: configuration) { response in }
+            MMLogDebug("[RNMobileMessaging] Performing early start")
+            isEarlyStartPerformed = true
+            start(configuration: configuration) { response in }
         }
     }
 
@@ -134,9 +149,9 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
         })
     }
 
-    private func stop() {
-        MobileMessaging.stop()
+    private func stop(completion: @escaping () -> Void) {
         eventsManager?.stop()
+        MobileMessaging.stop(false, completion: completion)
     }
 
     /*User Profile Management*/

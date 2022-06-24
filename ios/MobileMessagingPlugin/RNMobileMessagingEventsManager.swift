@@ -10,7 +10,7 @@ import MobileMessaging
 
 class RNMobileMessagingEventsManager {
     private var eventEmitter: RCTEventEmitter!
-    private var hasEventListeners = false
+    public var hasEventListeners = false
     private var cachedMobileMessagingNotifications = [Notification]()
 
     private let supportedNotifications: [String: String] = [
