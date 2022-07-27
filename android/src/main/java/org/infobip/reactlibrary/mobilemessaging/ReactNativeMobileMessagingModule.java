@@ -408,8 +408,12 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
 
     private void unregisterBroadcastReceiver() {
         if (!broadcastReceiverRegistered) return;
-        reactContext.unregisterReceiver(commonLibraryBroadcastReceiver);
-        LocalBroadcastManager.getInstance(reactContext).unregisterReceiver(messageStorageReceiver);
+        try {
+            reactContext.unregisterReceiver(commonLibraryBroadcastReceiver);
+            LocalBroadcastManager.getInstance(reactContext).unregisterReceiver(messageStorageReceiver);
+        } catch(IllegalArgumentException e) {
+            Log.d(Utils.TAG, "Can't unregister broadcast receivers");
+        }
         broadcastReceiverRegistered = false;
     }
 
