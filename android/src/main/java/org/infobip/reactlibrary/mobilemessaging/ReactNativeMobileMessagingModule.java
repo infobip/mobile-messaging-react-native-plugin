@@ -13,14 +13,23 @@ import androidx.annotation.Nullable;
 
 import com.facebook.react.ReactApplication;
 import com.facebook.react.bridge.*;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
+
+// Added for Huawei support
+import com.huawei.hms.api.ConnectionResult;
+import com.huawei.hms.api.HuaweiApiAvailability;
+
+// Commented out for Huawei support
+//import com.google.android.gms.common.ConnectionResult;
+//import com.google.android.gms.common.GoogleApiAvailability;
 
 import org.infobip.mobile.messaging.*;
 import org.infobip.mobile.messaging.chat.InAppChat;
 import org.infobip.mobile.messaging.chat.core.InAppChatEvent;
-import org.infobip.mobile.messaging.geo.GeoEvent;
-import org.infobip.mobile.messaging.geo.MobileGeo;
+
+// Commented out for Huawei support, geofencing is not supported on Huawei rc versions
+//import org.infobip.mobile.messaging.geo.GeoEvent;
+//import org.infobip.mobile.messaging.geo.MobileGeo;
+
 import org.infobip.mobile.messaging.interactive.InteractiveEvent;
 import org.infobip.mobile.messaging.interactive.MobileInteractive;
 import org.infobip.mobile.messaging.interactive.NotificationAction;
@@ -128,7 +137,8 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
         put(Event.USER_UPDATED.getKey(), EVENT_USER_UPDATED);
         put(Event.PERSONALIZED.getKey(), EVENT_PERSONALIZED);
         put(Event.DEPERSONALIZED.getKey(), EVENT_DEPERSONALIZED);
-        put(GeoEvent.GEOFENCE_AREA_ENTERED.getKey(), EVENT_GEOFENCE_ENTERED);
+// Commented out for Huawei support, geofencing is not supported on Huawei rc versions
+//        put(GeoEvent.GEOFENCE_AREA_ENTERED.getKey(), EVENT_GEOFENCE_ENTERED);
     }};
 
     private static final Map<String, String> messageBroadcastEventMap = new HashMap<String, String>() {{
@@ -247,13 +257,13 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
                 Log.w(Utils.TAG, "Cannot process event for broadcast: " + intent.getAction());
                 return;
             }
-
-            if (GeoEvent.GEOFENCE_AREA_ENTERED.getKey().equals(intent.getAction())) {
-                for (JSONObject geo : MessageJson.geosFromBundle(intent.getExtras())) {
-                    ReactNativeEvent.send(event, reactContext, geo);
-                }
-                return;
-            }
+// Commented out for Huawei support, geofencing is not supported on Huawei rc versions
+//            if (GeoEvent.GEOFENCE_AREA_ENTERED.getKey().equals(intent.getAction())) {
+//                for (JSONObject geo : MessageJson.geosFromBundle(intent.getExtras())) {
+//                    ReactNativeEvent.send(event, reactContext, geo);
+//                }
+//                return;
+//            }
 
             if (Event.INSTALLATION_UPDATED.getKey().equals(intent.getAction())) {
                 JSONObject updatedInstallation = InstallationJson.toJSON(Installation.createFrom(intent.getExtras()));
@@ -336,9 +346,10 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
             }
             builder.withDisplayNotification(notificationBuilder.build());
 
-            if (configuration.android.firebaseOptions != null) {
-                builder.withFirebaseOptions(configuration.android.firebaseOptions);
-            }
+// Commented out android specific code
+//            if (configuration.android.firebaseOptions != null) {
+//                builder.withFirebaseOptions(configuration.android.firebaseOptions);
+//            }
         }
 
         // Checking do we need to migrate data saved with old cryptor,
@@ -360,7 +371,8 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
             @Override
             public void onSuccess() {
                 if (configuration.geofencingEnabled) {
-                    MobileGeo.getInstance(context).activateGeofencing();
+// Commented out for Huawei support, geofencing is not supported on Huawei rc versions
+//                    MobileGeo.getInstance(context).activateGeofencing();
                 }
 
                 NotificationCategory categories[] = notificationCategoriesFromConfiguration(configuration.notificationCategories);
@@ -856,11 +868,11 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
         showErrorDialogContext.reset();
         reactContext.removeActivityEventListener(this);
 
-        GoogleApiAvailability googleApiAvailability = GoogleApiAvailability.getInstance();
-        int playServicesAvailabilityResult = googleApiAvailability.isGooglePlayServicesAvailable(reactContext);
-        if (playServicesAvailabilityResult != ConnectionResult.SUCCESS) {
+        HuaweiApiAvailability huaweiApiAvailability = HuaweiApiAvailability.getInstance();
+        int huaweiMobileServicesAvailable = huaweiApiAvailability.isHuaweiMobileServicesAvailable(reactContext);
+        if (huaweiMobileServicesAvailable != ConnectionResult.SUCCESS) {
             try {
-                showDialogForError(playServicesAvailabilityResult, successCallback, errorCallback);
+                showDialogForError(huaweiMobileServicesAvailable, successCallback, errorCallback);
             } catch (JSONException e) {
                 errorCallback.invoke(e.getMessage());
             }
@@ -875,8 +887,8 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
 
     @ReactMethod
     void showDialogForError(final int errorCode, final Callback successCallback, final Callback errorCallback) throws JSONException {
-        GoogleApiAvailability googleApiAvailability = GoogleApiAvailability.getInstance();
-        if (!googleApiAvailability.isUserResolvableError(errorCode)) {
+        HuaweiApiAvailability huaweiApiAvailability = HuaweiApiAvailability.getInstance();
+        if (!huaweiApiAvailability.isUserResolvableError(errorCode)) {
             errorCallback.invoke(Utils.callbackError("Error code [" + errorCode + "] is not user resolvable", null));
             return;
         }
@@ -885,7 +897,7 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
         showErrorDialogContext.onError = errorCallback;
         reactContext.addActivityEventListener(this);
 
-        googleApiAvailability
+        huaweiApiAvailability
                 .getErrorDialog(
                         reactContext.getCurrentActivity(),
                         errorCode,

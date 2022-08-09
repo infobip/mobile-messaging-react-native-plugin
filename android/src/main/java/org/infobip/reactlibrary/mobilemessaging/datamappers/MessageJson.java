@@ -7,8 +7,11 @@ import android.util.Log;
 import org.infobip.reactlibrary.mobilemessaging.Utils;
 
 import org.infobip.mobile.messaging.Message;
-import org.infobip.mobile.messaging.geo.Area;
-import org.infobip.mobile.messaging.geo.Geo;
+
+// Commented out for Huawei support, geofencing is not supported on Huawei rc versions
+//import org.infobip.mobile.messaging.geo.Area;
+//import org.infobip.mobile.messaging.geo.Geo;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -142,34 +145,35 @@ public class MessageJson {
      * @param bundle where to read geo objects from
      * @return list of json objects representing geo objects
      */
-    @NonNull
-    public static List<JSONObject> geosFromBundle(Bundle bundle) {
-        Geo geo = Geo.createFrom(bundle);
-        JSONObject message = bundleToJSON(bundle);
-        if (geo == null || geo.getAreasList() == null || geo.getAreasList().isEmpty() || message == null) {
-            return new ArrayList<JSONObject>();
-        }
-
-        List<JSONObject> geos = new ArrayList<JSONObject>();
-        for (final Area area : geo.getAreasList()) {
-            try {
-                geos.add(new JSONObject()
-                        .put("area", new JSONObject()
-                                .put("id", area.getId())
-                                .put("center", new JSONObject()
-                                        .put("lat", area.getLatitude())
-                                        .put("lon", area.getLongitude()))
-                                .put("radius", area.getRadius())
-                                .put("title", area.getTitle()))
-                );
-            } catch (JSONException e) {
-                Log.w(Utils.TAG, "Cannot convert geo to JSON: " + e.getMessage());
-                Log.d(Utils.TAG, Log.getStackTraceString(e));
-            }
-        }
-
-        return geos;
-    }
+// Commented out for Huawei support
+//    @NonNull
+//    public static List<JSONObject> geosFromBundle(Bundle bundle) {
+//        Geo geo = Geo.createFrom(bundle);
+//        JSONObject message = bundleToJSON(bundle);
+//        if (geo == null || geo.getAreasList() == null || geo.getAreasList().isEmpty() || message == null) {
+//            return new ArrayList<JSONObject>();
+//        }
+//
+//        List<JSONObject> geos = new ArrayList<JSONObject>();
+//        for (final Area area : geo.getAreasList()) {
+//            try {
+//                geos.add(new JSONObject()
+//                        .put("area", new JSONObject()
+//                                .put("id", area.getId())
+//                                .put("center", new JSONObject()
+//                                        .put("lat", area.getLatitude())
+//                                        .put("lon", area.getLongitude()))
+//                                .put("radius", area.getRadius())
+//                                .put("title", area.getTitle()))
+//                );
+//            } catch (JSONException e) {
+//                Log.w(Utils.TAG, "Cannot convert geo to JSON: " + e.getMessage());
+//                Log.d(Utils.TAG, Log.getStackTraceString(e));
+//            }
+//        }
+//
+//        return geos;
+//    }
 
     @NonNull
     public static List<Message> resolveMessages(JSONArray args) throws JSONException {

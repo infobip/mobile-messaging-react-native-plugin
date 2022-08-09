@@ -31,6 +31,8 @@ buildscript {
                     excludeGroup "com.facebook.react"
                 }
             }
+            //added for Huawei support
+            maven { url 'https://developer.huawei.com/repo/' }
         }
         dependencies {
             classpath 'com.android.tools.build:gradle:4.2+'
@@ -81,43 +83,72 @@ repositories {
         }
     }
     google()
+
+    //added for Huawei support
+    maven { url 'https://developer.huawei.com/repo/' }
+
     mavenLocal()
 }
 
 dependencies {
-    def mmVersion = '6.3.0'
+    def mmAndroidVersion = '6.3.2'
+    def mmHuaweiVersion = '3.0.0-rc2'
 
+    //Setup is it Huawei build or android
+    def isHmsBuild = true
+
+    implementation 'com.huawei.hms:push:6.3.0.302'
     implementation 'com.facebook.react:react-native:+'
     implementation "androidx.annotation:annotation:1.1.0"
 
     implementation 'com.google.android.material:material:1.4.0'
     implementation 'androidx.exifinterface:exifinterface:1.3.3'
 
-    implementation "com.infobip:infobip-mobile-messaging-android-resources:$mmVersion@aar"
-    implementation "com.infobip:infobip-mobile-messaging-android-chat-sdk:$mmVersion@aar"
-    implementation "com.infobip:infobip-mobile-messaging-android-geo-sdk:$mmVersion@aar"
-    implementation ("com.infobip:infobip-mobile-messaging-android-sdk:$mmVersion@aar") {
-        transitive = true;
+    //Android dependencies start
+    if (!isHmsBuild) {
+        implementation "com.infobip:infobip-mobile-messaging-android-resources:$mmAndroidVersion@aar"
+        implementation "com.infobip:infobip-mobile-messaging-android-chat-sdk:$mmAndroidVersion@aar"
+        implementation "com.infobip:infobip-mobile-messaging-android-geo-sdk:$mmAndroidVersion@aar"
+        implementation("com.infobip:infobip-mobile-messaging-android-sdk:$mmAndroidVersion@aar") {
+            transitive = true;
 
-        if (!overrideKotlinVersion.empty) {
-            exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk8'
+            if (!overrideKotlinVersion.empty) {
+                exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk8'
+            }
+
+            if (!overrideGmsVersion.empty) {
+                exclude group: 'com.google.android.gms', module: 'play-services-location'
+            }
+            if (!overrideFirebaseVersion.empty) {
+                exclude group: 'com.google.firebase', module: 'firebase-messaging'
+            }
         }
-
         if (!overrideGmsVersion.empty) {
-            exclude group: 'com.google.android.gms', module: 'play-services-location'
+            implementation "com.google.android.gms:play-services-location:$overrideGmsVersion"
         }
         if (!overrideFirebaseVersion.empty) {
-            exclude group: 'com.google.firebase', module: 'firebase-messaging'
+            implementation "com.google.firebase:firebase-messaging:$overrideFirebaseVersion"
+        }
+
+        if (withCryptorMigration.toBoolean()) {
+            implementation "com.infobip:infobip-mobile-messaging-android-cryptor-migration:$mmAndroidVersion@aar"
         }
     }
-    if (!overrideGmsVersion.empty) {
-        implementation "com.google.android.gms:play-services-location:$overrideGmsVersion"
-    }
-    if (!overrideFirebaseVersion.empty) {
-        implementation "com.google.firebase:firebase-messaging:$overrideFirebaseVersion"
-    }
+    //Android dependencies end
 
-    if (withCryptorMigration.toBoolean()) {
-        implementation "com.infobip:infobip-mobile-messaging-android-cryptor-migration:$mmVersion@aar"
+    //Huawei dependencies start
+    if (isHmsBuild) {
+
+// Geofencing is disabled for rc version, will be enabled in next releases
+//        implementation "com.infobip:infobip-mobile-messaging-huawei-geo-sdk:$mmHuaweiVersion@aar"
+        implementation "com.infobip:infobip-mobile-messaging-huawei-chat-sdk:$mmHuaweiVersion@aar"
+        implementation("com.infobip:infobip-mobile-messaging-huawei-sdk:$mmHuaweiVersion@aar") {
+            transitive = true;
+        }
+
+        if (withCryptorMigration.toBoolean()) {
+            implementation "com.infobip:infobip-mobile-messaging-huawei-cryptor-migration:$mmHuaweiVersion@aar"
+        }
+
     }
 }

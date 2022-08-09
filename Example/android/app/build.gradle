@@ -213,12 +213,20 @@ android {
         }
     }
     signingConfigs {
+// Added for Huawei support
         debug {
-            storeFile file('debug.keystore')
-            storePassword 'android'
-            keyAlias 'androiddebugkey'
-            keyPassword 'android'
+            keyAlias 'hmsdemo'
+            keyPassword '123456'
+            storeFile file('src/HmsDemo.jks')
+            storePassword '123456'
         }
+// Commented out for Huawei support
+//        debug {
+//            storeFile file('debug.keystore')
+//            storePassword 'android'
+//            keyAlias 'androiddebugkey'
+//            keyPassword 'android'
+//        }
     }
     buildTypes {
         debug {
@@ -308,5 +316,10 @@ def isNewArchitectureEnabled() {
     // - Set an environment variable `ORG_GRADLE_PROJECT_newArchEnabled=true`
     return project.hasProperty("newArchEnabled") && project.newArchEnabled == "true"
 }
-//It's for usage of google-services.json file, if you are using strings.xml to provide Firebase data, comment next line
-apply plugin: 'com.google.gms.google-services'
+
+// Commented out for Huawei support
+// It's for usage of google-services.json file, if you are using strings.xml to provide Firebase data, comment next line
+//apply plugin: 'com.google.gms.google-services'
+
+//Added for huawei support, for usage of agconnect-services.json file
+apply plugin: 'com.huawei.agconnect'

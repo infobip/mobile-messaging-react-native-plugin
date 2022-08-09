@@ -20,7 +20,7 @@
         <!-- Mobile Messaging components -->
 
         <service
-                android:name="org.infobip.mobile.messaging.cloud.firebase.MobileMessagingFirebaseService"
+                android:name="org.infobip.mobile.messaging.cloud.hms.MobileMessagingHmsService"
                 android:exported="false" >
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT"/>
@@ -49,7 +49,7 @@
             </intent-filter>
         </receiver>
         <receiver android:name="org.infobip.mobile.messaging.interactive.notification.NotificationActionTapReceiver"
-            android:exported="false"/>
+                  android:exported="false"/>
 
         <receiver android:name="org.infobip.reactlibrary.mobilemessaging.ReactNativeMobileMessagingModule$MessageEventReceiver"
                   android:exported="false">

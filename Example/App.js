@@ -92,14 +92,14 @@ export default class App extends React.Component {
     };
 
     configuration = {
-        applicationCode: 'Your application code',
+        applicationCode: 'Application Code',
         ios: {
             notificationTypes: ['alert', 'badge', 'sound'],
             logging: true,
         },
         messageStorage: myMessageStorage,
         inAppChatEnabled: true,
-        geofencingEnabled: true,
+        // geofencingEnabled: true,
     };
 
     constructor() {

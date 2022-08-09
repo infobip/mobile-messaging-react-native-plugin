@@ -10,7 +10,8 @@ import java.util.Map;
 
 import androidx.annotation.NonNull;
 
-import com.google.firebase.FirebaseOptions;
+// Commented out for Huawei support
+//import com.google.firebase.FirebaseOptions;
 
 class Configuration {
 
@@ -18,7 +19,8 @@ class Configuration {
         String notificationIcon;
         boolean multipleNotifications;
         String notificationAccentColor;
-        FirebaseOptions firebaseOptions;
+// Commented out for Huawei support
+//        FirebaseOptions firebaseOptions;
     }
 
     class PrivacySettings {

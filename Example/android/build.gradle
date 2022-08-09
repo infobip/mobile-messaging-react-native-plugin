@@ -12,6 +12,9 @@ buildscript {
     repositories {
         google()
         mavenCentral()
+
+        // Added for Huawei support
+        maven { url 'https://developer.huawei.com/repo/' }
 //        mavenLocal()
     }
     dependencies {
@@ -21,8 +24,12 @@ buildscript {
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
 
-        //GMS Gradle plugin
-        classpath 'com.google.gms:google-services:4.3.10'
+// Commented out for Huawei support
+// GMS Gradle plugin
+//        classpath 'com.google.gms:google-services:4.3.10'
+
+        // Added for Huawei support
+        classpath 'com.huawei.agconnect:agcp:1.6.0.300'
     }
 }
 
@@ -47,5 +54,8 @@ allprojects {
         google()
         maven { url 'https://www.jitpack.io' }
         mavenLocal()
+
+        //Added for Huawei support
+        maven { url 'https://developer.huawei.com/repo/' }
     }
 }
