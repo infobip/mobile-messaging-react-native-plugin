@@ -51,4 +51,18 @@ class RNMMChat: NSObject  {
     func setLanguage(localeString: String) {
         MobileMessaging.inAppChat?.setLanguage(localeString)
     }
+
+    @objc(sendContextualData:multiThreadStrategy:onSuccess:onError:)
+    func sendContextualData(data: NSString, multiThreadStrategy: Bool,  onSuccess: @escaping RCTResponseSenderBlock, onError: @escaping RCTResponseSenderBlock) {
+        guard let chatVC = UIApplication.topViewController() as? MMChatViewController else {
+            return
+        }
+        chatVC.sendContextualData(String(data), multiThreadStrategy: multiThreadStrategy ? .ALL : .ACTIVE) { error in
+            if let error = error {
+                onError([error.reactNativeObject])
+            } else {
+                onSuccess(nil)
+            }
+        }
+    }
 }

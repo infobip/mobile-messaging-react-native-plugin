@@ -556,6 +556,18 @@ class MobileMessaging {
     };
 
     /**
+     * Set contextual data of the widget
+     *
+     * @param data - contextual data in the form of JSON string
+     * @param allMultiThreadStrategy - multi-thread strategy flag, true -> ALL, false -> ACTIVE
+     * @param {Function} onSuccess. Success callback
+     * @param {Function} onError. Error callback
+     */
+    sendContextualData(data, allMultiThreadStrategy = false, onSuccess = function() {}, onError = function() {}) {
+        RNMMChat.sendContextualData(data, allMultiThreadStrategy, onSuccess, onError);
+    };
+
+    /**
      * Returns unread in-app chat push messages counter.
      * The counter increments each time the application receives in-app chat push message
      * (this usually happens when chat screen is inactive or the application is in background/terminated state).

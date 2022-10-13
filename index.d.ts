@@ -461,6 +461,16 @@ declare namespace MobileMessagingReactNative {
         setupiOSChatSettings(settings: ChatSettingsIOS): void;
 
         /**
+         * Set contextual data of the widget
+         *
+         * @param data contextual data in the form of JSON string
+         * @param allMultiThreadStrategy multi-thread strategy flag, true -> ALL, false -> ACTIVE
+         * @param {Function} onSuccess. Success callback
+         * @param {Function} onError. Error callback
+         */
+        sendContextualData(data: string, allMultiThreadStrategy: boolean, onSuccess = () => void, onError = (error: string) => void): void;
+
+        /**
          * Set chat language
          *
          * @param localeString

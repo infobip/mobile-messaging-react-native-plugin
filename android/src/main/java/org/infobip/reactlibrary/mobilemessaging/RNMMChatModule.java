@@ -51,9 +51,20 @@ public class RNMMChatModule extends ReactContextBaseJavaModule implements Activi
     }
 
     @ReactMethod
-    public void setLanguage(String localeString){
+    public void setLanguage(String localeString) {
         InAppChat.getInstance(reactContext).setLanguage(localeString);
     }
+
+    @ReactMethod
+    public void sendContextualData(String data, Boolean allMultiThreadStrategy, Callback onSuccess, Callback onError) {
+        try {
+            InAppChat.getInstance(reactContext).sendContextualData(data, allMultiThreadStrategy);
+            onSuccess.invoke();
+        } catch (Throwable t) {
+            onError.invoke(Utils.callbackError(t.getMessage(), null));
+        }
+    }
+
     @Override
     public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
         FragmentActivity fragmentActivity = Utils.getFragmentActivity(reactContext);

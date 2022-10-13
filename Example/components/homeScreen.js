@@ -26,6 +26,13 @@ class HomeScreen extends React.Component {
           title="Show chat (native VC/Activity)"
           onPress={() => {
             mobileMessaging.setLanguage('en');
+            setTimeout(() => {
+              mobileMessaging.sendContextualData(
+                "{'metadata': 'from react demo'}",
+                false,
+                () => console.log('MobileMessaging metadata sent'),
+                (error) => console.log('MobileMessaging metadata error: ' + error));
+            }, 1000);
             mobileMessaging.showChat();
             mobileMessaging.setupiOSChatSettings({
               //If these values are commented out, configuration will be set from web widget settings from the Infobip Portal
