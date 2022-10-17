@@ -468,7 +468,7 @@ declare namespace MobileMessagingReactNative {
          * @param {Function} onSuccess. Success callback
          * @param {Function} onError. Error callback
          */
-        sendContextualData(data: string, allMultiThreadStrategy: boolean, onSuccess = () => void, onError = (error: string) => void): void;
+        sendContextualData(data: string, allMultiThreadStrategy: boolean, onSuccess: () => void, onError: (error: string) => void): void;
 
         /**
          * Set chat language
