@@ -4,7 +4,7 @@ import android.util.Log;
 import com.facebook.react.bridge.ReadableMap;
 import org.infobip.mobile.messaging.*;
 import org.infobip.mobile.messaging.api.appinstance.UserCustomEventAtts;
-import org.infobip.mobile.messaging.api.shaded.google.gson.reflect.TypeToken;
+import com.google.gson.reflect.TypeToken;
 import org.infobip.mobile.messaging.api.support.http.serialization.JsonSerializer;
 import org.json.JSONArray;
 import org.json.JSONException;

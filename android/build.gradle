@@ -1,7 +1,7 @@
-def defaultCompileSDKVersion = 31
-def defaultBuildToolsVersion = '31.0.0'
+def defaultCompileSDKVersion = 33
+def defaultBuildToolsVersion = '33.0.0'
 def defaultMinSDKVersion = 21
-def defaultTargetSDKVersion = 31
+def defaultTargetSDKVersion = 33
 
 def getRootProjectProperty(property, fallback) {
     rootProject.ext.has(property) ? rootProject.ext.get(property) : fallback
@@ -33,7 +33,7 @@ buildscript {
             }
         }
         dependencies {
-            classpath 'com.android.tools.build:gradle:4.2+'
+            classpath 'com.android.tools.build:gradle:7.2.2'
         }
     }
 }
@@ -85,7 +85,7 @@ repositories {
 }
 
 dependencies {
-    def mmVersion = '6.4.3'
+    def mmVersion = '7.2.2'
 
     implementation 'com.facebook.react:react-native:+'
     implementation "androidx.annotation:annotation:1.1.0"
@@ -93,6 +93,7 @@ dependencies {
     implementation 'com.google.android.material:material:1.4.0'
     implementation 'androidx.exifinterface:exifinterface:1.3.3'
 
+    implementation 'com.google.code.gson:gson:2.9.0'
     implementation "com.infobip:infobip-mobile-messaging-android-resources:$mmVersion@aar"
     implementation "com.infobip:infobip-mobile-messaging-android-chat-sdk:$mmVersion@aar"
     implementation "com.infobip:infobip-mobile-messaging-android-geo-sdk:$mmVersion@aar"

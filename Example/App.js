@@ -224,6 +224,7 @@ export default class App extends React.Component {
                             headerTitleStyle: {
                                 fontWeight: 'bold',
                             },
+                            headerShown: Platform.OS !== "android"
                         }}
                     />
                     <Stack.Screen

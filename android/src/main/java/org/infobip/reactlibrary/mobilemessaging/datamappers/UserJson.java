@@ -3,7 +3,7 @@ package org.infobip.reactlibrary.mobilemessaging.datamappers;
 import org.infobip.mobile.messaging.*;
 
 import org.infobip.mobile.messaging.api.appinstance.UserAtts;
-import org.infobip.mobile.messaging.api.shaded.google.gson.reflect.TypeToken;
+import com.google.gson.reflect.TypeToken;
 import org.infobip.mobile.messaging.api.support.http.serialization.JsonSerializer;
 
 import org.infobip.mobile.messaging.util.DateTimeUtil;

@@ -2,8 +2,11 @@ package org.infobip.reactlibrary.mobilemessaging;
 
 import android.content.Context;
 import android.os.Build;
+import android.os.Bundle;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
@@ -11,6 +14,8 @@ import android.widget.FrameLayout;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
@@ -55,6 +60,25 @@ class ReactChatView extends FrameLayout {
             return;
         }
 
+        InAppChatFragment.InAppChatActionBarProvider provider = new InAppChatFragment.InAppChatActionBarProvider() {
+
+            @Nullable
+            @Override
+            public ActionBar getOriginalSupportActionBar() {
+                if (fragmentActivity instanceof AppCompatActivity){
+                    return ((AppCompatActivity) fragmentActivity).getSupportActionBar();
+                }
+                return null;
+            }
+
+            @Override
+            public void onInAppChatBackPressed() {
+                if (fragmentActivity != null){
+                    fragmentActivity.onBackPressed();
+                }
+            }
+        };
+
         //RN issue https://github.com/facebook/react-native/issues/17968
         //Without this layout will not be called and view will not be displayed, because RN doesn't dispatches events to android views properly
         ViewGroup parentView = (ViewGroup) parentLayout.findViewById(reactNativeViewId).getParent();
@@ -62,7 +86,7 @@ class ReactChatView extends FrameLayout {
 
         FragmentManager fragmentManager = fragmentActivity.getSupportFragmentManager();
         InAppChatFragment chatFragment = new InAppChatFragment();
-        chatFragment.setIsToolbarHidden(true);
+        chatFragment.setInAppChatActionBarProvider(provider);
 
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         if (fragmentManager.findFragmentByTag(Utils.RN_IN_APP_CHAT_FRAGMENT_TAG) == null) {
