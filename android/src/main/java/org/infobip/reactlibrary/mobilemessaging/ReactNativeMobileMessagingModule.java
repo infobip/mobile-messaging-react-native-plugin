@@ -3,22 +3,47 @@ package org.infobip.reactlibrary.mobilemessaging;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Application;
-import android.content.*;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.facebook.react.ReactApplication;
-import com.facebook.react.bridge.*;
+import com.facebook.react.bridge.ActivityEventListener;
+import com.facebook.react.bridge.Callback;
+import com.facebook.react.bridge.LifecycleEventListener;
+import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.ReactContextBaseJavaModule;
+import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.modules.core.PermissionAwareActivity;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
-import org.infobip.mobile.messaging.*;
+import org.infobip.mobile.messaging.BroadcastParameter;
+import org.infobip.mobile.messaging.CustomEvent;
+import org.infobip.mobile.messaging.Event;
+import org.infobip.mobile.messaging.Installation;
+import org.infobip.mobile.messaging.Message;
+import org.infobip.mobile.messaging.MobileMessaging;
+import org.infobip.mobile.messaging.MobileMessagingProperty;
+import org.infobip.mobile.messaging.NotificationSettings;
+import org.infobip.mobile.messaging.SuccessPending;
+import org.infobip.mobile.messaging.User;
 import org.infobip.mobile.messaging.chat.InAppChat;
 import org.infobip.mobile.messaging.chat.core.InAppChatEvent;
+import org.infobip.mobile.messaging.dal.bundle.MessageBundleMapper;
 import org.infobip.mobile.messaging.geo.GeoEvent;
 import org.infobip.mobile.messaging.geo.MobileGeo;
 import org.infobip.mobile.messaging.interactive.InteractiveEvent;
@@ -34,19 +59,22 @@ import org.infobip.mobile.messaging.storage.SQLiteMessageStore;
 import org.infobip.mobile.messaging.util.Cryptor;
 import org.infobip.mobile.messaging.util.DeviceInformation;
 import org.infobip.mobile.messaging.util.PreferenceHelper;
-import org.infobip.reactlibrary.mobilemessaging.datamappers.*;
-import org.infobip.mobile.messaging.dal.bundle.MessageBundleMapper;
+import org.infobip.reactlibrary.mobilemessaging.datamappers.CustomEventJson;
+import org.infobip.reactlibrary.mobilemessaging.datamappers.InstallationJson;
+import org.infobip.reactlibrary.mobilemessaging.datamappers.MessageJson;
+import org.infobip.reactlibrary.mobilemessaging.datamappers.PersonalizationCtx;
+import org.infobip.reactlibrary.mobilemessaging.datamappers.ReactNativeJson;
+import org.infobip.reactlibrary.mobilemessaging.datamappers.UserJson;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.os.Bundle;
-
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
-
-import java.util.*;
 
 public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule implements LifecycleEventListener, ActivityEventListener {
     public static final String MODULE_NAME = "ReactNativeMobileMessaging";
@@ -300,7 +328,8 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
         PreferenceHelper.saveString(context, MobileMessagingProperty.SYSTEM_DATA_VERSION_POSTFIX, "reactNative " + configuration.reactNativePluginVersion);
 
         MobileMessaging.Builder builder = new MobileMessaging.Builder(context)
-                .withApplicationCode(configuration.applicationCode);
+                .withApplicationCode(configuration.applicationCode)
+                .withoutRegisteringForRemoteNotifications();
 
         if (configuration.privacySettings.userDataPersistingDisabled) {
             builder.withoutStoringUserData();
@@ -411,7 +440,7 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
         try {
             reactContext.unregisterReceiver(commonLibraryBroadcastReceiver);
             LocalBroadcastManager.getInstance(reactContext).unregisterReceiver(messageStorageReceiver);
-        } catch(IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             Log.d(Utils.TAG, "Can't unregister broadcast receivers");
         }
         broadcastReceiverRegistered = false;
@@ -684,6 +713,24 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
                 successCallback.invoke();
             }
         });
+    }
+
+    @ReactMethod
+    public void registerForAndroidRemoteNotifications() {
+        mobileMessaging().registerForRemoteNotifications((Activity) getPermissionAwareActivity());
+    }
+
+    private PermissionAwareActivity getPermissionAwareActivity() {
+        Activity activity = getCurrentActivity();
+        if (activity == null) {
+            throw new IllegalStateException(
+                    "Tried to use permissions API while not attached to an " + "Activity.");
+        } else if (!(activity instanceof PermissionAwareActivity)) {
+            throw new IllegalStateException(
+                    "Tried to use permissions API but the host Activity doesn't"
+                            + " implement PermissionAwareActivity.");
+        }
+        return (PermissionAwareActivity) activity;
     }
 
     private static void runInBackground(final Runnable runnable) {

@@ -547,7 +547,7 @@ class MobileMessaging {
     };
 
     /**
-     * The predefined messages prompted within the In-app chat (such as status updates, button titles, input field prompt) by default are 
+     * The predefined messages prompted within the In-app chat (such as status updates, button titles, input field prompt) by default are
      * localized using system locale setting, but can be easily changed providing your locale string with the following formats:
      *  "es_ES", "es-ES" or "es"
      */
@@ -582,7 +582,17 @@ class MobileMessaging {
      */
     resetMessageCounter() {
         RNMMChat.resetMessageCounter();
-    }
+    };
+
+    /**
+     * Registering for POST_NOTIFICATIONS permission for Android 13+
+     */
+    registerForAndroidRemoteNotifications() {
+        if (Platform.OS === "ios") {
+            return;
+        }
+        ReactNativeMobileMessaging.registerForAndroidRemoteNotifications();
+    };
 
     /* Geofencing permissions */
 
@@ -593,7 +603,7 @@ class MobileMessaging {
      * ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION, ACCESS_BACKGROUND_LOCATION
      * @return {Promise<boolean>}
      */
-    async requestAndroidPermissions(rationale?: Rationale): Promise<Boolean> {
+    async requestAndroidLocationPermissions(rationale?: Rationale): Promise<Boolean> {
         const requiredPermissions = await this.requiredAndroidLocationPermissions();
         if (requiredPermissions.length === 0) {
             return Promise.resolve(true);
@@ -603,7 +613,7 @@ class MobileMessaging {
             if (!granted) {
                 return Promise.resolve(false);
             } else {
-                return this.requestAndroidPermissions(rationale);
+                return this.requestAndroidLocationPermissions(rationale);
             }
         });
     };

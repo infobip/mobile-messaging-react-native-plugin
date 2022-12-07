@@ -31,7 +31,9 @@ class HomeScreen extends React.Component {
                 "{'metadata': 'from react demo'}",
                 false,
                 () => console.log('MobileMessaging metadata sent'),
-                (error) => console.log('MobileMessaging metadata error: ' + error));
+                error =>
+                  console.log('MobileMessaging metadata error: ' + error),
+              );
             }, 1000);
             mobileMessaging.showChat();
             mobileMessaging.setupiOSChatSettings({
@@ -48,8 +50,14 @@ class HomeScreen extends React.Component {
           title="Show chat (React Component)"
           onPress={() => this.props.navigation.navigate('Chat')}
         />
+        <Button title="Register For Android 13 Notifications" onPress={() => this.buttonPressMe_()} />
       </View>
     );
+  }
+
+  buttonPressMe_(): void {
+    console.log('trying to register for remote notifications');
+    mobileMessaging.registerForAndroidRemoteNotifications();
   }
 
   /*
@@ -57,17 +65,17 @@ class HomeScreen extends React.Component {
      */
 
   registerForDeeplinkEvents(): void {
-    mobileMessaging.register('notificationTapped', (message) => {
+    mobileMessaging.subscribe('notificationTapped', message => {
       if (!message.deeplink) {
         return;
       }
       this.handleDeeplinkEvent(message.deeplink);
     });
-    mobileMessaging.register(
+    mobileMessaging.subscribe(
       'notificationTapped',
       this.handleNotificationTappedEvent,
     );
-    Linking.addEventListener('url', (initialUrlDict) => {
+    Linking.addEventListener('url', initialUrlDict => {
       this.handleDeeplinkEvent(initialUrlDict.url);
     });
   }
@@ -82,25 +90,25 @@ class HomeScreen extends React.Component {
 
   handleInitialDeeplinkUrl() {
     Linking.getInitialURL()
-      .then((initialUrl) => {
+      .then(initialUrl => {
         if (!initialUrl) {
           return;
         }
         this.handleDeeplinkEvent(initialUrl);
       })
-      .catch((error) => {
+      .catch(error => {
         console.log('Initial URL is not provided');
       });
   }
 
-  handleNotificationTappedEvent = (message) => {
+  handleNotificationTappedEvent = message => {
     if (!message.deeplink) {
       return;
     }
     this.handleDeeplinkEvent(message.deeplink);
   };
 
-  handleDeeplinkEvent = (deeplinkUrl) => {
+  handleDeeplinkEvent = deeplinkUrl => {
     let pathSegments = new URL(deeplinkUrl).pathname.split('/').filter(Boolean);
     for (let pathSegment of pathSegments) {
       console.log('Deeplink path segment: ' + pathSegment);

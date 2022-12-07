@@ -1,4 +1,4 @@
-import { EmitterSubscription, Rationale } from "react-native";
+import {EmitterSubscription, Rationale} from "react-native";
 
 declare namespace MobileMessagingReactNative {
     export type OS = 'Android' | 'iOS';
@@ -497,7 +497,12 @@ declare namespace MobileMessagingReactNative {
          * ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION, ACCESS_BACKGROUND_LOCATION
          * @return
          */
-        requestAndroidPermissions(rationale?: Rationale): Promise<boolean>;
+        requestAndroidLocationPermissions(rationale?: Rationale): Promise<boolean>;
+
+        /**
+         * Registering for POST_NOTIFICATIONS permission for Android 13+
+         */
+        registerForAndroidRemoteNotifications(): void;
     }
 }
 

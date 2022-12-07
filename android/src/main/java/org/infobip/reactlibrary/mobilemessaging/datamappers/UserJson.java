@@ -1,27 +1,28 @@
 package org.infobip.reactlibrary.mobilemessaging.datamappers;
 
-import org.infobip.mobile.messaging.*;
+import androidx.annotation.NonNull;
 
-import org.infobip.mobile.messaging.api.appinstance.UserAtts;
+import com.facebook.react.bridge.ReadableMap;
 import com.google.gson.reflect.TypeToken;
-import org.infobip.mobile.messaging.api.support.http.serialization.JsonSerializer;
 
+import org.infobip.mobile.messaging.CustomAttributeValue;
+import org.infobip.mobile.messaging.CustomAttributesMapper;
+import org.infobip.mobile.messaging.User;
+import org.infobip.mobile.messaging.UserAttributes;
+import org.infobip.mobile.messaging.UserIdentity;
+import org.infobip.mobile.messaging.UserMapper;
+import org.infobip.mobile.messaging.api.appinstance.UserAtts;
+import org.infobip.mobile.messaging.api.support.http.serialization.JsonSerializer;
 import org.infobip.mobile.messaging.util.DateTimeUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
-import com.facebook.react.bridge.ReadableMap;
-
+import java.lang.reflect.Type;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
-import java.lang.reflect.Type;
 import java.util.Set;
 
 /**

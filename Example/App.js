@@ -20,9 +20,9 @@ import ChatScreen from './components/chatScreen.js';
 import {
     mobileMessaging,
 } from 'infobip-mobile-messaging-react-native-plugin';
-import NativeDialogManagerAndroid from "react-native/Libraries/NativeModules/specs/NativeDialogManagerAndroid";
-import {Platform} from "react-native";
-import type {Rationale} from "react-native/Libraries/PermissionsAndroid/PermissionsAndroid";
+import NativeDialogManagerAndroid from 'react-native/Libraries/NativeModules/specs/NativeDialogManagerAndroid';
+import {Platform} from 'react-native';
+import type {Rationale} from 'react-native/Libraries/PermissionsAndroid/PermissionsAndroid';
 
 const myMessageStorage = {
     save: function (messages) {
@@ -89,7 +89,7 @@ export default class App extends React.Component {
             if (value === null) return Promise.resolve(false);
             return Promise.resolve(JSON.parse(value));
         });
-    };
+    }
 
     configuration = {
         applicationCode: 'Your application code',
@@ -109,7 +109,7 @@ export default class App extends React.Component {
         };
         this.subscriptions = [];
 
-        if (Platform.OS === "ios" || !this.configuration.geofencingEnabled) {
+        if (Platform.OS === 'ios' || !this.configuration.geofencingEnabled) {
             this.initMobileMessaging();
             return;
         }
@@ -161,7 +161,7 @@ export default class App extends React.Component {
                     }
                 }
             );
-        })
+        });
     }
 
     componentDidMount() {
@@ -183,7 +183,7 @@ export default class App extends React.Component {
 
     initMobileMessagingWithRequestingGeoPermissions(androidGeoPermissionsRationale: Rationale) {
         //Request geofencing permissions using mobileMessaging method, you can create your own implementation if provided isn't suite.
-        mobileMessaging.requestAndroidPermissions(androidGeoPermissionsRationale).then(granted => {
+        mobileMessaging.requestAndroidLocationPermissions(androidGeoPermissionsRationale).then(granted => {
             if (!granted) {
                 console.log('Required Geofencing permissions are not granted.');
             }
@@ -191,7 +191,7 @@ export default class App extends React.Component {
             // Initialize will be called with geofencingEnabled: true, user can give permissions later.
             // Geofencing won't work until permissions are granted.
             this.initMobileMessaging();
-        })
+        });
     }
 
     initMobileMessaging() {

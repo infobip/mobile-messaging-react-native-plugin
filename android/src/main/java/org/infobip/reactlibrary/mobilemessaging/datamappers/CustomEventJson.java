@@ -1,13 +1,13 @@
 package org.infobip.reactlibrary.mobilemessaging.datamappers;
 
 import android.util.Log;
-import com.facebook.react.bridge.ReadableMap;
-import org.infobip.mobile.messaging.*;
-import org.infobip.mobile.messaging.api.appinstance.UserCustomEventAtts;
+
 import com.google.gson.reflect.TypeToken;
+
+import org.infobip.mobile.messaging.CustomAttributesMapper;
+import org.infobip.mobile.messaging.CustomEvent;
+import org.infobip.mobile.messaging.api.appinstance.UserCustomEventAtts;
 import org.infobip.mobile.messaging.api.support.http.serialization.JsonSerializer;
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.reflect.Type;
