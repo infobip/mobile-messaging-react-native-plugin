@@ -19,8 +19,8 @@ Pod::Spec.new do |s|
   s.requires_arc = true
 
   s.dependency "React-Core"
-  s.dependency "MobileMessaging/Core", "10.5.1"
-  s.dependency "MobileMessaging/Geofencing", "10.5.1"
-  s.dependency "MobileMessaging/InAppChat", "10.5.1"
+  s.dependency "MobileMessaging/Core", "10.5.3"
+  s.dependency "MobileMessaging/Geofencing", "10.5.3"
+  s.dependency "MobileMessaging/InAppChat", "10.5.3"
 
 end
