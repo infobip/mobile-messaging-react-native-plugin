@@ -25,4 +25,4 @@ git commit -a -m "Release: $RELEASE_VERSION"
 git tag $RELEASE_VERSION -m "Release: $RELEASE_VERSION"
 
 # Push changes
-git push origin master --tags
+git push origin $BRANCH_NAME_TO_BUILD --tags
