@@ -1,5 +1,6 @@
 package org.infobip.reactlibrary.mobilemessaging;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Application;
@@ -10,6 +11,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -28,6 +30,7 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.modules.core.PermissionAwareActivity;
+import com.facebook.react.modules.core.PermissionListener;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
@@ -76,22 +79,26 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule implements LifecycleEventListener, ActivityEventListener {
+public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule implements LifecycleEventListener,
+        ActivityEventListener,
+        PermissionsRequestManager.PermissionsRequester,
+        PermissionListener {
     public static final String MODULE_NAME = "ReactNativeMobileMessaging";
 
     private final ReactApplicationContext reactContext;
 
     private static volatile Boolean broadcastReceiverRegistered = false;
     private static volatile Boolean pluginInitialized = false;
+    private PermissionsRequestManager permissionsRequestManager;
 
     public ReactNativeMobileMessagingModule(ReactApplicationContext reactContext) {
         super(reactContext);
-
         while (getReactApplicationContext() == null) ;
         reactContext = getReactApplicationContext();
 
         this.reactContext = reactContext;
         reactContext.addLifecycleEventListener(this);
+        permissionsRequestManager = new PermissionsRequestManager(this);
     }
 
     @Override
@@ -328,8 +335,8 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
         PreferenceHelper.saveString(context, MobileMessagingProperty.SYSTEM_DATA_VERSION_POSTFIX, "reactNative " + configuration.reactNativePluginVersion);
 
         MobileMessaging.Builder builder = new MobileMessaging.Builder(context)
-                .withApplicationCode(configuration.applicationCode)
-                .withoutRegisteringForRemoteNotifications();
+                .withoutRegisteringForRemoteNotifications()
+                .withApplicationCode(configuration.applicationCode);
 
         if (configuration.privacySettings.userDataPersistingDisabled) {
             builder.withoutStoringUserData();
@@ -717,20 +724,12 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
 
     @ReactMethod
     public void registerForAndroidRemoteNotifications() {
-        mobileMessaging().registerForRemoteNotifications((Activity) getPermissionAwareActivity());
-    }
-
-    private PermissionAwareActivity getPermissionAwareActivity() {
         Activity activity = getCurrentActivity();
-        if (activity == null) {
-            throw new IllegalStateException(
-                    "Tried to use permissions API while not attached to an " + "Activity.");
-        } else if (!(activity instanceof PermissionAwareActivity)) {
-            throw new IllegalStateException(
-                    "Tried to use permissions API but the host Activity doesn't"
-                            + " implement PermissionAwareActivity.");
+        if (activity != null && (activity instanceof PermissionAwareActivity)) {
+            permissionsRequestManager.isRequiredPermissionsGranted((PermissionAwareActivity) activity, this);
+        } else {
+            Log.e(Utils.TAG, "Cannot register for remote notifications because activity isn't exist");
         }
-        return (PermissionAwareActivity) activity;
     }
 
     private static void runInBackground(final Runnable runnable) {
@@ -971,5 +970,44 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
                 }
             }
         };
+    }
+
+    // PermissionsRequester for Post Notifications Permission
+
+    @Override
+    public boolean onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if (requestCode == PermissionsRequestManager.REQ_CODE_POST_NOTIFICATIONS_PERMISSIONS) {
+            permissionsRequestManager.onRequestPermissionsResult(permissions, grantResults);
+        }
+        return true;
+    }
+
+    @Override
+    public void onPermissionGranted() {
+        Log.i(Utils.TAG, "Post Notifications permission granted");
+    }
+
+    @NonNull
+    @Override
+    public String[] requiredPermissions() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            return new String[]{Manifest.permission.POST_NOTIFICATIONS};
+        }
+        return new String[0];
+    }
+
+    @Override
+    public boolean shouldShowPermissionsNotGrantedDialogIfShownOnce() {
+        return true;
+    }
+
+    @Override
+    public int permissionsNotGrantedDialogTitle() {
+        return org.infobip.mobile.messaging.resources.R.string.mm_post_notifications_settings_title;
+    }
+
+    @Override
+    public int permissionsNotGrantedDialogMessage() {
+        return org.infobip.mobile.messaging.resources.R.string.mm_post_notifications_settings_message;
     }
 }
