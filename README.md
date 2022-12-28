@@ -22,7 +22,7 @@ For iOS project:
 For Android project:
 - Android Studio (Bumblebee | 2021.1.1)
 - Gradle (v7.3.3)
-- Supported API Levels: 21 (Android 5.0 - [Lollipop](https://developer.android.com/about/versions/lollipop)) - 31 (Android 12.0)
+- Supported API Levels: 21 (Android 5.0 - [Lollipop](https://developer.android.com/about/versions/lollipop)) - 33 (Android 13.0)
 
 ## Quick start guide
 
@@ -95,6 +95,10 @@ This guide is designed to get you up and running with Mobile Messaging SDK plugi
        > ...
        > </manifest>
        > ```
+
+     > ### Notice (when targeting Android 13):
+     >  Starting from Android 13, Google requires to ask user for notification permission. Follow [this guide](https://github.com/infobip/mobile-messaging-react-native-plugin/wiki/Android-13-Notification-Permission-Handling) to make a permission request.
+       
 
 ## Initialization configuration
 
