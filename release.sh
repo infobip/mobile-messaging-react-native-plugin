@@ -1,6 +1,7 @@
 #!/bin/bash
 
-git remote rm github
+# origin1 it's github repo
+git remote rm origin1
 
 # Find last git tag and create commit log
 LAST_TAG=`git describe --tags --abbrev=0`
