@@ -8,17 +8,15 @@ import androidx.annotation.Nullable;
 
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableArray;
-import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.annotations.ReactProp;
 
-import java.util.Map;
-
 class RNMMChatViewManager extends ViewGroupManager<ReactChatView> {
+    public static final String COMMAND_ADD = "add";
+    public static final String COMMAND_REMOVE = "remove";
+
     public static final String VIEW_GROUP_MANAGER_NAME = "RNMMChatView";
-    public static final int COMMAND_ADD = 1;
-    public static final int COMMAND_REMOVE = 2;
     private ReactApplicationContext context;
 
     @Nullable
@@ -41,26 +39,17 @@ class RNMMChatViewManager extends ViewGroupManager<ReactChatView> {
         return chatView;
     }
 
-    @Nullable
-    @Override
-    public Map<String, Integer> getCommandsMap() {
-        return MapBuilder.of(
-                "add", COMMAND_ADD,
-                "remove", COMMAND_REMOVE
-        );
-    }
-
     @Override
     public void receiveCommand(@NonNull ReactChatView root, String commandId, @Nullable ReadableArray args) {
         super.receiveCommand(root, commandId, args);
-        int commandIdInt = Integer.parseInt(commandId);
+
         if (args == null) {
             Log.e(Utils.TAG, "RNMMChatViewManager received command without argumnents, Id: " + commandId);
             return;
         }
         int reactNativeViewId = args.getInt(0);
 
-        switch (commandIdInt) {
+        switch (commandId) {
             case COMMAND_ADD:
                 addChatFragment(root, reactNativeViewId);
                 break;

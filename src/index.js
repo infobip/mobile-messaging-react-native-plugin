@@ -1,19 +1,13 @@
-import React, { Component } from 'react'
-import PropTypes from 'prop-types';
-import {
+import {    
+    EmitterSubscription,
     NativeEventEmitter,
     NativeModules,
+    Permission,
     PermissionsAndroid,
-    Platform,
-    requireNativeComponent,
-    Text,
-    View,
-    findNodeHandle,
-    UIManager,
-    EmitterSubscription,
+    Platform,    
 } from 'react-native';
-import type {Rationale} from "react-native/Libraries/PermissionsAndroid/PermissionsAndroid";
-import {Permission} from "react-native";
+import type {Rationale} from 'react-native/Libraries/PermissionsAndroid/PermissionsAndroid';
+
 
 const { ReactNativeMobileMessaging, RNMMChat } = NativeModules;
 
@@ -248,7 +242,7 @@ class MobileMessaging {
             });
         }
 
-        config.reactNativePluginVersion = require('./package').version;
+        config.reactNativePluginVersion = require('../package').version;
 
         ReactNativeMobileMessaging.init(config, onSuccess, onError);
     };
@@ -437,21 +431,21 @@ class MobileMessaging {
         }
 
         return {
-            find: function (messageId, onSuccess, onError = function() {} ) {
+            find (messageId, onSuccess, onError = function() {}) {
                 ReactNativeMobileMessaging.defaultMessageStorage_find(messageId, onSuccess, onError);
             },
 
-            findAll: function (onSuccess, onError = function() {}) {
+            findAll (onSuccess, onError = function() {}) {
                 ReactNativeMobileMessaging.defaultMessageStorage_findAll(onSuccess, onError);
             },
 
-            delete: function (messageId, onSuccess = function() {}, onError = function() {}) {
+            delete (messageId, onSuccess = function() {}, onError = function() {}) {
                 ReactNativeMobileMessaging.defaultMessageStorage_delete(messageId, onSuccess, onError);
             },
 
-            deleteAll: function (onSuccess = function() {}, onError = function() {}) {
+            deleteAll (onSuccess = function() {}, onError = function() {}) {
                 ReactNativeMobileMessaging.defaultMessageStorage_deleteAll(onSuccess, onError);
-            }
+            },
         };
     };
 
@@ -459,7 +453,7 @@ class MobileMessaging {
      * Displays built-in error dialog so that user can resolve errors during SDK initialization.
      *
      * @name showDialogForError
-     * @param {Int} errorCode to display dialog for
+     * @param {Number} errorCode to display dialog for
      * @param {Function} onSuccess will be called upon completion
      * @param {Function} onError will be called on error
      */
@@ -653,67 +647,6 @@ class MobileMessaging {
 
 }
 
-export class ChatView extends React.Component {
-    androidViewId;
+export {ChatView, RNMMChatView} from './components/RNMMChatViewNativeComponent';
 
-    componentDidMount() {
-        if (Platform.OS === "ios") {
-            this.add();
-        } else {
-            //fix for android, sometimes it can't get parent view, which is needed for properly relayout
-            let _this = this;
-            setTimeout(function() { _this.add(); }, 100);
-        }
-    }
-
-    componentWillUnmount() {
-        this.remove();
-    }
-
-    add = () => {
-        //not needed for iOS
-        if (Platform.OS === "ios") {
-            return;
-        }
-        this.androidViewId = findNodeHandle(this.refs.rnmmChatViewRef);
-        console.log('Native android viewId: ', this.androidViewId);
-
-        UIManager.dispatchViewManagerCommand(
-            this.androidViewId,
-            UIManager.RNMMChatView.Commands.add.toString(),
-            [this.androidViewId],
-        );
-    };
-
-    remove = () => {
-        //not needed for iOS
-        if (Platform.OS === "ios") {
-            return;
-        }
-        UIManager.dispatchViewManagerCommand(
-            this.androidViewId,
-            UIManager.RNMMChatView.Commands.remove.toString(),
-            [this.androidViewId],
-        );
-    };
-
-    render() {
-        return (
-            <RNMMChatView {...this.props}
-                          ref="rnmmChatViewRef"
-            />
-        );
-    }
-}
-
-ChatView.propTypes = {
-    /**
-     * Send button color can be set in hex format.
-     * If it's not provided, color from Infobip Portal widget configuration will be set.
-     */
-    sendButtonColor: PropTypes.string,
-}
-
-export let RNMMChatView = requireNativeComponent('RNMMChatView', ChatView);
-
-export let mobileMessaging = new MobileMessaging();
+export const mobileMessaging = new MobileMessaging();

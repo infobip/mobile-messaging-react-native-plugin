@@ -50,7 +50,10 @@ class HomeScreen extends React.Component {
           title="Show chat (React Component)"
           onPress={() => this.props.navigation.navigate('Chat')}
         />
-        <Button title="Register For Android 13 Notifications" onPress={() => this.buttonPressMe_()} />
+        <Button
+          title="Register For Android 13 Notifications"
+          onPress={() => this.buttonPressMe_()}
+        />
       </View>
     );
   }
@@ -96,7 +99,7 @@ class HomeScreen extends React.Component {
         }
         this.handleDeeplinkEvent(initialUrl);
       })
-      .catch(error => {
+      .catch(() => {
         console.log('Initial URL is not provided');
       });
   }

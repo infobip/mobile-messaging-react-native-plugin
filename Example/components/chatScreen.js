@@ -7,8 +7,10 @@ import {ChatView} from 'infobip-mobile-messaging-react-native-plugin';
 
 class ChatScreen extends React.Component {
   render() {
-    return <ChatView style={{flex: 1}} sendButtonColor={'#FF0000'} />;
+    return <ChatView style={styles} sendButtonColor={'#FF0000'} />;
   }
 }
+
+const styles = {flex: 1};
 
 export default ChatScreen;
