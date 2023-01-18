@@ -16,6 +16,7 @@ import HomeScreen from './components/homeScreen.js';
 import TestDeeplinkingScreen from './components/testDeeplinkingScreen.js';
 import TestDeeplinkingScreen2 from './components/testDeeplinkingScreen2.js';
 import ChatScreen from './components/chatScreen.js';
+import SubviewChatScreen from './components/subviewChatScreen.js';
 
 import {mobileMessaging} from 'infobip-mobile-messaging-react-native-plugin';
 import NativeDialogManagerAndroid from 'react-native/Libraries/NativeModules/specs/NativeDialogManagerAndroid';
@@ -229,6 +230,7 @@ export default class App extends React.Component {
       <NavigationContainer>
         <Stack.Navigator initialRouteName="Home">
           <Stack.Screen name="Home" component={HomeScreen} />
+          <Stack.Screen name="SubviewChat" component={SubviewChatScreen}/>
           <Stack.Screen
             name="Chat"
             component={ChatScreen}

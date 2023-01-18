@@ -51,9 +51,10 @@ class HomeScreen extends React.Component {
           onPress={() => this.props.navigation.navigate('Chat')}
         />
         <Button
-          title="Register For Android 13 Notifications"
-          onPress={() => this.buttonPressMe_()}
+          title="Show chat (React Component as subview)"
+          onPress={() => this.props.navigation.navigate('SubviewChat')}
         />
+        <Button title="Register For Android 13 Notifications" onPress={() => this.buttonPressMe_()} />
       </View>
     );
   }
