@@ -11,13 +11,13 @@ The document describes library integration steps for your React Native project.
 
 ## Requirements
 - node (v16.10.0 or higher)
-- ruby (2.7.4)
-- React Native (v0.68.0)
+- ruby (2.7.5)
+- React Native (v0.70.7)
 
 For iOS project:
 - Xcode and Command Line Tools (13.2.1)
 - CocoaPods (v1.11.3)
-- Minimum deployment target 12.0
+- Minimum deployment target 12.4
 
 For Android project:
 - Android Studio (Bumblebee | 2021.1.1)

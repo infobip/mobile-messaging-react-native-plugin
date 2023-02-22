@@ -1,14 +1,14 @@
 import React from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 
-class TestDeeplinkingScreen extends React.Component {
-  render() {
-    return (
-      <View style={styles.infoView}>
-        <Text style={styles.info}>This screen was opened by the deeplink</Text>
-      </View>
-    );
-  }
+function TestDeeplinkingScreen2() {
+  return (
+    <View style={styles.infoView}>
+      <Text style={styles.info}>
+        This screen was opened by the second deeplink
+      </Text>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -26,4 +26,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default TestDeeplinkingScreen;
+export default TestDeeplinkingScreen2;

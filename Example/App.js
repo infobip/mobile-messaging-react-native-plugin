@@ -1,84 +1,28 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow strict-local
- */
-
-import * as React from 'react';
+import React, {Component} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
-import {createStackNavigator} from '@react-navigation/stack';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {Platform} from 'react-native';
 
-//screens
-import HomeScreen from './components/homeScreen.js';
-import TestDeeplinkingScreen from './components/testDeeplinkingScreen.js';
-import TestDeeplinkingScreen2 from './components/testDeeplinkingScreen2.js';
-import ChatScreen from './components/chatScreen.js';
-import SubviewChatScreen from './components/subviewChatScreen.js';
+//Screens
+import HomeScreen from './screens/HomeScreen';
+import PersonalizeScreen from './screens/PersonalizeScreen';
+import ChatScreen from './screens/ChatScreen';
+import SubviewChatScreen from './screens/SubviewChatScreen';
+import TestDeeplinkingScreen from './screens/testDeeplinkingScreen';
+import TestDeeplinkingScreen2 from './screens/testDeeplinkingScreen2';
 
 import {mobileMessaging} from 'infobip-mobile-messaging-react-native-plugin';
+import Colors from './constants/Colors';
+import MyMessageStorage from './constants/MyMessageStorage';
 import NativeDialogManagerAndroid from 'react-native/Libraries/NativeModules/specs/NativeDialogManagerAndroid';
-import {Platform} from 'react-native';
-import type {Rationale} from 'react-native/Libraries/PermissionsAndroid/PermissionsAndroid';
+import {Rationale} from 'react-native';
 
-const myMessageStorage = {
-  save(messages) {
-    for (const [, message] of messages.entries()) {
-      AsyncStorage.setItem(message.messageId, JSON.stringify(message));
-    }
-    console.log('[CustomStorage] Saving messages: ' + JSON.stringify(messages));
-  },
+const Stack = createNativeStackNavigator();
 
-  async find(messageId, callback) {
-    console.log('[CustomStorage] Find message: ' + messageId);
-    let message = await AsyncStorage.getItem(messageId);
-    if (message) {
-      console.log('[CustomStorage] Found message: ' + message);
-      callback(JSON.parse(message));
-    } else {
-      callback({});
-    }
-  },
+const myMessageStorage = MyMessageStorage;
 
-  findAll(callback) {
-    console.log('[CustomStorage] Find all');
-    this.getAllMessages(values => {
-      console.log(
-        '[CustomStorage] Find all messages result: ',
-        values.toString(),
-      );
-      callback(values);
-    });
-  },
-
-  start() {
-    console.log('[CustomStorage] Start');
-  },
-
-  stop() {
-    console.log('[CustomStorage] Stop');
-  },
-
-  getAllMessages(callback) {
-    try {
-      AsyncStorage.getAllKeys().then(keys => {
-        console.log('Then AllKeys: ', keys);
-        AsyncStorage.multiGet(keys).then(values => {
-          console.log('Then AllValues: ', values);
-          callback(values);
-        });
-      });
-    } catch (error) {
-      console.log('[CustomStorage] Error: ', error);
-    }
-  },
-};
-
-const Stack = createStackNavigator();
-
-export default class App extends React.Component {
+export default class App extends Component {
   androidGeoProminentDisclosureAcceptedKey: string =
     'androidGeoProminentDisclosureAcceptedKey';
 
@@ -101,7 +45,7 @@ export default class App extends React.Component {
     },
     messageStorage: myMessageStorage,
     inAppChatEnabled: true,
-    geofencingEnabled: true,
+    geofencingEnabled: false,
   };
 
   constructor() {
@@ -228,18 +172,28 @@ export default class App extends React.Component {
   render() {
     return (
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="Home">
-          <Stack.Screen name="Home" component={HomeScreen} />
-          <Stack.Screen name="SubviewChat" component={SubviewChatScreen}/>
+        <Stack.Navigator
+          initialRouteName="HomeScreen"
+          screenOptions={{
+            contentStyle: {backgroundColor: Colors.tintWhite},
+            headerTintColor: 'white',
+            headerStyle: {backgroundColor: Colors.primary500},
+          }}>
+          <Stack.Screen name="HomeScreen" component={HomeScreen} />
           <Stack.Screen
-            name="Chat"
+            name="PersonalizeScreen"
+            component={PersonalizeScreen}
+            options={{title: 'Personalize'}}
+          />
+          <Stack.Screen
+            name="ChatScreen"
             component={ChatScreen}
             options={{
               title: 'My Chat Title',
               headerStyle: {
-                backgroundColor: '#FF0000',
+                backgroundColor: Colors.primary500,
               },
-              headerTintColor: '#FFFFFF',
+              headerTintColor: Colors.tintWhite,
               headerTitleStyle: {
                 fontWeight: 'bold',
               },
@@ -247,28 +201,39 @@ export default class App extends React.Component {
             }}
           />
           <Stack.Screen
-            name={'TestDeeplinking'}
-            component={TestDeeplinkingScreen}
+            name="SubviewChatScreen"
+            component={SubviewChatScreen}
             options={{
-              title: 'Test Deeplinking',
-              headerStyle: {
-                backgroundColor: '#FF0000',
-              },
-              headerTintColor: '#FFFFFF',
+              title: 'Subview Chat',
+              headerTintColor: Colors.tintWhite,
               headerTitleStyle: {
                 fontWeight: 'bold',
               },
             }}
           />
           <Stack.Screen
-            name={'TestDeeplinking2'}
+            name="TestDeeplinking"
+            component={TestDeeplinkingScreen}
+            options={{
+              title: 'Test Deeplinking',
+              headerStyle: {
+                backgroundColor: Colors.primary500,
+              },
+              headerTintColor: Colors.tintWhite,
+              headerTitleStyle: {
+                fontWeight: 'bold',
+              },
+            }}
+          />
+          <Stack.Screen
+            name="TestDeeplinking2"
             component={TestDeeplinkingScreen2}
             options={{
               title: 'Test Deeplinking2',
               headerStyle: {
-                backgroundColor: '#FF0000',
+                backgroundColor: Colors.primary500,
               },
-              headerTintColor: '#FFFFFF',
+              headerTintColor: Colors.tintWhite,
               headerTitleStyle: {
                 fontWeight: 'bold',
               },
