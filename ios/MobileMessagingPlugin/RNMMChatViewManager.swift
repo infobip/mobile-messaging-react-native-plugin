@@ -49,14 +49,17 @@ class RNMMChatViewManager: RCTViewManager {
         guard let parentVC = parentViewController else {
             return
         }
-
-        let vc = MMChatViewController.makeModalViewController()
-        parentVC.addChild(vc)
-        addSubview(vc.view)
-        vc.didMove(toParent: parentVC)
-        self.viewController = vc
+        guard let existingChatVC = parentVC.children.filter({ $0 is MMChatViewController }).first as? MMChatViewController else {
+            let newChatVC = MMChatViewController.makeModalViewController()
+            parentVC.addChild(newChatVC)
+            addSubview(newChatVC.view)
+            newChatVC.didMove(toParent: parentVC)
+            self.viewController = newChatVC
+            return
+        }
+        /* existingChatVC is the case of didMoveToWindow being triggered from the presentation of other view (ie RTCImageView) */
+        self.viewController = existingChatVC
     }
-
 }
 
 extension UIView {
