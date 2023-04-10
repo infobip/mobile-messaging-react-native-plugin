@@ -5,8 +5,7 @@
   "description": "Infobip Mobile Messaging React Native Plugin",
   "main": "./src/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "postinstall": "patch-package"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
@@ -40,8 +39,5 @@
     "metro-react-native-babel-preset": "^0.67.0",
     "react": "^17.0.2",
     "react-native": "^0.68.0"
-  },
-  "dependencies": {
-    "patch-package": "^6.5.1"
   }
 }
