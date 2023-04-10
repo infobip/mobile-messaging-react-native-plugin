@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button, Linking, StyleSheet, Text, View} from 'react-native';
+import {Button, Linking, Platform, StyleSheet, Text, View} from 'react-native';
 import {URL} from 'react-native-url-polyfill';
 import {mobileMessaging} from 'infobip-mobile-messaging-react-native-plugin';
 
@@ -16,6 +16,19 @@ class HomeScreen extends React.Component {
   }
 
   render() {
+    let button = <View />;
+
+    if (Platform.OS === 'android' && Platform.constants.Release === '13') {
+      button = (
+        <Button
+          onPress={() => {
+            console.log('trying to register for remote notifications');
+            mobileMessaging.registerForAndroidRemoteNotifications();
+          }}>
+          Register for Android 13 Notifications
+        </Button>
+      );
+    }
     return (
       <View style={styles.infoView}>
         <Text style={styles.infoText}>
@@ -54,14 +67,9 @@ class HomeScreen extends React.Component {
           title="Show chat (React Component as subview)"
           onPress={() => this.props.navigation.navigate('SubviewChat')}
         />
-        <Button title="Register For Android 13 Notifications" onPress={() => this.buttonPressMe_()} />
+        <View>{button}</View>
       </View>
     );
-  }
-
-  buttonPressMe_(): void {
-    console.log('trying to register for remote notifications');
-    mobileMessaging.registerForAndroidRemoteNotifications();
   }
 
   /*
