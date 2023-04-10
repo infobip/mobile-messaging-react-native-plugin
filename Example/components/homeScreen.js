@@ -21,12 +21,12 @@ class HomeScreen extends React.Component {
     if (Platform.OS === 'android' && Platform.constants.Release === '13') {
       button = (
         <Button
+          title="Register for Android 13 Notifications"
           onPress={() => {
             console.log('trying to register for remote notifications');
             mobileMessaging.registerForAndroidRemoteNotifications();
-          }}>
-          Register for Android 13 Notifications
-        </Button>
+          }}
+        />
       );
     }
     return (
