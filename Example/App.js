@@ -9,6 +9,7 @@ import HomeScreen from './screens/HomeScreen';
 import PersonalizeScreen from './screens/PersonalizeScreen';
 import ChatScreen from './screens/ChatScreen';
 import SubviewChatScreen from './screens/SubviewChatScreen';
+import MultiThreadChatScreen from './screens/MultiThreadChatScreen';
 import TestDeeplinkingScreen from './screens/testDeeplinkingScreen';
 import TestDeeplinkingScreen2 from './screens/testDeeplinkingScreen2';
 
@@ -197,7 +198,6 @@ export default class App extends Component {
               headerTitleStyle: {
                 fontWeight: 'bold',
               },
-              headerShown: Platform.OS !== 'android',
             }}
           />
           <Stack.Screen
@@ -211,6 +211,17 @@ export default class App extends Component {
               },
             }}
           />
+          <Stack.Screen
+            name="MultiThreadChatScreen"
+            component={MultiThreadChatScreen}
+            options={{
+              title: 'Multi-Thread Chat',
+              headerTintColor: Colors.tintWhite,
+              headerTitleStyle: {
+                fontWeight: 'bold',
+              },
+            }}
+          />          
           <Stack.Screen
             name="TestDeeplinking"
             component={TestDeeplinkingScreen}

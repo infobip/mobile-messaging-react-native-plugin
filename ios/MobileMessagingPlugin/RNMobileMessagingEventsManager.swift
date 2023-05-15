@@ -25,7 +25,8 @@ class RNMobileMessagingEventsManager {
         EventName.installationUpdated: MMNotificationInstallationSynced,
         EventName.userUpdated: MMNotificationUserSynced,
         EventName.inAppChat_availabilityUpdated: MMNotificationInAppChatAvailabilityUpdated,
-        EventName.inAppChat_unreadMessageCounterUpdated: MMNotificationInAppChatUnreadMessagesCounterUpdated
+        EventName.inAppChat_unreadMessageCounterUpdated: MMNotificationInAppChatUnreadMessagesCounterUpdated,
+        EventName.inAppChat_viewStateChanged: MMNotificationInAppChatViewChanged
     ]
 
     func startObserving() {
@@ -121,6 +122,11 @@ class RNMobileMessagingEventsManager {
         case MMNotificationInAppChatUnreadMessagesCounterUpdated:
             eventName = EventName.inAppChat_unreadMessageCounterUpdated
             notificationResult = notification.userInfo?[MMNotificationKeyInAppChatUnreadMessagesCounter] as? Int
+        case MMNotificationInAppChatViewChanged:
+            eventName = EventName.inAppChat_viewStateChanged
+            if let viewState = notification.userInfo?[MMNotificationKeyInAppChatViewChanged] as? String {
+                notificationResult = viewState
+            }
         default: break
         }
 

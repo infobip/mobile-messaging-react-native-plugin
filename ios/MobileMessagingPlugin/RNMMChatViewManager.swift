@@ -24,7 +24,7 @@ class RNMMChatViewManager: RCTViewManager {
         fatalError("init(coder:) has not been implemented")
     }
 
-    weak var viewController: MMChatViewController?
+    weak static var viewController: MMChatViewController?
 
     @objc func setSendButtonColor(_ colorString: NSString) {
         MobileMessaging.inAppChat?.settings.configureWith(rawConfig: ["sendButtonColor": colorString])
@@ -32,7 +32,7 @@ class RNMMChatViewManager: RCTViewManager {
 
     override func layoutSubviews() {
         super.layoutSubviews()
-        viewController?.view.frame = bounds
+        RNMMChatView.viewController?.view.frame = bounds
     }
 
     override func didMoveToWindow() {
@@ -41,7 +41,7 @@ class RNMMChatViewManager: RCTViewManager {
     }
 
     override func removeFromSuperview() {
-        self.viewController?.removeFromParent()
+        RNMMChatView.viewController?.removeFromParent()
         super.removeFromSuperview()
     }
 
@@ -54,11 +54,11 @@ class RNMMChatViewManager: RCTViewManager {
             parentVC.addChild(newChatVC)
             addSubview(newChatVC.view)
             newChatVC.didMove(toParent: parentVC)
-            self.viewController = newChatVC
+            RNMMChatView.viewController = newChatVC
             return
         }
         /* existingChatVC is the case of didMoveToWindow being triggered from the presentation of other view (ie RTCImageView) */
-        self.viewController = existingChatVC
+        RNMMChatView.viewController = existingChatVC
     }
 }
 

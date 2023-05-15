@@ -13,9 +13,11 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
 
+import org.infobip.mobile.messaging.chat.view.InAppChatFragment;
+
 public class Utils {
     public static final String TAG = "RNMobileMessaging";
-    public static final String RN_IN_APP_CHAT_FRAGMENT_TAG = "RN_IN_APP_CHAT_FRAGMENT";
+    public static final String RN_IN_APP_CHAT_FRAGMENT_TAG = InAppChatFragment.class.getName();
     public static final int REQ_CODE_RESOLVE_GOOGLE_ERROR = 2;
 
     /**

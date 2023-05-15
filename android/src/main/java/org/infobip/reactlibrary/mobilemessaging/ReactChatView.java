@@ -21,6 +21,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import org.infobip.mobile.messaging.chat.InAppChat;
 import org.infobip.mobile.messaging.chat.view.InAppChatFragment;
 
 class ReactChatView extends FrameLayout {
@@ -60,39 +61,19 @@ class ReactChatView extends FrameLayout {
             return;
         }
 
-        InAppChatFragment.InAppChatActionBarProvider provider = new InAppChatFragment.InAppChatActionBarProvider() {
-
-            @Nullable
-            @Override
-            public ActionBar getOriginalSupportActionBar() {
-                if (fragmentActivity instanceof AppCompatActivity){
-                    return ((AppCompatActivity) fragmentActivity).getSupportActionBar();
-                }
-                return null;
-            }
-
-            @Override
-            public void onInAppChatBackPressed() {
-                if (fragmentActivity != null){
-                    fragmentActivity.onBackPressed();
-                }
-            }
-        };
-
         //RN issue https://github.com/facebook/react-native/issues/17968
         //Without this layout will not be called and view will not be displayed, because RN doesn't dispatches events to android views properly
         ViewGroup parentView = (ViewGroup) parentLayout.findViewById(reactNativeViewId).getParent();
         setupLayoutHack(parentView);
 
         FragmentManager fragmentManager = fragmentActivity.getSupportFragmentManager();
-        InAppChatFragment chatFragment = new InAppChatFragment();
-        chatFragment.setInAppChatActionBarProvider(provider);
-
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        if (fragmentManager.findFragmentByTag(Utils.RN_IN_APP_CHAT_FRAGMENT_TAG) == null) {
-            fragmentTransaction.add(reactNativeViewId, chatFragment, Utils.RN_IN_APP_CHAT_FRAGMENT_TAG);
+        InAppChat.getInstance(fragmentActivity.getApplicationContext()).showInAppChatFragment(fragmentManager, reactNativeViewId);
+        fragmentManager.executePendingTransactions();
+        Fragment inAppChatFragment = fragmentManager.findFragmentByTag(Utils.RN_IN_APP_CHAT_FRAGMENT_TAG);
+        Log.e(Utils.TAG, "InAppChatFragment found " + (inAppChatFragment != null));
+        if (inAppChatFragment instanceof InAppChatFragment){
+            ((InAppChatFragment) inAppChatFragment).setWithToolbar(false);
         }
-        fragmentTransaction.commit();
     }
 
     public void removeChatFragment(FrameLayout parentLayout, @Nullable FragmentActivity fragmentActivity) {
@@ -109,21 +90,13 @@ class ReactChatView extends FrameLayout {
     }
 
     private void setupLayoutHack(final ViewGroup view) {
-        view.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                view.requestLayout();
-            }
-        });
+        view.getViewTreeObserver().addOnGlobalLayoutListener(view::requestLayout);
     }
 
-    private final Runnable measureAndLayout = new Runnable() {
-        @Override
-        public void run() {
-            measure(
-                    MeasureSpec.makeMeasureSpec(getWidth(), MeasureSpec.EXACTLY),
-                    MeasureSpec.makeMeasureSpec(getHeight(), MeasureSpec.EXACTLY));
-            layout(getLeft(), getTop(), getRight(), getBottom());
-        }
+    private final Runnable measureAndLayout = () -> {
+        measure(
+                MeasureSpec.makeMeasureSpec(getWidth(), MeasureSpec.EXACTLY),
+                MeasureSpec.makeMeasureSpec(getHeight(), MeasureSpec.EXACTLY));
+        layout(getLeft(), getTop(), getRight(), getBottom());
     };
 }

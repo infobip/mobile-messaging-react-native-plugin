@@ -65,10 +65,6 @@ function HomeScreen({navigation}) {
   }
 
   function showChatHandler() {
-    navigation.navigate('ChatScreen');
-  }
-
-  function showChatReactComponentHandler() {
     mobileMessaging.setLanguage('en');
     setTimeout(() => {
       mobileMessaging.sendContextualData(
@@ -89,8 +85,16 @@ function HomeScreen({navigation}) {
     });
   }
 
+  function showChatReactComponentHandler() {
+    navigation.navigate('ChatScreen');
+  }
+
   function showChatSubviewHandler() {
     navigation.navigate('SubviewChatScreen');
+  }
+
+  function showMTChatSubviewHandler() {
+    navigation.navigate('MultiThreadChatScreen');
   }
 
   let subscriptionDeeplink;
@@ -184,6 +188,9 @@ function HomeScreen({navigation}) {
       </PrimaryButton>
       <PrimaryButton onPress={showChatSubviewHandler}>
         Show Chat (React Component as Subview)
+      </PrimaryButton>
+      <PrimaryButton onPress={showMTChatSubviewHandler}>
+        Show Chat (React Component with Multi-thread handling)
       </PrimaryButton>
     </View>
   );

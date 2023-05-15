@@ -117,6 +117,8 @@ struct EventName {
     static let messageStorage_findAll = "messageStorage.findAll"
     static let inAppChat_availabilityUpdated = "inAppChat.availabilityUpdated"
     static let inAppChat_unreadMessageCounterUpdated = "inAppChat.unreadMessageCounterUpdated"
+    static let inAppChat_viewStateChanged = "inAppChat.viewStateChanged"
+
 }
 
 extension UIApplication {

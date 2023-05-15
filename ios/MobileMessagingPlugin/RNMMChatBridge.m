@@ -22,6 +22,7 @@ RCT_EXTERN_METHOD(resetMessageCounter)
 RCT_EXTERN_METHOD(setupChatSettings:)
 RCT_EXTERN_METHOD(setLanguage:)
 RCT_EXTERN_METHOD(sendContextualData:(NSString *)data multiThreadStrategy:(BOOL)multiThreadStrategy onSuccess:(RCTResponseSenderBlock)successCallback onError:(RCTResponseSenderBlock)errorCallback)
+RCT_EXTERN_METHOD(showThreadsList)
 
 - (dispatch_queue_t)methodQueue {
    return dispatch_get_main_queue();

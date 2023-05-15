@@ -30,6 +30,11 @@ class RNMMChat: NSObject  {
         }
     }
 
+    @objc(showThreadsList)
+    func showThreadsList() {
+        RNMMChatView.viewController?.showThreadsList()
+    }
+    
     @objc(getMessageCounter:)
     func getMessageCounter(onResult: @escaping RCTResponseSenderBlock) {
         onResult([MobileMessaging.inAppChat?.getMessageCounter ?? 0])
@@ -54,7 +59,7 @@ class RNMMChat: NSObject  {
 
     @objc(sendContextualData:multiThreadStrategy:onSuccess:onError:)
     func sendContextualData(data: NSString, multiThreadStrategy: Bool,  onSuccess: @escaping RCTResponseSenderBlock, onError: @escaping RCTResponseSenderBlock) {
-        guard let chatVC = UIApplication.topViewController() as? MMChatViewController else {
+        guard let chatVC = RNMMChatView.viewController else {
             return
         }
         chatVC.sendContextualData(String(data), multiThreadStrategy: multiThreadStrategy ? .ALL : .ACTIVE) { error in

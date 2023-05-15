@@ -37,12 +37,11 @@ class MobileMessaging {
             'messageStorage.find',
             'messageStorage.findAll'
         ];
-
         this.inAppChatEvents = [
             'inAppChat.availabilityUpdated',
-            'inAppChat.unreadMessageCounterUpdated'
+            'inAppChat.unreadMessageCounterUpdated',
+            'inAppChat.viewStateChanged'
         ];
-
         this.eventEmitter = new NativeEventEmitter(ReactNativeMobileMessaging);
     }
 
@@ -576,6 +575,14 @@ class MobileMessaging {
      */
     resetMessageCounter() {
         RNMMChat.resetMessageCounter();
+    };
+
+
+    /**
+     * Navigates to THREAD_LIST view in multithread widget if in-app chat is shown as React Component.
+     */
+    showThreadsList() {
+        RNMMChat.showThreadsList();
     };
 
     /**

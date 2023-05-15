@@ -85,13 +85,14 @@ repositories {
 }
 
 dependencies {
-    def mmVersion = '7.6.2'
+    def mmVersion = '8.1.4'
 
     implementation 'com.facebook.react:react-native:+'
     implementation "androidx.annotation:annotation:1.1.0"
 
-    implementation 'com.google.android.material:material:1.4.0'
-    implementation 'androidx.exifinterface:exifinterface:1.3.3'
+    implementation 'com.google.android.material:material:1.8.0'
+    implementation 'androidx.exifinterface:exifinterface:1.3.6'
+    implementation 'androidx.databinding:viewbinding:8.0.1'
 
     implementation "com.infobip:infobip-mobile-messaging-android-resources:$mmVersion@aar"
     implementation "com.infobip:infobip-mobile-messaging-android-chat-sdk:$mmVersion@aar"

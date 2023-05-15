@@ -37,7 +37,8 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
             EventName.messageStorage_find,
             EventName.messageStorage_findAll,
             EventName.inAppChat_availabilityUpdated,
-            EventName.inAppChat_unreadMessageCounterUpdated
+            EventName.inAppChat_unreadMessageCounterUpdated,
+            EventName.inAppChat_viewStateChanged
         ]
     }
 
@@ -232,7 +233,7 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
             }
         })
     }
-
+    
     @objc(personalize:onSuccess:onError:)
     func personalize(context: NSDictionary, onSuccess: @escaping RCTResponseSenderBlock, onError: @escaping RCTResponseSenderBlock) {
         guard let context = context as? [String: Any], let uiDict = context["userIdentity"] as? [String: Any] else

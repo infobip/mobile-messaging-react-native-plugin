@@ -15,7 +15,8 @@ declare namespace MobileMessagingReactNative {
         'depersonalized' |
         'inAppChat.availabilityUpdated' |
         'inAppChat.unreadMessageCounterUpdated' |
-        'deeplink';
+        'deeplink' |
+        'inAppChat.viewStateChanged';
 
     export interface Configuration {
         /**
@@ -229,7 +230,8 @@ declare namespace MobileMessagingReactNative {
 
         inAppChatEvents: [
             "inAppChat.availabilityUpdated",
-            "inAppChat.unreadMessageCounterUpdated"
+            "inAppChat.unreadMessageCounterUpdated",
+            "inAppChat.viewStateChanged"
         ];
 
         supportedEvents: [
@@ -489,6 +491,11 @@ declare namespace MobileMessagingReactNative {
          * However, use the following API in case you need to manually reset the counter.
          */
         resetMessageCounter(): void;
+
+        /**
+         * Navigates to THREAD_LIST view in multithread widget if in-app chat is shown as React Component.
+         */
+        showThreadsList(): void;
 
         /**
          * This is used for requesting Location permissions for Android

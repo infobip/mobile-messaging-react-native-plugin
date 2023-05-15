@@ -143,6 +143,8 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
         // Keep: Required for RN built in Event Emitter Calls.
     }
 
+    //region BroadcastReceivers
+    //region Events
     private static final String EVENT_TOKEN_RECEIVED = "tokenReceived";
     private static final String EVENT_REGISTRATION_UPDATED = "registrationUpdated";
     private static final String EVENT_INSTALLATION_UPDATED = "installationUpdated";
@@ -154,30 +156,25 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
     private static final String EVENT_NOTIFICATION_TAPPED = "notificationTapped";
     private static final String EVENT_NOTIFICATION_ACTION_TAPPED = "actionTapped";
     private static final String EVENT_MESSAGE_RECEIVED = "messageReceived";
+
     private static final String EVENT_INAPPCHAT_UNREAD_MESSAGES_COUNT_UPDATED = "inAppChat.unreadMessageCounterUpdated";
+    private static final String EVENT_INAPPCHAT_VIEW_STATE_CHANGED = "inAppChat.viewStateChanged";
+    //endregion
 
-    private static final Map<String, String> broadcastEventMap = new HashMap<String, String>() {{
-        put(Event.TOKEN_RECEIVED.getKey(), EVENT_TOKEN_RECEIVED);
-        put(Event.REGISTRATION_CREATED.getKey(), EVENT_REGISTRATION_UPDATED);
-        put(Event.INSTALLATION_UPDATED.getKey(), EVENT_INSTALLATION_UPDATED);
-        put(Event.USER_UPDATED.getKey(), EVENT_USER_UPDATED);
-        put(Event.PERSONALIZED.getKey(), EVENT_PERSONALIZED);
-        put(Event.DEPERSONALIZED.getKey(), EVENT_DEPERSONALIZED);
-        put(GeoEvent.GEOFENCE_AREA_ENTERED.getKey(), EVENT_GEOFENCE_ENTERED);
-    }};
-
-    private static final Map<String, String> messageBroadcastEventMap = new HashMap<String, String>() {{
-        put(Event.MESSAGE_RECEIVED.getKey(), EVENT_MESSAGE_RECEIVED);
-        put(Event.NOTIFICATION_TAPPED.getKey(), EVENT_NOTIFICATION_TAPPED);
-        put(InteractiveEvent.NOTIFICATION_ACTION_TAPPED.getKey(), EVENT_NOTIFICATION_ACTION_TAPPED);
-        put(InAppChatEvent.UNREAD_MESSAGES_COUNTER_UPDATED.getKey(), EVENT_INAPPCHAT_UNREAD_MESSAGES_COUNT_UPDATED);
-    }};
-
+    //region MessageStorageBroadcastReceiver
     private static final Map<String, String> messageStorageEventMap = new HashMap<String, String>() {{
         put(MessageStoreAdapter.EVENT_MESSAGESTORAGE_START, MessageStoreAdapter.EVENT_MESSAGESTORAGE_START);
         put(MessageStoreAdapter.EVENT_MESSAGESTORAGE_SAVE, MessageStoreAdapter.EVENT_MESSAGESTORAGE_SAVE);
         put(MessageStoreAdapter.EVENT_MESSAGESTORAGE_FIND_ALL, MessageStoreAdapter.EVENT_MESSAGESTORAGE_FIND_ALL);
     }};
+
+    private static String getMessageStorageBroadcastEvent(Intent intent) {
+        if (intent == null || intent.getAction() == null) {
+            Log.w(Utils.TAG, "Cannot process event for broadcast, cause intent or action is null");
+            return null;
+        }
+        return messageStorageEventMap.get(intent.getAction());
+    }
 
     private final BroadcastReceiver messageStorageReceiver = new BroadcastReceiver() {
         @Override
@@ -206,6 +203,19 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
             }
         }
     };
+    //endregion
+
+    //region MessageBroadcastReceiver
+
+    /**
+     * For event caching, if plugin not yet initialized
+     */
+    private static final Map<String, String> messageBroadcastEventMap = new HashMap<String, String>() {{
+        put(Event.MESSAGE_RECEIVED.getKey(), EVENT_MESSAGE_RECEIVED);
+        put(Event.NOTIFICATION_TAPPED.getKey(), EVENT_NOTIFICATION_TAPPED);
+        put(InteractiveEvent.NOTIFICATION_ACTION_TAPPED.getKey(), EVENT_NOTIFICATION_ACTION_TAPPED);
+        put(InAppChatEvent.UNREAD_MESSAGES_COUNTER_UPDATED.getKey(), EVENT_INAPPCHAT_UNREAD_MESSAGES_COUNT_UPDATED);
+    }};
 
     private static String getMessageBroadcastEvent(Intent intent) {
         if (intent == null || intent.getAction() == null) {
@@ -214,18 +224,6 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
         }
         return messageBroadcastEventMap.get(intent.getAction());
     }
-
-    private static String getMessageStorageBroadcastEvent(Intent intent) {
-        if (intent == null || intent.getAction() == null) {
-            Log.w(Utils.TAG, "Cannot process event for broadcast, cause intent or action is null");
-            return null;
-        }
-        return messageStorageEventMap.get(intent.getAction());
-    }
-
-    /*
-    For event caching, if plugin not yet initialized
-    */
 
     public static class MessageEventReceiver extends BroadcastReceiver {
         @Override
@@ -272,6 +270,19 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
             return reactApplication.getReactNativeHost().getReactInstanceManager().getCurrentReactContext();
         }
     }
+    //endregion
+
+    //region CommonLibraryEventsBroadcastReceiver
+    private static final Map<String, String> broadcastEventMap = new HashMap<String, String>() {{
+        put(Event.TOKEN_RECEIVED.getKey(), EVENT_TOKEN_RECEIVED);
+        put(Event.REGISTRATION_CREATED.getKey(), EVENT_REGISTRATION_UPDATED);
+        put(Event.INSTALLATION_UPDATED.getKey(), EVENT_INSTALLATION_UPDATED);
+        put(Event.USER_UPDATED.getKey(), EVENT_USER_UPDATED);
+        put(Event.PERSONALIZED.getKey(), EVENT_PERSONALIZED);
+        put(Event.DEPERSONALIZED.getKey(), EVENT_DEPERSONALIZED);
+        put(GeoEvent.GEOFENCE_AREA_ENTERED.getKey(), EVENT_GEOFENCE_ENTERED);
+        put(InAppChatEvent.CHAT_VIEW_CHANGED.getKey(), EVENT_INAPPCHAT_VIEW_STATE_CHANGED);
+    }};
 
     private final BroadcastReceiver commonLibraryBroadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -312,6 +323,8 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
                 data = intent.getStringExtra(BroadcastParameter.EXTRA_CLOUD_TOKEN);
             } else if (Event.REGISTRATION_CREATED.getKey().equals(intent.getAction())) {
                 data = intent.getStringExtra(BroadcastParameter.EXTRA_INFOBIP_ID);
+            } else if (InAppChatEvent.CHAT_VIEW_CHANGED.getKey().equals(intent.getAction())) {
+                data = intent.getStringExtra(BroadcastParameter.EXTRA_CHAT_VIEW);
             }
 
             if (data == null) {
@@ -321,6 +334,37 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
             }
         }
     };
+    //endregion
+
+    private void registerBroadcastReceiver() {
+
+        IntentFilter commonLibIntentFilter = new IntentFilter();
+        for (String action : broadcastEventMap.keySet()) {
+            commonLibIntentFilter.addAction(action);
+        }
+
+        reactContext.registerReceiver(commonLibraryBroadcastReceiver, commonLibIntentFilter);
+
+        IntentFilter messageStorageIntentFilter = new IntentFilter();
+        for (String action : messageStorageEventMap.keySet()) {
+            messageStorageIntentFilter.addAction(action);
+        }
+
+        LocalBroadcastManager.getInstance(reactContext).registerReceiver(messageStorageReceiver, messageStorageIntentFilter);
+        broadcastReceiverRegistered = true;
+    }
+
+    private void unregisterBroadcastReceiver() {
+        if (!broadcastReceiverRegistered) return;
+        try {
+            reactContext.unregisterReceiver(commonLibraryBroadcastReceiver);
+            LocalBroadcastManager.getInstance(reactContext).unregisterReceiver(messageStorageReceiver);
+        } catch (IllegalArgumentException e) {
+            Log.d(Utils.TAG, "Can't unregister broadcast receivers");
+        }
+        broadcastReceiverRegistered = false;
+    }
+    //endregion
 
     @ReactMethod
     public void init(ReadableMap args, final Callback successCallback, final Callback errorCallback) throws JSONException {
@@ -417,40 +461,6 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
         if (configuration.inAppChatEnabled) {
             InAppChat.getInstance(context).activate();
         }
-    }
-
-    private void registerBroadcastReceiver() {
-
-        IntentFilter commonLibIntentFilter = new IntentFilter();
-        for (String action : broadcastEventMap.keySet()) {
-            commonLibIntentFilter.addAction(action);
-        }
-
-        reactContext.registerReceiver(commonLibraryBroadcastReceiver, commonLibIntentFilter);
-
-        IntentFilter messageActionIntentFilter = new IntentFilter();
-        for (String action : messageBroadcastEventMap.keySet()) {
-            messageActionIntentFilter.addAction(action);
-        }
-
-        IntentFilter messageStorageIntentFilter = new IntentFilter();
-        for (String action : messageStorageEventMap.keySet()) {
-            messageStorageIntentFilter.addAction(action);
-        }
-
-        LocalBroadcastManager.getInstance(reactContext).registerReceiver(messageStorageReceiver, messageStorageIntentFilter);
-        broadcastReceiverRegistered = true;
-    }
-
-    private void unregisterBroadcastReceiver() {
-        if (!broadcastReceiverRegistered) return;
-        try {
-            reactContext.unregisterReceiver(commonLibraryBroadcastReceiver);
-            LocalBroadcastManager.getInstance(reactContext).unregisterReceiver(messageStorageReceiver);
-        } catch (IllegalArgumentException e) {
-            Log.d(Utils.TAG, "Can't unregister broadcast receivers");
-        }
-        broadcastReceiverRegistered = false;
     }
 
     /**

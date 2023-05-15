@@ -4,12 +4,41 @@
     <style name="AppTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
         <!-- Customize your theme here. -->
     </style>
-    <style name="IB_AppTheme.Chat">
-        <item name="android:editTextBackground">@drawable/rn_edit_text_material</item>
-        <!--  If these values commented out, configuration will be set from web widget settings from the Infobip Portal-->
-        <!--        <item name="colorPrimary">#FF0000</item> &lt;!&ndash; color of toolbar background and send chat button tint &ndash;&gt;-->
-        <!--        <item name="colorPrimaryDark">#FF0000</item> &lt;!&ndash; color of status / notification bar &ndash;&gt;-->
-        <!--        <item name="colorControlNormal">@android:color/white</item> &lt;!&ndash; color of navigation icon in toolbar &ndash;&gt;-->
-        <!--        <item name="titleTextColor">@android:color/white</item> &lt;!&ndash; color of toolbar title text &ndash;&gt;-->
-    </style>
+
+<!--    Uncomment for In-app chat customizations, see https://github.com/infobip/mobile-messaging-react-native-plugin/wiki/In%E2%80%90app-chat#android-->
+<!--    <style name="IB_AppTheme.Chat">-->
+<!--        <item name="ibChatToolbarStyle">@style/InAppChat.Demo.Toolbar</item>-->
+<!--        <item name="ibChatAttachmentToolbarStyle">@style/InAppChat.Demo.Toolbar.AttachmentPreview</item>-->
+<!--        <item name="ibChatInputStyle">@style/InAppChat.Demo.Input</item>-->
+<!--        <item name="ibChatStyle">@style/InAppChat.Demo.Chat</item>-->
+<!--    </style>-->
+
+<!--    <style name="InAppChat"/>-->
+
+<!--    <style name="InAppChat.Demo.Toolbar" parent="InAppChat">-->
+<!--        <item name="ibChatNavigationIconTint">@android:color/white</item>-->
+<!--        <item name="ibChatTitleTextAppearance">@style/InAppChat.Demo.Toolbar.Title.TextAppearance</item>-->
+<!--        <item name="ibChatTitleTextColor">@android:color/white</item>-->
+<!--        <item name="ibChatTitleCentered">false</item>-->
+<!--        <item name="ibChatStatusBarIconsColorMode">light</item>-->
+<!--        <item name="ibChatToolbarBackgroundColor">@android:color/black</item>-->
+<!--    </style>-->
+
+<!--    <style name="InAppChat.Demo.Toolbar.Title.TextAppearance" parent="TextAppearance.MaterialComponents.Headline6">-->
+<!--        <item name="android:textStyle">italic</item>-->
+<!--        <item name="fontFamily">sans-serif-medium</item>-->
+<!--    </style>-->
+
+<!--    <style name="InAppChat.Demo.Toolbar.AttachmentPreview" parent="InAppChat.Demo.Toolbar">-->
+<!--        <item name="ibChatSubtitleCentered">true</item>-->
+<!--    </style>-->
+
+<!--    <style name="InAppChat.Demo.Input" parent="InAppChat">-->
+<!--        <item name="ibChatInputBackgroundColor">@android:color/white</item>-->
+<!--    </style>-->
+
+<!--    <style name="InAppChat.Demo.Chat" parent="InAppChat">-->
+<!--        <item name="ibChatBackgroundColor">@android:color/white</item>-->
+<!--    </style>-->
+
 </resources>

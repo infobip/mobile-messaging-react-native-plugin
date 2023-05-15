@@ -37,7 +37,12 @@ public class RNMMChatModule extends ReactContextBaseJavaModule implements Activi
 
     @ReactMethod
     public void showChat(ReadableMap args) {
-        InAppChat.getInstance(reactContext).inAppChatView().show();
+        InAppChat.getInstance(reactContext).inAppChatScreen().show();
+    }
+
+    @ReactMethod
+    public void showThreadsList() {
+        InAppChat.getInstance(reactContext).showThreadsList();
     }
 
     @ReactMethod
