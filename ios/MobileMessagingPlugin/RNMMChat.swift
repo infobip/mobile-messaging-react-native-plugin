@@ -48,13 +48,28 @@ class RNMMChat: NSObject  {
     @objc(setupChatSettings:)
     func setupChatSettings(settings: NSDictionary) {
         if let chatSettings = settings as? [String: AnyObject] {
-            MobileMessaging.inAppChat?.settings.configureWith(rawConfig: chatSettings)
+            MMChatSettings.settings.configureWith(rawConfig: chatSettings)
         }
     }
     
-    @objc(setLanguage:)
-    func setLanguage(localeString: String) {
-        MobileMessaging.inAppChat?.setLanguage(localeString)
+    @objc(setLanguage:onSuccess:onError:)
+    func setLanguage(localeString: NSString, onSuccess: @escaping RCTResponseSenderBlock, onError: @escaping RCTResponseSenderBlock) {
+        guard let chatVC = RNMMChatView.viewController else {
+            MobileMessaging.inAppChat?.setLanguage(String(localeString))
+            return
+        }
+        let localeS = String(localeString)
+        let separator = localeS.contains("_") ? "_" : "-"
+        let components = localeS.components(separatedBy: separator)
+        let lang = MMLanguage.mapLanguage(from: components.first ??
+                                                         String(localeS.prefix(2)))
+        chatVC.setLanguage(lang) { error in
+            if let error = error {
+                onError([error.reactNativeObject])
+            } else {
+                onSuccess(nil)
+            }
+        }    
     }
 
     @objc(sendContextualData:multiThreadStrategy:onSuccess:onError:)
@@ -69,5 +84,10 @@ class RNMMChat: NSObject  {
                 onSuccess(nil)
             }
         }
+    }
+
+    @objc(setJwt:)
+    func setJwt(jwt: String) {
+        MobileMessaging.inAppChat?.jwt = jwt
     }
 }

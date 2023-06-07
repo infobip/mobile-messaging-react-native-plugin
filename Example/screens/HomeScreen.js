@@ -65,6 +65,10 @@ function HomeScreen({navigation}) {
   }
 
   function showChatHandler() {
+//    call mobileMessaging.personalize() first, then setJwtProvider
+//    mobileMessaging.setJwtProvider(() => {
+//       return 'your JWT';
+//    });
     mobileMessaging.setLanguage('en');
     setTimeout(() => {
       mobileMessaging.sendContextualData(

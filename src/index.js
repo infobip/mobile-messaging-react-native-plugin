@@ -97,6 +97,7 @@ class MobileMessaging {
      *   - depersonalized
      *   - inAppChat.availabilityUpdated
      *   - inAppChat.unreadMessageCounterUpdated
+     *   - inAppChat.viewStateChanged
      *
      * @name subscribe
      * @param {String} eventName
@@ -543,18 +544,23 @@ class MobileMessaging {
      * The predefined messages prompted within the In-app chat (such as status updates, button titles, input field prompt) by default are
      * localized using system locale setting, but can be easily changed providing your locale string with the following formats:
      *  "es_ES", "es-ES" or "es"
+     * @name setLanguage
+     * @param localeString locale code to be set
+     * @param {Function} onSuccess success callback
+     * @param {Function} onError error callback
      */
-    setLanguage(localeString) {
-        RNMMChat.setLanguage(localeString);
+    setLanguage(localeString, onSuccess = function() {}, onError = function() {}) {
+        RNMMChat.setLanguage(localeString, onSuccess, onError);
     };
 
     /**
      * Set contextual data of the widget
      *
+     * @name sendContextualData
      * @param data - contextual data in the form of JSON string
      * @param allMultiThreadStrategy - multi-thread strategy flag, true -> ALL, false -> ACTIVE
-     * @param {Function} onSuccess. Success callback
-     * @param {Function} onError. Error callback
+     * @param {Function} onSuccess success callback
+     * @param {Function} onError error callback
      */
     sendContextualData(data, allMultiThreadStrategy = false, onSuccess = function() {}, onError = function() {}) {
         RNMMChat.sendContextualData(data, allMultiThreadStrategy, onSuccess, onError);
@@ -564,6 +570,8 @@ class MobileMessaging {
      * Returns unread in-app chat push messages counter.
      * The counter increments each time the application receives in-app chat push message
      * (this usually happens when chat screen is inactive or the application is in background/terminated state).
+     * @name getMessageCounter
+     * @param {Function} onResult message count callback
      */
     getMessageCounter(onResult) {
         RNMMChat.getMessageCounter(onResult);
@@ -572,6 +580,7 @@ class MobileMessaging {
     /**
      * MobileMessaging plugin automatically resets the counter to 0 whenever user opens the in-app chat screen.
      * However, use the following API in case you need to manually reset the counter.
+     * @name resetMessageCounter
      */
     resetMessageCounter() {
         RNMMChat.resetMessageCounter();
@@ -580,10 +589,43 @@ class MobileMessaging {
 
     /**
      * Navigates to THREAD_LIST view in multithread widget if in-app chat is shown as React Component.
+     * @name showThreadsList
      */
     showThreadsList() {
         RNMMChat.showThreadsList();
     };
+
+    /**
+     * Private global variable holding reference to android jwt update events subscription.
+     */
+    #jwtSubscription = null;
+
+    /**
+     * Provides JSON Web Token (JWT), to give in-app chat ability to authenticate.
+     *
+     * In android app, function can be triggered multiple times during in-app chat lifetime, due to various events like screen orientation change, internet re-connection.
+     * If you can ensure JWT expiration time is longer than in-app chat lifetime, you can return cached token, otherwise it is important to provide fresh new token for each invocation.
+     *
+     * @name setJwtProvider
+     * @param {Function} jwtProvider callback returning JWT token
+     */
+    setJwtProvider(jwtProvider) {
+        const setJwt = () => {
+            RNMMChat.setJwt(jwtProvider());
+        };
+        setJwt();
+
+        if (Platform.OS === "android") {
+            if (jwtProvider != null) {
+                if (this.#jwtSubscription != null) {
+                    this.unsubscribe(this.#jwtSubscription);
+                }
+                this.#jwtSubscription = this.subscribe('inAppChat.jwtRequested', () => {
+                    setJwt();
+                });
+            }
+        }
+    }
 
     /**
      * Registering for POST_NOTIFICATIONS permission for Android 13+

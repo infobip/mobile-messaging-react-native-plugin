@@ -16,11 +16,43 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 
+import org.infobip.mobile.messaging.MobileMessaging;
 import org.infobip.mobile.messaging.chat.InAppChat;
+import org.infobip.mobile.messaging.mobileapi.MobileMessagingError;
+import org.infobip.mobile.messaging.mobileapi.Result;
+import org.infobip.mobile.messaging.util.StringUtils;
 
 public class RNMMChatModule extends ReactContextBaseJavaModule implements ActivityEventListener, LifecycleEventListener {
 
+    private static final String EVENT_INAPPCHAT_JWT_REQUESTED = "inAppChat.jwtRequested";
+
     private static ReactApplicationContext reactContext;
+
+    private String jwt = null;
+    private boolean isJwtProviderInitialInvocation = true;
+    private final InAppChat.JwtProvider jwtProvider = () -> {
+        if (!isJwtProviderInitialInvocation) {
+            //send event to JS to generate new JWT and invoke native setter, then wait 150ms and return generated JWT
+            ReactNativeEvent.send(EVENT_INAPPCHAT_JWT_REQUESTED, reactContext);
+            try {
+                Thread waitThread = new Thread(() -> {
+                    try {
+                        Thread.sleep(150);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        Log.e(Utils.TAG, "Thread Interrupted");
+                    }
+                });
+                waitThread.start();
+                waitThread.join();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                Log.e(Utils.TAG, "Thread Interrupted");
+            }
+        }
+        isJwtProviderInitialInvocation = false;
+        return this.jwt;
+    };
 
     RNMMChatModule(ReactApplicationContext context) {
         super(context);
@@ -56,8 +88,18 @@ public class RNMMChatModule extends ReactContextBaseJavaModule implements Activi
     }
 
     @ReactMethod
-    public void setLanguage(String localeString) {
-        InAppChat.getInstance(reactContext).setLanguage(localeString);
+    public void setLanguage(String localeString, final Callback onSuccess, final Callback onError) {
+        InAppChat.getInstance(reactContext).setLanguage(localeString, new MobileMessaging.ResultListener<String>() {
+            @Override
+            public void onResult(Result<String, MobileMessagingError> result) {
+                if (result.isSuccess()) {
+                    onSuccess.invoke(result.getData());
+                }
+                else {
+                    onError.invoke(Utils.callbackError(result.getError().getMessage(), null));
+                }
+            }
+        });
     }
 
     @ReactMethod
@@ -67,6 +109,19 @@ public class RNMMChatModule extends ReactContextBaseJavaModule implements Activi
             onSuccess.invoke();
         } catch (Throwable t) {
             onError.invoke(Utils.callbackError(t.getMessage(), null));
+        }
+    }
+
+    @ReactMethod
+    public void setJwt(String jwt) {
+        this.jwt = jwt;
+        InAppChat inAppChat = InAppChat.getInstance(reactContext);
+        if (inAppChat.getJwtProvider() == null) {
+            inAppChat.setJwtProvider(jwtProvider);
+            this.isJwtProviderInitialInvocation = true;
+        }
+        else if (inAppChat.getJwtProvider() != null && StringUtils.isBlank(jwt)) {
+            inAppChat.setJwtProvider(null);
         }
     }
 

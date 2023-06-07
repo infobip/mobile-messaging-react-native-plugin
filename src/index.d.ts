@@ -467,35 +467,52 @@ declare namespace MobileMessagingReactNative {
          *
          * @param data contextual data in the form of JSON string
          * @param allMultiThreadStrategy multi-thread strategy flag, true -> ALL, false -> ACTIVE
-         * @param {Function} onSuccess. Success callback
-         * @param {Function} onError. Error callback
+         * @param {Function} onSuccess success callback
+         * @param {Function} onError error callback
          */
-        sendContextualData(data: string, allMultiThreadStrategy: boolean, onSuccess: () => void, onError: (error: string) => void): void;
+        sendContextualData(data: string, allMultiThreadStrategy: boolean, onSuccess: () => void, onError: (error: MobileMessagingError) => void): void;
 
         /**
          * Set chat language
-         *
-         * @param localeString
+         * @name setLanguage
+         * @param localeString locale code to be set
+         * @param {Function} onSuccess success callback
+         * @param {Function} onError error callback
          */
-        setLanguage(localeString: string): void;
+        setLanguage(localeString: string, onSuccess: (locale: string) => void, onError: (error: MobileMessagingError) => void): void;
 
         /**
          * Returns unread in-app chat push messages counter.
          * The counter increments each time the application receives in-app chat push message
          * (this usually happens when chat screen is inactive or the application is in background/terminated state).
+         * @name getMessageCounter
+         * @param {Function} onResult message count callback
          */
         getMessageCounter(onResult: (counter: number) => void): void;
 
         /**
          * MobileMessaging plugin automatically resets the counter to 0 whenever user opens the in-app chat screen.
          * However, use the following API in case you need to manually reset the counter.
+         * @name resetMessageCounter
          */
         resetMessageCounter(): void;
 
         /**
          * Navigates to THREAD_LIST view in multithread widget if in-app chat is shown as React Component.
+         * @name showThreadsList
          */
         showThreadsList(): void;
+
+        /**
+         * Provides JSON Web Token (JWT), to give in-app chat ability to authenticate.
+         *
+         * In android app, function can be triggered multiple times during in-app chat lifetime, due to various events like screen orientation change, internet re-connection.
+         * If you can ensure JWT expiration time is longer than in-app chat lifetime, you can return cached token, otherwise it is important to provide fresh new token for each invocation.
+         *
+         * @name setJwtProvider
+         * @param {Function} jwtProvider callback returning JWT token
+         */
+        setJwtProvider(jwtProvider: () => string): void;
 
         /**
          * This is used for requesting Location permissions for Android
