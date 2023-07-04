@@ -119,10 +119,10 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
         MobileMessaging.privacySettings.carrierInfoSendingDisabled = configuration.privacySettings[RNMobileMessagingConfiguration.Keys.carrierInfoSendingDisabled].unwrap(orDefault: false)
         MobileMessaging.privacySettings.userDataPersistingDisabled = configuration.privacySettings[RNMobileMessagingConfiguration.Keys.userDataPersistingDisabled].unwrap(orDefault: false)
 
-        var mobileMessaging = MobileMessaging.withApplicationCode(configuration.appCode, notificationType: configuration.notificationType, forceCleanup: configuration.forceCleanup)
+        var mobileMessaging = MobileMessaging.withApplicationCode(configuration.appCode, notificationType: configuration.notificationType)
 
         if configuration.geofencingEnabled {
-           mobileMessaging = mobileMessaging?.withGeofencingService()
+            mobileMessaging = mobileMessaging?.withGeofencingService()
         }
 
         if let storageAdapter = messageStorageAdapter, configuration.messageStorageEnabled {

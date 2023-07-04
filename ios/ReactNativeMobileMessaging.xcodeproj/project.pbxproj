@@ -19,6 +19,8 @@
 		A01DF5FD24802BDA00A65A31 /* RNMMChatViewManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A01DF5FB24802BDA00A65A31 /* RNMMChatViewManager.swift */; };
 		A01DF5FE24802BDA00A65A31 /* RNMMChatViewManagerBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = A01DF5FC24802BDA00A65A31 /* RNMMChatViewManagerBridge.m */; };
 		A069E87E23F417870065188B /* RNMobileMessagingStorageAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A069E87D23F417870065188B /* RNMobileMessagingStorageAdapter.swift */; };
+		A867C79C2A4325AD00CF2C27 /* RNMMWebRTCUIBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = A867C79A2A4325AC00CF2C27 /* RNMMWebRTCUIBridge.m */; };
+		A867C79D2A4325AD00CF2C27 /* RNMMWebRTCUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = A867C79B2A4325AD00CF2C27 /* RNMMWebRTCUI.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -48,6 +50,8 @@
 		A01DF5FB24802BDA00A65A31 /* RNMMChatViewManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RNMMChatViewManager.swift; sourceTree = "<group>"; };
 		A01DF5FC24802BDA00A65A31 /* RNMMChatViewManagerBridge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNMMChatViewManagerBridge.m; sourceTree = "<group>"; };
 		A069E87D23F417870065188B /* RNMobileMessagingStorageAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNMobileMessagingStorageAdapter.swift; sourceTree = "<group>"; };
+		A867C79A2A4325AC00CF2C27 /* RNMMWebRTCUIBridge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNMMWebRTCUIBridge.m; sourceTree = "<group>"; };
+		A867C79B2A4325AD00CF2C27 /* RNMMWebRTCUI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RNMMWebRTCUI.swift; sourceTree = "<group>"; };
 		CEEB052400B05B1AC8F953D0 /* Pods-ReactNativeMobileMessaging.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ReactNativeMobileMessaging.release.xcconfig"; path = "Target Support Files/Pods-ReactNativeMobileMessaging/Pods-ReactNativeMobileMessaging.release.xcconfig"; sourceTree = "<group>"; };
 		E00237C20633CB07301167F3 /* Pods_ReactNativeMobileMessaging.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ReactNativeMobileMessaging.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -86,6 +90,8 @@
 		A036A57D24AA7A2600B426EF /* MobileMessagingPlugin */ = {
 			isa = PBXGroup;
 			children = (
+				A867C79B2A4325AD00CF2C27 /* RNMMWebRTCUI.swift */,
+				A867C79A2A4325AC00CF2C27 /* RNMMWebRTCUIBridge.m */,
 				A01DF5FB24802BDA00A65A31 /* RNMMChatViewManager.swift */,
 				A01DF5FC24802BDA00A65A31 /* RNMMChatViewManagerBridge.m */,
 				A01DF5F3247D2D6800A65A31 /* RNMMChat.swift */,
@@ -205,6 +211,7 @@
 				76D6D32D23915E1E00F1E02B /* RNMobileMessaging.swift in Sources */,
 				A006027D23E9586B007BE88B /* RNMobileMessagingErrorExtension.swift in Sources */,
 				A01DF5FE24802BDA00A65A31 /* RNMMChatViewManagerBridge.m in Sources */,
+				A867C79C2A4325AD00CF2C27 /* RNMMWebRTCUIBridge.m in Sources */,
 				A006029023E9AB3C007BE88B /* RNMobileMessagingUtils.swift in Sources */,
 				A01DF5F5247D2D6900A65A31 /* RNMMChat.swift in Sources */,
 				A006028E23E9AB27007BE88B /* RNMobileMessagingEventsManager.swift in Sources */,
@@ -213,6 +220,7 @@
 				76D6D32F239161D700F1E02B /* RNMobileMessagingBridge.m in Sources */,
 				A01DF5FD24802BDA00A65A31 /* RNMMChatViewManager.swift in Sources */,
 				A069E87E23F417870065188B /* RNMobileMessagingStorageAdapter.swift in Sources */,
+				A867C79D2A4325AD00CF2C27 /* RNMMWebRTCUI.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

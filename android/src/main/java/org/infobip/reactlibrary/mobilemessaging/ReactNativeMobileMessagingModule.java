@@ -369,6 +369,7 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
     @ReactMethod
     public void init(ReadableMap args, final Callback successCallback, final Callback errorCallback) throws JSONException {
         final Configuration configuration = Configuration.resolveConfiguration(ReactNativeJson.convertMapToJson(args));
+        ConfigCache.getInstance().setConfiguration(configuration);
 
         final Application context = (Application) reactContext.getApplicationContext();
 

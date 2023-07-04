@@ -23,6 +23,9 @@ declare namespace MobileMessagingReactNative {
          * The application code of your Application from Push Portal website
          */
         applicationCode: string;
+        webRTCUI?: {
+            applicationId: string;
+        } | undefined;
         geofencingEnabled?: boolean | undefined;
         inAppChatEnabled?: boolean | undefined;
         /**
@@ -32,7 +35,6 @@ declare namespace MobileMessagingReactNative {
         defaultMessageStorage?: boolean | undefined;
         ios?: {
             notificationTypes?: string[] | undefined;
-            forceCleanup?: boolean | undefined;
             logging?: boolean | undefined
         } | undefined;
         android?: {
@@ -479,7 +481,7 @@ declare namespace MobileMessagingReactNative {
          * @param {Function} onSuccess success callback
          * @param {Function} onError error callback
          */
-        setLanguage(localeString: string, onSuccess: (locale: string) => void, onError: (error: MobileMessagingError) => void): void;
+        setLanguage(localeString: string, onSuccess: () => void, onError: (error: MobileMessagingError) => void): void;
 
         /**
          * Returns unread in-app chat push messages counter.
@@ -531,3 +533,22 @@ declare namespace MobileMessagingReactNative {
 }
 
 declare var mobileMessaging: MobileMessagingReactNative.Api;
+
+declare namespace WebRTCUI {
+        /**
+         * Manually enable WebRTCUI calls.
+         * @name enableCalls
+         * @param {Function} onSuccess success callback
+         * @param {Function} onError error callback
+         */
+        enableCalls(onSuccess: () => void, onError: (error: MobileMessagingError) => void): void;
+
+        /**
+         * Manually disable WebRTCUI calls if they were previously enabled. Note: This action may need up to half a minute to be completed,
+         * and calls may still be received in the meantime.
+         * @name disableCalls
+         * @param {Function} onSuccess success callback
+         * @param {Function} onError error callback
+         */
+        disableCalls(onSuccess: () => void, onError: (error: MobileMessagingError) => void): void;
+}

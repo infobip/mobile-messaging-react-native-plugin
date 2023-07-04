@@ -19,7 +19,8 @@ class RNMobileMessagingConfiguration {
         static let applicationCodePersistingDisabled = "applicationCodePersistingDisabled"
         static let geofencingEnabled = "geofencingEnabled"
         static let applicationCode = "applicationCode"
-        static let forceCleanup = "forceCleanup"
+        static let webRTCUI = "webRTCUI"
+        static let applicationId = "applicationId"
         static let logging = "logging"
         static let defaultMessageStorage = "defaultMessageStorage"
         static let notificationTypes = "notificationTypes"
@@ -31,11 +32,11 @@ class RNMobileMessagingConfiguration {
     }
 
     let appCode: String
+    let webRTCUI: [String: AnyObject]?
     let geofencingEnabled: Bool
     let messageStorageEnabled: Bool
     let defaultMessageStorage: Bool
     let notificationType: MMUserNotificationType
-    let forceCleanup: Bool
     let logging: Bool
     let privacySettings: [String: Any]
     let reactNativePluginVersion: String
@@ -51,8 +52,8 @@ class RNMobileMessagingConfiguration {
         }
 
         self.appCode = appCode
+        self.webRTCUI = rawConfig[RNMobileMessagingConfiguration.Keys.webRTCUI] as? [String: AnyObject]
         self.geofencingEnabled = rawConfig[RNMobileMessagingConfiguration.Keys.geofencingEnabled].unwrap(orDefault: false)
-        self.forceCleanup = ios[RNMobileMessagingConfiguration.Keys.forceCleanup].unwrap(orDefault: false)
         self.logging = ios[RNMobileMessagingConfiguration.Keys.logging].unwrap(orDefault: false)
         self.defaultMessageStorage = rawConfig[RNMobileMessagingConfiguration.Keys.defaultMessageStorage].unwrap(orDefault: false)
         self.messageStorageEnabled = rawConfig[RNMobileMessagingConfiguration.Keys.messageStorage] != nil ? true : false

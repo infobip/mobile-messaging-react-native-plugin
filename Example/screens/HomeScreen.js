@@ -1,5 +1,5 @@
 import {Alert, Linking, Platform, View} from 'react-native';
-import {mobileMessaging} from 'infobip-mobile-messaging-react-native-plugin';
+import {mobileMessaging, webRTCUI} from 'infobip-mobile-messaging-react-native-plugin';
 
 import Colors from '../constants/Colors';
 import PrimaryButton from '../components/PrimaryButton';
@@ -101,6 +101,20 @@ function HomeScreen({navigation}) {
     navigation.navigate('MultiThreadChatScreen');
   }
 
+  function enableWebRTC() {
+    webRTCUI.enableCalls(
+        () => console.log('WebRTCUI enabled calls'),
+        error => console.log('WebRTCUI could not enable calls, error: ' + JSON.stringify(error)),
+    );
+  }
+
+   function disableWebRTC() {
+     webRTCUI.disableCalls(
+        () => console.log('WebRTCUI disabled calls'),
+        error => console.log('WebRTCUI could not disable calls, error: ' + JSON.stringify(error)),
+    );
+  }
+
   let subscriptionDeeplink;
   let subscriptionNotificationTapped;
 
@@ -195,6 +209,12 @@ function HomeScreen({navigation}) {
       </PrimaryButton>
       <PrimaryButton onPress={showMTChatSubviewHandler}>
         Show Chat (React Component with Multi-thread handling)
+      </PrimaryButton>
+      <PrimaryButton onPress={enableWebRTC}>
+        Enable calls
+      </PrimaryButton>
+      <PrimaryButton onPress={disableWebRTC}>
+        Disable calls
       </PrimaryButton>
     </View>
   );

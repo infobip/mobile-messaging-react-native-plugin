@@ -9,7 +9,7 @@ import {
 import type {Rationale} from 'react-native/Libraries/PermissionsAndroid/PermissionsAndroid';
 
 
-const { ReactNativeMobileMessaging, RNMMChat } = NativeModules;
+const { ReactNativeMobileMessaging, RNMMChat, RNMMWebRTCUI } = NativeModules;
 
 export default ReactNativeMobileMessaging;
 
@@ -136,12 +136,14 @@ class MobileMessaging {
      * Configuration format:
      *	{
      *		applicationCode: '<The application code of your Application from Push Portal website>',
+     *		webRTCUI: {
+     *			applicationId: <String>
+     *		},
      *		geofencingEnabled: true,
      *		messageStorage: '<Message storage save callback>',
      *		defaultMessageStorage: true,
      *		ios: {
      *			notificationTypes: ['alert', 'sound', 'badge'],
-     *			forceCleanup: <Boolean>,
      *			logging: <Boolean>
      *		},
      *	    android: {
@@ -699,3 +701,31 @@ class MobileMessaging {
 export {ChatView, RNMMChatView} from './components/RNMMChatViewNativeComponent';
 
 export const mobileMessaging = new MobileMessaging();
+
+class WebRTCUI {
+    /**
+     * Manually enable WebRTCUI calls, provided a valid application Id exists in the webRTCUI configuration. This function is used to control when to start 
+     * calls, for example if you want to enabled it only after a successful user authentication. Note: Device settings, such as "Do not disturb" modes, will 
+     * ignore this method until the operating system allows calls.
+     * @name enableCalls
+     * @param {Function} onSuccess success callback
+     * @param {Function} onError error callback
+     */
+    enableCalls(onSuccess = function() {}, onError = function() {}){
+        RNMMWebRTCUI.enableCalls(onSuccess, onError);
+    }
+
+    /**
+     * Manually disable WebRTCUI calls. This function is used to control when to stop the calls, for example after a user log out. Note: This action may need
+     * up to half a minute to be completed, and calls may still be received in the meantime.
+     * @name disableCalls
+     * @param {Function} onSuccess success callback
+     * @param {Function} onError error callback
+     */
+    disableCalls(onSuccess = function() {}, onError = function() {}) {
+        RNMMWebRTCUI.disableCalls(onSuccess, onError);
+    }
+
+}
+
+export const webRTCUI = new WebRTCUI();

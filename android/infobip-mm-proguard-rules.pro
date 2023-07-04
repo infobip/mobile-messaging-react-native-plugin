@@ -11,4 +11,11 @@
 
 # Application classes that will be serialized/deserialized over Gson
 -keep class org.infobip.reactlibrary.mobilemessaging.Configuration* { *; }
+-keep class org.infobip.reactlibrary.mobilemessaging.Configuration$* { *; }
 -keep class org.infobip.reactlibrary.mobilemessaging.CacheManager* { *; }
+
+# InfobipRtcUi classes that are accessed via reflection
+-keep class com.infobip.webrtc.ui.InfobipRtcUi$Builder { *; }
+-keep class com.infobip.webrtc.ui.SuccessListener { *; }
+-keep class com.infobip.webrtc.ui.ErrorListener { *; }
+-keep class com.infobip.webrtc.ui.InfobipRtcUi { *; }

@@ -11,6 +11,7 @@ def overrideGmsVersion = getRootProjectProperty('overrideGmsVersion', '')
 def overrideFirebaseVersion = getRootProjectProperty('overrideFirebaseVersion', '')
 def overrideKotlinVersion = getRootProjectProperty('overrideKotlinVersion', '')
 def withCryptorMigration = getRootProjectProperty('withCryptorMigration', false)
+def withWebRTCUI = getRootProjectProperty('withWebRTCUI', false)
 
 apply plugin: 'com.android.library'
 apply plugin: 'maven-publish'
@@ -109,6 +110,11 @@ dependencies {
         }
         if (!overrideFirebaseVersion.empty) {
             exclude group: 'com.google.firebase', module: 'firebase-messaging'
+        }
+    }
+    if (withWebRTCUI.toBoolean()) {
+        implementation implementation("com.infobip:infobip-rtc-ui:$mmVersion") {
+            transitive = true
         }
     }
     if (!overrideGmsVersion.empty) {

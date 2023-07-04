@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="org.infobip.reactlibrary.mobilemessaging">
+    package="org.infobip.reactlibrary.mobilemessaging">
 
     <!-- Mobile Messaging permissions -->
 
@@ -8,35 +8,34 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <uses-permission android:name="${applicationId}.permission.C2D_MESSAGE" />
-    <permission android:name="${applicationId}.permission.C2D_MESSAGE" android:protectionLevel="signature" />
+
+    <permission
+        android:name="${applicationId}.permission.C2D_MESSAGE"
+        android:protectionLevel="signature" />
 
     <!-- Needed for push notifications that contain VIBRATE flag. Optional, but recommended. -->
     <uses-permission android:name="android.permission.VIBRATE" />
 
     <!-- /Mobile Messaging permissions -->
 
+    <!-- Infobip rtc ui permissions -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <!-- Infobip rtc ui permissions -->
+
     <application>
-
         <!-- Mobile Messaging components -->
+        <service
+            android:name="org.infobip.mobile.messaging.cloud.MobileMessagingCloudService"
+            android:permission="android.permission.BIND_JOB_SERVICE"
+            android:exported="false" />
 
         <service
-                android:name="org.infobip.mobile.messaging.cloud.firebase.MobileMessagingFirebaseService"
-                android:exported="false" >
-            <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
-            </intent-filter>
-        </service>
-
-        <service
-                android:name="org.infobip.mobile.messaging.cloud.MobileMessagingCloudService"
-                android:permission="android.permission.BIND_JOB_SERVICE"
-                android:exported="false" >
-        </service>
-
-        <service
-                android:name="org.infobip.mobile.messaging.platform.MobileMessagingJobService"
-                android:enabled="false"
-                android:exported="false"
+            android:name="org.infobip.mobile.messaging.platform.MobileMessagingJobService"
+            android:enabled="false"
+            android:exported="false"
                 android:permission="android.permission.BIND_JOB_SERVICE" />
 
         <receiver

@@ -6,6 +6,7 @@ install! 'cocoapods', :deterministic_uuids => false
 
 target 'Example' do
   config = use_native_modules!
+  $WebRTCUIEnabled = true
 
   # Flags change depending on the env values.
   flags = get_default_flags()
@@ -45,6 +46,13 @@ target 'Example' do
             if (build_phase.respond_to?(:name) && build_phase.name.eql?('[CP-User] Generate Specs'))
               target.build_phases.move(build_phase, 0)
             end
+          end
+        end
+
+        if (target.name&.eql?('infobip-mobile-messaging-react-native-plugin'))
+          target.build_configurations.each do |config|
+            config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] = '$(inherited) COCOAPODS=1 WEBRTCUI_ENABLED=1'
+            config.build_settings['OTHER_SWIFT_FLAGS'] = '$(inherited) -D DEBUG -D WEBRTCUI_ENABLED'
           end
         end
 

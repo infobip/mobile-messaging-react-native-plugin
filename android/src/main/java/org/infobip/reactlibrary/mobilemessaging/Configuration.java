@@ -41,6 +41,10 @@ class Configuration {
         List<Action> actions;
     }
 
+    class WebRTCUI {
+        String applicationId;
+    }
+
     AndroidConfiguration android;
     String applicationCode;
     boolean geofencingEnabled;
@@ -51,6 +55,7 @@ class Configuration {
     String reactNativePluginVersion = "unknown";
     PrivacySettings privacySettings = new PrivacySettings();
     List<Category> notificationCategories = new ArrayList<Category>();
+    WebRTCUI webRTCUI;
 
     @NonNull
     static Configuration resolveConfiguration(JSONObject args) throws JSONException {

@@ -14,6 +14,7 @@ import TestDeeplinkingScreen from './screens/testDeeplinkingScreen';
 import TestDeeplinkingScreen2 from './screens/testDeeplinkingScreen2';
 
 import {mobileMessaging} from 'infobip-mobile-messaging-react-native-plugin';
+import {webRTCUI} from 'infobip-mobile-messaging-react-native-plugin';
 import Colors from './constants/Colors';
 import MyMessageStorage from './constants/MyMessageStorage';
 import NativeDialogManagerAndroid from 'react-native/Libraries/NativeModules/specs/NativeDialogManagerAndroid';
@@ -39,7 +40,10 @@ export default class App extends Component {
   }
 
   configuration = {
-    applicationCode: 'Your application code',
+    applicationCode: 'Your mobile push profile application code',
+    webRTCUI: {
+      applicationId: 'Your webrtc application id'
+    },
     ios: {
       notificationTypes: ['alert', 'badge', 'sound'],
       logging: true,
@@ -47,6 +51,7 @@ export default class App extends Component {
     messageStorage: myMessageStorage,
     inAppChatEnabled: true,
     geofencingEnabled: false,
+    loggingEnabled: true,
   };
 
   constructor() {
@@ -160,8 +165,14 @@ export default class App extends Component {
   initMobileMessaging() {
     mobileMessaging.init(
       this.configuration,
-      () => this.updateLogInfo('MobileMessaging started'),
-      error => this.updateLogInfo('MobileMessaging error: ' + error),
+      () => {
+        this.updateLogInfo('MobileMessaging started');
+        webRTCUI.enableCalls(
+          () => console.log("Calls enabled"),
+          error => console.log("Calls enable error "+JSON.stringify(error))
+        )
+      },
+      error => this.updateLogInfo('MobileMessaging error: ' + JSON.stringify(error)),
     );
   }
 
@@ -252,6 +263,7 @@ export default class App extends Component {
           />
         </Stack.Navigator>
       </NavigationContainer>
+
     );
   }
 }
