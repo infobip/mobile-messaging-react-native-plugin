@@ -696,6 +696,33 @@ class MobileMessaging {
         return Promise.resolve(permissions);
     };
 
+    /**
+     * This method is iOS only and it has no effect in Android.
+     * Used to reset the In-app chat connection. The correct usage is to call it after stopConnection, when we want the messages to reappear, and push
+     * notifications to stop.
+     * In Android In-app chat connection is automatically established and stopped based on component lifecycle. Chat connection is active only when Lifecycle.State is at least Lifecycle.State.STARTED. Chat connection is stopped when Lifecycle.State is below Lifecycle.State.STARTED.
+     * @name restartConnection
+     */
+    restartConnection() {
+        if (Platform.OS === "android") {
+             return;
+        }
+        RNMMChat.restartConnection();
+    };
+
+    /**
+     * This method is iOS only and it has no effect in Android.
+     * Used to stop In-app chat connection. This has two effects: the chat message is cleared, and push notifications from incoming messages events
+     * start coming again to the device, even with the In-app chat in foreground. In order for the chat messages to reappear, simply call restartConnection.
+     * In Android In-app chat connection is automatically established and stopped based on component lifecycle. Chat connection is active only when Lifecycle.State is at least Lifecycle.State.STARTED. Chat connection is stopped when Lifecycle.State is below Lifecycle.State.STARTED.
+     * @name stopConnection
+     */
+    stopConnection() {
+        if (Platform.OS === "android") {
+             return;
+        }
+        RNMMChat.stopConnection();
+    };
 }
 
 export {ChatView, RNMMChatView} from './components/RNMMChatViewNativeComponent';

@@ -52,7 +52,7 @@ target 'Example' do
         if (target.name&.eql?('infobip-mobile-messaging-react-native-plugin'))
           target.build_configurations.each do |config|
             config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] = '$(inherited) COCOAPODS=1 WEBRTCUI_ENABLED=1'
-            config.build_settings['OTHER_SWIFT_FLAGS'] = '$(inherited) -D DEBUG -D WEBRTCUI_ENABLED'
+            config.build_settings['OTHER_SWIFT_FLAGS'] = '$(inherited) -D WEBRTCUI_ENABLED'
           end
         end
 

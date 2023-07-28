@@ -90,4 +90,14 @@ class RNMMChat: NSObject  {
     func setJwt(jwt: String) {
         MobileMessaging.inAppChat?.jwt = jwt
     }
+
+    @objc(restartConnection)
+    func restartConnection() {
+        RNMMChatView.viewController?.restartConnection()
+    }
+
+    @objc(stopConnection)
+    func stopConnection() {
+        RNMMChatView.viewController?.stopConnection()
+    }
 }

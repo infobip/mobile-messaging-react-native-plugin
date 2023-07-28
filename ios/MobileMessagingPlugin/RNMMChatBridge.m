@@ -24,6 +24,8 @@ RCT_EXTERN_METHOD(setLanguage:(NSString *)data onSuccess:(RCTResponseSenderBlock
 RCT_EXTERN_METHOD(setJwt:)
 RCT_EXTERN_METHOD(sendContextualData:(NSString *)data multiThreadStrategy:(BOOL)multiThreadStrategy onSuccess:(RCTResponseSenderBlock)successCallback onError:(RCTResponseSenderBlock)errorCallback)
 RCT_EXTERN_METHOD(showThreadsList)
+RCT_EXTERN_METHOD(restartConnection)
+RCT_EXTERN_METHOD(stopConnection)
 
 - (dispatch_queue_t)methodQueue {
    return dispatch_get_main_queue();
