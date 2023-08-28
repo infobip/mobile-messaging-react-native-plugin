@@ -232,7 +232,7 @@ export default class App extends Component {
                 fontWeight: 'bold',
               },
             }}
-          />          
+          />
           <Stack.Screen
             name="TestDeeplinking"
             component={TestDeeplinkingScreen}

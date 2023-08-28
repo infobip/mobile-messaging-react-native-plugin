@@ -44,11 +44,56 @@ class RNMMChat: NSObject  {
     func resetMessageCounter() {
         MobileMessaging.inAppChat?.resetMessageCounter()
     }
-
+    
     @objc(setupChatSettings:)
     func setupChatSettings(settings: NSDictionary) {
-        if let chatSettings = settings as? [String: AnyObject] {
-            MMChatSettings.settings.configureWith(rawConfig: chatSettings)
+        guard let settings = settings as? [String: AnyObject] else { return }
+        let chatSettings = MMChatSettings.sharedInstance        
+        
+        setNotNil(&chatSettings.title, CustomisationKeys.toolbarTitle.getString(from: settings))
+        /// Colors
+        setNotNil(&chatSettings.navBarItemsTintColor, CustomisationKeys.toolbarTintColor.getColor(from: settings))
+        setNotNil(&chatSettings.navBarColor, CustomisationKeys.toolbarBackgroundColor.getColor(from: settings))
+        setNotNil(&chatSettings.navBarTitleColor, CustomisationKeys.toolbarTitleColor.getColor(from: settings))
+    
+        setNotNil(&chatSettings.sendButtonTintColor, CustomisationKeys.sendButtonTintColor.getColor(from: settings))
+        setNotNil(&chatSettings.backgroungColor, CustomisationKeys.chatBackgroundColor.getColor(from: settings))
+        setNotNil(&chatSettings.errorLabelTextColor, CustomisationKeys.noConnectionAlertTextColor.getColor(from: settings))
+        setNotNil(&chatSettings.errorLabelBackgroundColor, CustomisationKeys.noConnectionAlertBackgroundColor.getColor(from: settings))
+        setNotNil(&chatSettings.advancedSettings.mainPlaceholderTextColor, CustomisationKeys.chatInputPlaceholderTextColor.getColor(from: settings))
+        setNotNil(&chatSettings.advancedSettings.typingIndicatorColor, CustomisationKeys.chatInputCursorColor.getColor(from: settings))
+        /// Icons
+        setNotNil(&chatSettings.advancedSettings.sendButtonIcon, CustomisationKeys.sendButtonIcon.getImage(from: settings))
+        setNotNil(&chatSettings.advancedSettings.attachmentButtonIcon, CustomisationKeys.attachmentButtonIcon.getImage(from: settings))
+        /// Attachment colors
+        setNotNil(&chatSettings.attachmentPreviewBarsColor, CustomisationKeys.attachmentPreviewBarsColor.getColor(from: settings))
+        setNotNil(&chatSettings.attachmentPreviewItemsColor, CustomisationKeys.attachmentPreviewItemsColor.getColor(from: settings))
+        
+        if let chatInputSeparatorVisible = CustomisationKeys.chatInputSeparatorVisible.getBool(from: settings) {
+            chatSettings.advancedSettings.isLineSeparatorHidden = !chatInputSeparatorVisible
+        }
+        /// Sizes
+        setNotNil(&chatSettings.advancedSettings.textContainerTopMargin, CustomisationKeys.textContainerTopMargin.getCGFloat(from: settings))
+        setNotNil(&chatSettings.advancedSettings.textContainerLeftPadding, CustomisationKeys.textContainerLeftPadding.getCGFloat(from: settings))
+        setNotNil(&chatSettings.advancedSettings.textContainerCornerRadius, CustomisationKeys.textContainerCornerRadius.getCGFloat(from: settings))
+        setNotNil(&chatSettings.advancedSettings.textViewTopMargin, CustomisationKeys.textViewTopMargin.getCGFloat(from: settings))
+        setNotNil(&chatSettings.advancedSettings.placeholderHeight, CustomisationKeys.placeholderHeight.getCGFloat(from: settings))
+        setNotNil(&chatSettings.advancedSettings.placeholderSideMargin, CustomisationKeys.placeholderSideMargin.getCGFloat(from: settings))
+        setNotNil(&chatSettings.advancedSettings.buttonHeight, CustomisationKeys.buttonHeight.getCGFloat(from: settings))
+        setNotNil(&chatSettings.advancedSettings.buttonTouchableOverlap, CustomisationKeys.buttonTouchableOverlap.getCGFloat(from: settings))
+        setNotNil(&chatSettings.advancedSettings.buttonRightMargin, CustomisationKeys.buttonRightMargin.getCGFloat(from: settings))
+        setNotNil(&chatSettings.advancedSettings.utilityButtonWidth, CustomisationKeys.utilityButtonWidth.getCGFloat(from: settings))
+        setNotNil(&chatSettings.advancedSettings.utilityButtonBottomMargin, CustomisationKeys.utilityButtonBottomMargin.getCGFloat(from: settings))
+        setNotNil(&chatSettings.advancedSettings.initialHeight, CustomisationKeys.initialHeight.getCGFloat(from: settings))
+        /// Fonts
+        if let mainFontSize = chatSettings.advancedSettings.mainFont?.pointSize {
+            setNotNil(&chatSettings.advancedSettings.mainFont, CustomisationKeys.mainFont.getFont(from: settings, with: mainFontSize))
+        }
+        if let charCountFontSize = chatSettings.advancedSettings.charCountFont?.pointSize {
+            setNotNil(&chatSettings.advancedSettings.charCountFont, CustomisationKeys.chatCountFont.getFont(from: settings, with: charCountFontSize))
+        }
+        func setNotNil<T>(_ forVariable: inout T, _ value:T?) {
+            if let value = value { forVariable = value }
         }
     }
     

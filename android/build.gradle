@@ -86,8 +86,13 @@ repositories {
 }
 
 dependencies {
-    def mmVersion = '8.4.0'
-
+    def mmVersion = '8.5.1'
+    //react and mm dependencies clash
+    if (!overrideKotlinVersion.empty) {
+        constraints {
+            implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$overrideKotlinVersion")
+        }
+    }
     implementation 'com.facebook.react:react-native:+'
     implementation "androidx.annotation:annotation:1.1.0"
 
@@ -100,10 +105,6 @@ dependencies {
     implementation "com.infobip:infobip-mobile-messaging-android-geo-sdk:$mmVersion@aar"
     implementation ("com.infobip:infobip-mobile-messaging-android-sdk:$mmVersion@aar") {
         transitive = true;
-
-        if (!overrideKotlinVersion.empty) {
-            exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk8'
-        }
 
         if (!overrideGmsVersion.empty) {
             exclude group: 'com.google.android.gms', module: 'play-services-location'

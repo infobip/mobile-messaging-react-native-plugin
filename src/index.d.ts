@@ -220,12 +220,59 @@ declare namespace MobileMessagingReactNative {
         properties: Record<string, any>;
     }
 
-    export interface ChatSettingsIOS {
-        title: string;
-        sendButtonColor: string;
-        navigationBarItemsColor: string;
-        navigationBarColor: string;
-        navigationBarTitleColor: string;
+    export interface ChatCustomizationConfiguration {
+        toolbarTitle: string;
+
+        toolbarTintColor: string;
+        toolbarBackgroundColor: string;
+        toolbarTitleColor: string;
+        chatBackgroundColor: string;
+        noConnectionAlertTextColor: string;
+        noConnectionAlertBackgroundColor: string;
+        chatInputPlaceholderTextColor: string;
+        chatInputCursorColor: string;
+        
+        sendButtonIconUri: string;
+        attachmentButtonIconUri: string;
+
+        chatInputSeparatorVisible: boolean;
+        // iOS only properties
+        attachmentPreviewBarsColor: string;
+        attachmentPreviewItemsColor: string;
+        textContainerTopMargin: double;
+        textContainerLeftPadding: double;
+        textContainerCornerRadius: double;
+        textViewTopMargin: double; 
+        placeholderHeight: double;
+        placeholderSideMargin: double;
+        buttonHeight: double;
+        buttonTouchableOverlap: double;
+        buttonRightMargin: double;
+        utilityButtonWidth: double;
+        utilityButtonBottomMargin: double;
+        initialHeight: double;
+        mainFont: string;
+        charCountFont: string;
+        //android only properties
+        navigationIconTint: string;
+        subtitleTextColor: string;
+        inputTextColor: string;
+        progressBarColor: string;
+        inputAttachmentIconTint: string;
+        inputSendIconTint: string;
+        inputSeparatorLineColor: string;
+        inputHintText: string;
+        subtitleText: string;
+        subtitleTextAppearanceRes: string;
+        subtitleCentered: boolean;
+        titleCentered: boolean;
+        inputTextAppearance: string;
+        networkConnectionErrorTextAppearanceRes: string;
+        networkConnectionErrorText: string;
+        navigationIconUri: string;
+        statusBarColorLight: boolean;
+        titleTextAppearanceRes: string;
+        statusBarBackgroundColor: string;
     }
 
     interface Api {
@@ -458,11 +505,17 @@ declare namespace MobileMessagingReactNative {
         showChat(config?: ChatConfig): void;
 
         /**
-         * Setup chat settings for iOS only
-         *
-         * @param settings
+         * Set custom style of In-app chat
+         * @param configuration various colors in hex format, texts, margins etc.
+         * example:
+         * {
+         *   toolbarTitle: "Chat",
+         *   toolbarTitleColor: "#FFFFFF",
+         *   toolbarTintColor: "#FFFFFF",
+         *   ...
+         * }
          */
-        setupiOSChatSettings(settings: ChatSettingsIOS): void;
+        setupChatSettings(configuration: ChatCustomizationConfiguration): void;
 
         /**
          * Set contextual data of the widget

@@ -9,7 +9,6 @@ import androidx.fragment.app.FragmentActivity;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableArray;
-import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
 
@@ -35,6 +34,9 @@ public class Utils {
         }
         if (resId == 0) {
             resId = res.getIdentifier(resPath, "raw", packageName);
+        }
+        if (resId == 0) {
+            resId = res.getIdentifier(resPath, "style", packageName);
         }
 
         return resId;

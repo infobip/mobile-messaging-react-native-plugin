@@ -525,21 +525,18 @@ class MobileMessaging {
     };
 
     /**
-     * You can define custom appearance for iOS chat view by providing a chat settings.
-     * Chat settings format:
-     *	{
-     *		title: '<chat title>',
-     *	    sendButtonColor: '<hex color string>',
-     *	    navigationBarItemsColor:'<hex color string>',
-     *	    navigationBarColor:'<hex color string>',
-     *	    navigationBarTitleColor:'<hex color string>',
+     * Set custom style of In-app chat
+     * @param configuration various colors in hex format, texts, margins etc.
+     * example:
+     * {
+     *   toolbarTitle: "Chat",
+     *   toolbarTitleColor: "#FFFFFF",
+     *   toolbarTintColor: "#FFFFFF",
+     *   ...
+     * }
      */
-    setupiOSChatSettings(chatSettings) {
-        if (Platform.OS === "ios") {
-            RNMMChat.setupChatSettings(chatSettings);
-        } else {
-            console.log("method setupiOSChatSettings isn't supported for Android, use settings.xml to provide appearance settings.");
-        }
+    setupChatSettings(configuration) {
+        RNMMChat.setupChatSettings(configuration)
     };
 
     /**

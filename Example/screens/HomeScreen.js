@@ -1,4 +1,4 @@
-import {Alert, Linking, Platform, View} from 'react-native';
+import {Alert, Linking, Platform, View, ScrollView} from 'react-native';
 import {mobileMessaging, webRTCUI} from 'infobip-mobile-messaging-react-native-plugin';
 
 import Colors from '../constants/Colors';
@@ -79,14 +79,6 @@ function HomeScreen({navigation}) {
       );
     }, 1000);
     mobileMessaging.showChat();
-    mobileMessaging.setupiOSChatSettings({
-      //If these values are commented out, configuration will be set from web widget settings from the Infobip Portal
-      // title: 'My Chat Title',
-      // sendButtonColor: '#FF0000',
-      // navigationBarColor: '#FF0000',
-      navigationBarTitleColor: Colors.tintWhite,
-      navigationBarItemsColor: Colors.tintWhite,
-    });
   }
 
   function showChatReactComponentHandler() {
@@ -181,8 +173,58 @@ function HomeScreen({navigation}) {
     }
   }
 
+  function customize(){
+    const sendButtonIcon = require("../assets/ic_send.png");
+    const attachmentIcon = require("../assets/ic_add_circle.png");
+    const navigationIcon = require("../assets/ic_back.png");
+    const resolveAssetSource = require('react-native/Libraries/Image/resolveAssetSource');
+
+    const settings = {
+     toolbarTitle: "Chat",
+     toolbarTitleColor: "#FFFFFF",
+     toolbarTintColor: "#FFFFFF",
+     toolbarBackgroundColor: "#673AB7",
+     sendButtonTintColor: "#9E9E9E",
+     chatBackgroundColor: "#D1C4E9",
+     noConnectionAlertTextColor: "#FFFFFF",
+     noConnectionAlertBackgroundColor: "#212121",
+     chatInputPlaceholderTextColor: "#757575",
+     chatInputCursorColor: "#9E9E9E",
+     chatInputBackgroundColor: "#D1C4E9",
+     sendButtonIconUri: resolveAssetSource(sendButtonIcon).uri,
+     attachmentButtonIconUri: resolveAssetSource(attachmentIcon).uri,
+     chatInputSeparatorVisible: true,
+     //android
+     navigationIconTint: "#FFFFFF",
+     subtitleTextColor: "#FFFFFF",
+     inputTextColor: "#212121",
+     progressBarColor: "#9E9E9E",
+     inputAttachmentIconTint: "#9E9E9E",
+     inputSendIconTint: "#9E9E9E",
+     inputSeparatorLineColor: "#BDBDBD",
+     inputHintText: "Message",
+     subtitleText: "#1",
+     subtitleTextAppearanceRes: "TextAppearance_AppCompat_Subtitle",
+     subtitleCentered: true,
+     titleCentered: true,
+     inputTextAppearance: "TextAppearance_AppCompat",
+     networkConnectionErrorTextAppearanceRes: "TextAppearance_AppCompat_Small",
+     networkConnectionErrorText: "Offline",
+     navigationIconUri: resolveAssetSource(navigationIcon).uri,
+     statusBarColorLight: true,
+     titleTextAppearanceRes: "TextAppearance_AppCompat_Title",
+     statusBarBackgroundColor: "#673AB7",
+     //ios
+     initialHeightUri: 125,
+     mainFont: 'Apple Chancery',
+    };
+    mobileMessaging.setupChatSettings(settings);
+
+    console.log("Style applied");
+  }
+
   return (
-    <View>
+    <ScrollView>
       <PrimaryButton onPress={personalizeHandler}>Personalize</PrimaryButton>
       <View>{button}</View>
       <PrimaryButton onPress={depersonalizeHandler}>
@@ -216,7 +258,10 @@ function HomeScreen({navigation}) {
       <PrimaryButton onPress={disableWebRTC}>
         Disable calls
       </PrimaryButton>
-    </View>
+      <PrimaryButton onPress={customize}>
+        Runtime customization
+      </PrimaryButton>
+    </ScrollView>
   );
 }
 

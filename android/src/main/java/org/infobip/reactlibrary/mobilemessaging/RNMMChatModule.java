@@ -1,7 +1,13 @@
 package org.infobip.reactlibrary.mobilemessaging;
 
+import static org.infobip.reactlibrary.mobilemessaging.Utils.getResId;
+
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -18,9 +24,19 @@ import com.facebook.react.bridge.ReadableMap;
 
 import org.infobip.mobile.messaging.MobileMessaging;
 import org.infobip.mobile.messaging.chat.InAppChat;
+import org.infobip.mobile.messaging.chat.view.styles.InAppChatInputViewStyle;
+import org.infobip.mobile.messaging.chat.view.styles.InAppChatStyle;
+import org.infobip.mobile.messaging.chat.view.styles.InAppChatTheme;
+import org.infobip.mobile.messaging.chat.view.styles.InAppChatToolbarStyle;
 import org.infobip.mobile.messaging.mobileapi.MobileMessagingError;
 import org.infobip.mobile.messaging.mobileapi.Result;
 import org.infobip.mobile.messaging.util.StringUtils;
+import org.infobip.reactlibrary.mobilemessaging.datamappers.ReactNativeJson;
+import org.json.JSONException;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 
 public class RNMMChatModule extends ReactContextBaseJavaModule implements ActivityEventListener, LifecycleEventListener {
 
@@ -123,6 +139,80 @@ public class RNMMChatModule extends ReactContextBaseJavaModule implements Activi
         else if (inAppChat.getJwtProvider() != null && StringUtils.isBlank(jwt)) {
             inAppChat.setJwtProvider(null);
         }
+    }
+
+    @ReactMethod
+    public void setupChatSettings(ReadableMap settings) throws JSONException {
+        Configuration.InAppChatCustomization inAppChatCustomization = Configuration.resolveChatSettings(ReactNativeJson.convertMapToJson(settings));
+        InAppChat.getInstance(reactContext).setTheme(createTheme(inAppChatCustomization));
+    }
+
+    private InAppChatTheme createTheme(Configuration.InAppChatCustomization customisation) {
+        if (customisation != null) {
+            try {
+                InAppChatToolbarStyle toolbarStyle = new InAppChatToolbarStyle(
+                        Color.parseColor(customisation.toolbarBackgroundColor),
+                        Color.parseColor(customisation.statusBarBackgroundColor),
+                        customisation.statusBarColorLight,
+                        loadDrawable(customisation.navigationIconUri),
+                        Color.parseColor(customisation.navigationIconTint),
+                        getResId(reactContext.getResources(), customisation.titleTextAppearanceRes, reactContext.getPackageName()),
+                        Color.parseColor(customisation.toolbarTitleColor),
+                        customisation.toolbarTitle,
+                        null,
+                        customisation.titleCentered,
+                        getResId(reactContext.getResources(), customisation.subtitleTextAppearanceRes, reactContext.getPackageName()),
+                        Color.parseColor(customisation.subtitleTextColor),
+                        customisation.subtitleText,
+                        null,
+                        customisation.subtitleCentered,
+                        false
+                );
+                return new InAppChatTheme(
+                        toolbarStyle,
+                        toolbarStyle,
+                        new InAppChatStyle(
+                                Color.parseColor(customisation.chatBackgroundColor),
+                                Color.parseColor(customisation.progressBarColor),
+                                customisation.networkConnectionErrorText,
+                                null,
+                                getResId(reactContext.getResources(), customisation.networkConnectionErrorTextAppearanceRes, reactContext.getPackageName()),
+                                Color.parseColor(customisation.noConnectionAlertTextColor),
+                                Color.parseColor(customisation.noConnectionAlertBackgroundColor),
+                                false
+                        ),
+                        new InAppChatInputViewStyle(
+                                getResId(reactContext.getResources(), customisation.inputTextAppearance, reactContext.getPackageName()),
+                                Color.parseColor(customisation.inputTextColor),
+                                Color.parseColor(customisation.chatBackgroundColor),
+                                customisation.inputHintText,
+                                null,
+                                Color.parseColor(customisation.chatInputPlaceholderTextColor),
+                                loadDrawable(customisation.attachmentButtonIconUri),
+                                ColorStateList.valueOf(Color.parseColor(customisation.inputAttachmentIconTint)),
+                                loadDrawable(customisation.sendButtonIconUri),
+                                ColorStateList.valueOf(Color.parseColor(customisation.inputSendIconTint)),
+                                Color.parseColor(customisation.inputSeparatorLineColor),
+                                customisation.chatInputSeparatorVisible,
+                                Color.parseColor(customisation.chatInputCursorColor)
+                        )
+                );
+            } catch (Throwable e) {
+                Log.e(Utils.TAG, "Unable to parse chat configuration.", e);
+                return null;
+            }
+        }
+        return null;
+    }
+
+    private Drawable loadDrawable(String drawableUri) {
+        try (InputStream drawableStream = new URL(drawableUri).openStream()){
+            return new BitmapDrawable(reactContext.getResources(), drawableStream);
+        } catch (IOException e) {
+            Log.e(Utils.TAG, "Failed to load image " + drawableUri, e);
+            return null;
+        }
+
     }
 
     @Override
