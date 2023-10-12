@@ -40,7 +40,9 @@ class MobileMessaging {
         this.inAppChatEvents = [
             'inAppChat.availabilityUpdated',
             'inAppChat.unreadMessageCounterUpdated',
-            'inAppChat.viewStateChanged'
+            'inAppChat.viewStateChanged',
+            'inAppChat.configurationSynced',
+            'inAppChat.livechatRegistrationIdUpdated'
         ];
         this.eventEmitter = new NativeEventEmitter(ReactNativeMobileMessaging);
     }
@@ -98,6 +100,8 @@ class MobileMessaging {
      *   - inAppChat.availabilityUpdated
      *   - inAppChat.unreadMessageCounterUpdated
      *   - inAppChat.viewStateChanged
+     *   - inAppChat.configurationSynced
+     *   - inAppChat.livechatRegistrationIdUpdated'
      *
      * @name subscribe
      * @param {String} eventName
@@ -137,7 +141,7 @@ class MobileMessaging {
      *	{
      *		applicationCode: '<The application code of your Application from Push Portal website>',
      *		webRTCUI: {
-     *			applicationId: <String>
+     *			configurationId: <String>
      *		},
      *		geofencingEnabled: true,
      *		messageStorage: '<Message storage save callback>',
@@ -728,15 +732,28 @@ export const mobileMessaging = new MobileMessaging();
 
 class WebRTCUI {
     /**
-     * Manually enable WebRTCUI calls, provided a valid application Id exists in the webRTCUI configuration. This function is used to control when to start 
+     * Manually enable WebRTCUI calls, provided a valid configuration Id exists in the webRTCUI configuration. This function is used to control when to start
      * calls, for example if you want to enabled it only after a successful user authentication. Note: Device settings, such as "Do not disturb" modes, will 
      * ignore this method until the operating system allows calls.
      * @name enableCalls
+     * @param identity String value to use as identity in the registration for WebRTC calls. If empty string is set, push registration Id will be used
      * @param {Function} onSuccess success callback
      * @param {Function} onError error callback
      */
-    enableCalls(onSuccess = function() {}, onError = function() {}){
-        RNMMWebRTCUI.enableCalls(onSuccess, onError);
+    enableCalls(identity, onSuccess = function() {}, onError = function() {}){
+        RNMMWebRTCUI.enableCalls(identity, onSuccess, onError);
+    }
+
+    /**
+     * Manually enable WebRTCUI calls, provided a valid configuration Id exists in the webRTCUI configuration. This function is used to control when to start
+     * calls, for example if you want to enabled it only after a successful user authentication. Note: Device settings, such as "Do not disturb" modes, will 
+     * ignore this method until the operating system allows calls.
+     * @name enableChatCalls
+     * @param {Function} onSuccess success callback
+     * @param {Function} onError error callback
+     */
+    enableChatCalls(onSuccess = function() {}, onError = function() {}){
+        RNMMWebRTCUI.enableChatCalls(onSuccess, onError);
     }
 
     /**

@@ -20,7 +20,7 @@ class RNMobileMessagingConfiguration {
         static let geofencingEnabled = "geofencingEnabled"
         static let applicationCode = "applicationCode"
         static let webRTCUI = "webRTCUI"
-        static let applicationId = "applicationId"
+        static let configurationId = "configurationId"
         static let logging = "logging"
         static let defaultMessageStorage = "defaultMessageStorage"
         static let notificationTypes = "notificationTypes"

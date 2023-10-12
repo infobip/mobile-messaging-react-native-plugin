@@ -24,7 +24,7 @@ declare namespace MobileMessagingReactNative {
          */
         applicationCode: string;
         webRTCUI?: {
-            applicationId: string;
+            configurationId: string;
         } | undefined;
         geofencingEnabled?: boolean | undefined;
         inAppChatEnabled?: boolean | undefined;
@@ -222,7 +222,6 @@ declare namespace MobileMessagingReactNative {
 
     export interface ChatCustomizationConfiguration {
         toolbarTitle: string;
-
         toolbarTintColor: string;
         toolbarBackgroundColor: string;
         toolbarTitleColor: string;
@@ -231,10 +230,9 @@ declare namespace MobileMessagingReactNative {
         noConnectionAlertBackgroundColor: string;
         chatInputPlaceholderTextColor: string;
         chatInputCursorColor: string;
-        
+        chatInputBackgroundColor: string;
         sendButtonIconUri: string;
         attachmentButtonIconUri: string;
-
         chatInputSeparatorVisible: boolean;
         // iOS only properties
         attachmentPreviewBarsColor: string;
@@ -254,25 +252,33 @@ declare namespace MobileMessagingReactNative {
         mainFont: string;
         charCountFont: string;
         //android only properties
+        //status bar properties
+        statusBarColorLight: boolean;
+        statusBarBackgroundColor: string;
+        //toolbar properties
+        navigationIconUri: string;
         navigationIconTint: string;
-        subtitleTextColor: string;
-        inputTextColor: string;
-        progressBarColor: string;
-        inputAttachmentIconTint: string;
-        inputSendIconTint: string;
-        inputSeparatorLineColor: string;
-        inputHintText: string;
         subtitleText: string;
+        subtitleTextColor: string;
         subtitleTextAppearanceRes: string;
         subtitleCentered: boolean;
+        titleTextAppearanceRes: string;
         titleCentered: boolean;
-        inputTextAppearance: string;
+        //chat properties
+        progressBarColor: string;
         networkConnectionErrorTextAppearanceRes: string;
         networkConnectionErrorText: string;
-        navigationIconUri: string;
-        statusBarColorLight: boolean;
-        titleTextAppearanceRes: string;
-        statusBarBackgroundColor: string;
+        //chat input properties
+        inputTextColor: string;
+        inputAttachmentIconTint: string;
+        inputAttachmentBackgroundColor: string;
+        inputAttachmentBackgroundDrawable: string;
+        inputSendIconTint: string;
+        inputSendBackgroundColor: string;
+        inputSendBackgroundDrawable: string;
+        inputSeparatorLineColor: string;
+        inputHintText: string;
+        inputTextAppearance: string;
     }
 
     interface Api {
@@ -280,7 +286,9 @@ declare namespace MobileMessagingReactNative {
         inAppChatEvents: [
             "inAppChat.availabilityUpdated",
             "inAppChat.unreadMessageCounterUpdated",
-            "inAppChat.viewStateChanged"
+            "inAppChat.viewStateChanged",
+            "inAppChat.configurationSynced",
+            "inAppChat.livechatRegistrationIdUpdated"
         ];
 
         supportedEvents: [
@@ -609,10 +617,19 @@ declare namespace WebRTCUI {
         /**
          * Manually enable WebRTCUI calls.
          * @name enableCalls
+         * @param identity String to be used as identity for the WebRTC registration. If left empty, push registration Id will be used instead
          * @param {Function} onSuccess success callback
          * @param {Function} onError error callback
          */
-        enableCalls(onSuccess: () => void, onError: (error: MobileMessagingError) => void): void;
+        enableCalls(identity: string, onSuccess: () => void, onError: (error: MobileMessagingError) => void): void;
+
+        /**
+         * Manually enable WebRTCUI LiveChat calls.
+         * @name enableChatCalls
+         * @param {Function} onSuccess success callback
+         * @param {Function} onError error callback
+         */
+        enableChatCalls(onSuccess: () => void, onError: (error: MobileMessagingError) => void): void;
 
         /**
          * Manually disable WebRTCUI calls if they were previously enabled. Note: This action may need up to half a minute to be completed,

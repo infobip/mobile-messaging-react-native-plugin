@@ -159,6 +159,8 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
 
     private static final String EVENT_INAPPCHAT_UNREAD_MESSAGES_COUNT_UPDATED = "inAppChat.unreadMessageCounterUpdated";
     private static final String EVENT_INAPPCHAT_VIEW_STATE_CHANGED = "inAppChat.viewStateChanged";
+    private static final String EVENT_INAPPCHAT_CONFIGURATION_SYNCED = "inAppChat.configurationSynced";
+    private static final String EVENT_INAPPCHAT_LIVECHAT_REGISTRATION_ID_UPDATED = "inAppChat.livechatRegistrationIdUpdated";
     //endregion
 
     //region MessageStorageBroadcastReceiver
@@ -282,6 +284,8 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
         put(Event.DEPERSONALIZED.getKey(), EVENT_DEPERSONALIZED);
         put(GeoEvent.GEOFENCE_AREA_ENTERED.getKey(), EVENT_GEOFENCE_ENTERED);
         put(InAppChatEvent.CHAT_VIEW_CHANGED.getKey(), EVENT_INAPPCHAT_VIEW_STATE_CHANGED);
+        put(InAppChatEvent.CHAT_CONFIGURATION_SYNCED.getKey(), EVENT_INAPPCHAT_CONFIGURATION_SYNCED);
+        put(InAppChatEvent.LIVECHAT_REGISTRATION_ID_UPDATED.getKey(), EVENT_INAPPCHAT_LIVECHAT_REGISTRATION_ID_UPDATED);
     }};
 
     private final BroadcastReceiver commonLibraryBroadcastReceiver = new BroadcastReceiver() {
@@ -325,6 +329,8 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
                 data = intent.getStringExtra(BroadcastParameter.EXTRA_INFOBIP_ID);
             } else if (InAppChatEvent.CHAT_VIEW_CHANGED.getKey().equals(intent.getAction())) {
                 data = intent.getStringExtra(BroadcastParameter.EXTRA_CHAT_VIEW);
+            } else if (InAppChatEvent.LIVECHAT_REGISTRATION_ID_UPDATED.getKey().equals(intent.getAction())) {
+                data = intent.getStringExtra(BroadcastParameter.EXTRA_LIVECHAT_REGISTRATION_ID);
             }
 
             if (data == null) {

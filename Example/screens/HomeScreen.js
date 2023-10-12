@@ -94,9 +94,9 @@ function HomeScreen({navigation}) {
   }
 
   function enableWebRTC() {
-    webRTCUI.enableCalls(
-        () => console.log('WebRTCUI enabled calls'),
-        error => console.log('WebRTCUI could not enable calls, error: ' + JSON.stringify(error)),
+    webRTCUI.enableChatCalls(
+        () => console.log('WebRTCUI enabled chat calls'),
+        error => console.log('WebRTCUI could not enable chat calls, error: ' + JSON.stringify(error)),
     );
   }
 
@@ -199,6 +199,8 @@ function HomeScreen({navigation}) {
      subtitleTextColor: "#FFFFFF",
      inputTextColor: "#212121",
      progressBarColor: "#9E9E9E",
+     sendBackgroundColor: "#71ea53",
+     attachmentBackgroundColor: "#71ea53",
      inputAttachmentIconTint: "#9E9E9E",
      inputSendIconTint: "#9E9E9E",
      inputSeparatorLineColor: "#BDBDBD",

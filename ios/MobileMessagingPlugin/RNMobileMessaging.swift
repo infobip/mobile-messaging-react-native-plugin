@@ -38,7 +38,9 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
             EventName.messageStorage_findAll,
             EventName.inAppChat_availabilityUpdated,
             EventName.inAppChat_unreadMessageCounterUpdated,
-            EventName.inAppChat_viewStateChanged
+            EventName.inAppChat_viewStateChanged,
+            EventName.inAppChat_configurationSynced,
+            EventName.inAppChat_registrationIdUpdated
         ]
     }
 

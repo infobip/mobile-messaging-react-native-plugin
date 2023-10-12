@@ -118,7 +118,8 @@ struct EventName {
     static let inAppChat_availabilityUpdated = "inAppChat.availabilityUpdated"
     static let inAppChat_unreadMessageCounterUpdated = "inAppChat.unreadMessageCounterUpdated"
     static let inAppChat_viewStateChanged = "inAppChat.viewStateChanged"
-
+    static let inAppChat_configurationSynced = "inAppChat.configurationSynced"
+    static let inAppChat_registrationIdUpdated = "inAppChat.livechatRegistrationIdUpdated"
 }
 
 extension UIApplication {

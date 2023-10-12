@@ -9,7 +9,8 @@ import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.ReadableMap;
+
+import org.infobip.mobile.messaging.util.StringUtils;
 
 import java.lang.reflect.Proxy;
 
@@ -18,6 +19,7 @@ public class RNMMWebRTCUI extends ReactContextBaseJavaModule {
 
     private Class<?> successListenerClass = null;
     private Class<?> errorListenerClass = null;
+    private Class<?> listenTypeClass = null;
 
     public RNMMWebRTCUI(@Nullable ReactApplicationContext reactContext) {
         super(reactContext);
@@ -30,23 +32,50 @@ public class RNMMWebRTCUI extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void enableCalls(final Callback successCallback, final Callback errorCallback) {
+    public void enableChatCalls(final Callback successCallback, final Callback errorCallback) {
+        enableCalls(true, null, successCallback, errorCallback);
+    }
+
+    @ReactMethod
+    public void enableCalls(String identity, final Callback successCallback, final Callback errorCallback) {
+        enableCalls(false, identity, successCallback, errorCallback);
+    }
+
+    private void enableCalls(Boolean enableChatCalls, String identity, final Callback successCallback, final Callback errorCallback) {
         try {
             final Configuration configuration = ConfigCache.getInstance().getConfiguration();
             if (configuration == null) {
                 errorCallback.invoke(Utils.callbackError("Mobile messaging not initialized. Please call mobileMessaging.init().", null));
-            } else if (configuration.webRTCUI != null && configuration.webRTCUI.applicationId != null) {
+            } else if (configuration.webRTCUI != null && configuration.webRTCUI.configurationId != null) {
                 Class<?> rtcUiBuilderClass = Class.forName("com.infobip.webrtc.ui.InfobipRtcUi$Builder");
+                Class<?> rtcUiBuilderFinalStepClass = Class.forName("com.infobip.webrtc.ui.InfobipRtcUi$BuilderFinalStep");
                 Object rtcUiBuilder = rtcUiBuilderClass.getDeclaredConstructor(Context.class).newInstance(getReactApplicationContext());
                 Object successListener = successListenerProxy(successCallback);
-                Object errorListener = errorListenerCallback(errorCallback);
-                rtcUiBuilderClass.getMethod("applicationId", String.class).invoke(rtcUiBuilder, configuration.webRTCUI.applicationId);
-                rtcUiBuilderClass.getMethod("enableInAppCalls", getSuccessListenerClass(), getErrorListenerClass()).invoke(
-                        rtcUiBuilder,
-                        successListener,
-                        errorListener
-                );
-                infobipRtcUiInstance = rtcUiBuilderClass.getMethod("build").invoke(rtcUiBuilder);
+                Object errorListener = errorListenerProxy(errorCallback);
+                rtcUiBuilderClass.getMethod("withConfigurationId", String.class).invoke(rtcUiBuilder, configuration.webRTCUI.configurationId);
+                Object rtcUiBuilderFinalStep;
+                if (enableChatCalls) {
+                    rtcUiBuilderFinalStep = rtcUiBuilderClass.getMethod("withInAppChatCalls", getSuccessListenerClass(), getErrorListenerClass()).invoke(
+                            rtcUiBuilder,
+                            successListener,
+                            errorListener
+                    );
+                } else if (!StringUtils.isBlank(identity)) {
+                    rtcUiBuilderFinalStep = rtcUiBuilderClass.getMethod("withCalls", String.class, getListenTypeClass(), getSuccessListenerClass(), getErrorListenerClass()).invoke(
+                            rtcUiBuilder,
+                            identity,
+                            pushListenType(),
+                            successListener,
+                            errorListener
+                    );
+                } else {
+                    rtcUiBuilderFinalStep = rtcUiBuilderClass.getMethod("withCalls", getSuccessListenerClass(), getErrorListenerClass()).invoke(
+                            rtcUiBuilder,
+                            successListener,
+                            errorListener
+                    );
+                }
+                infobipRtcUiInstance = rtcUiBuilderFinalStepClass.getMethod("build").invoke(rtcUiBuilderFinalStep);
             } else {
                 errorCallback.invoke(Utils.callbackError("Configuration does not contain webRTCUI data.", null));
             }
@@ -73,9 +102,16 @@ public class RNMMWebRTCUI extends ReactContextBaseJavaModule {
         return errorListenerClass;
     }
 
+    @NonNull
+    private Class<?> getListenTypeClass() throws ClassNotFoundException {
+        if (listenTypeClass == null)
+            listenTypeClass = Class.forName("com.infobip.webrtc.ui.model.ListenType");
+        return listenTypeClass;
+    }
+
     @SuppressWarnings("SuspiciousInvocationHandlerImplementation")
     @NonNull
-    private Object errorListenerCallback(Callback errorCallback) throws ClassNotFoundException {
+    private Object errorListenerProxy(Callback errorCallback) throws ClassNotFoundException {
         return Proxy.newProxyInstance(
                 getClass().getClassLoader(),
                 new Class[]{getErrorListenerClass()},
@@ -104,6 +140,13 @@ public class RNMMWebRTCUI extends ReactContextBaseJavaModule {
         );
     }
 
+    /** @noinspection rawtypes*/
+    @SuppressWarnings("unchecked")
+    @NonNull
+    private Object pushListenType() throws ClassNotFoundException {
+        return Enum.valueOf((Class<? extends Enum>)Class.forName("com.infobip.webrtc.ui.model.ListenType"), "PUSH");
+    }
+
     @ReactMethod
     public void disableCalls(final Callback successCallback, final Callback errorCallback) {
         if (infobipRtcUiInstance == null) {
@@ -115,7 +158,7 @@ public class RNMMWebRTCUI extends ReactContextBaseJavaModule {
                         .invoke(
                                 infobipRtcUiInstance,
                                 successListenerProxy(successCallback),
-                                errorListenerCallback(errorCallback)
+                                errorListenerProxy(errorCallback)
                         );
             } catch (ClassNotFoundException e) {
                 errorCallback.invoke(Utils.callbackError("Android WebRtcUi not enabled. Please set flag buildscript {ext { withWebRTCUI = true } } in your build.gradle.", null));

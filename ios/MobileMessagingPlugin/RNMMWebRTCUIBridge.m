@@ -16,7 +16,8 @@
 
 @implementation RNMMWebRTCUI (RCTExternModule)
 RCT_EXPORT_MODULE_NO_LOAD(RNMMWebRTCUI, RNMMWebRTCUI)
-RCT_EXTERN_METHOD(enableCalls:(RCTResponseSenderBlock)successCallback onError:(RCTResponseSenderBlock)errorCallback)
+RCT_EXTERN_METHOD(enableCalls:(NSString *)identity onSuccess:(RCTResponseSenderBlock)successCallback onError:(RCTResponseSenderBlock)errorCallback)
+RCT_EXTERN_METHOD(enableChatCalls:(RCTResponseSenderBlock)successCallback onError:(RCTResponseSenderBlock)errorCallback)
 RCT_EXTERN_METHOD(disableCalls:(RCTResponseSenderBlock)successCallback onError:(RCTResponseSenderBlock)errorCallback)
 
 

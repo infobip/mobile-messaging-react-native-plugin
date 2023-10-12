@@ -42,41 +42,51 @@ class Configuration {
     }
 
     class InAppChatCustomization {
+        //common
         String toolbarTitle;
-        String toolbarTintColor;
-        String toolbarBackgroundColor;
         String toolbarTitleColor;
+        String toolbarBackgroundColor;
         String chatBackgroundColor;
         String noConnectionAlertTextColor;
         String noConnectionAlertBackgroundColor;
         String chatInputPlaceholderTextColor;
         String chatInputCursorColor;
+        String chatInputBackgroundColor;
         String sendButtonIconUri;
         String attachmentButtonIconUri;
         boolean chatInputSeparatorVisible;
+        //android only
+        //status bar properties
+        boolean statusBarColorLight;
+        String statusBarBackgroundColor;
+        //toolbar properties
+        String navigationIconUri;
         String navigationIconTint;
-        String subtitleTextColor;
-        String inputTextColor;
-        String progressBarColor;
-        String inputAttachmentIconTint;
-        String inputSendIconTint;
-        String inputSeparatorLineColor;
-        String inputHintText;
         String subtitleText;
+        String subtitleTextColor;
         String subtitleTextAppearanceRes;
         boolean subtitleCentered;
+        String titleTextAppearanceRes;
         boolean titleCentered;
-        String inputTextAppearance;
+        //chat properties
+        String progressBarColor;
         String networkConnectionErrorTextAppearanceRes;
         String networkConnectionErrorText;
-        String navigationIconUri;
-        boolean statusBarColorLight;
-        String titleTextAppearanceRes;
-        String statusBarBackgroundColor;
+        //chat input properties
+        String inputTextColor;
+        String inputAttachmentIconTint;
+        String inputAttachmentBackgroundColor;
+        String inputAttachmentBackgroundDrawable;
+        String inputSendIconTint;
+        String inputSendBackgroundColor;
+        String inputSendBackgroundDrawable;
+        String inputSeparatorLineColor;
+        String inputHintText;
+        String inputTextAppearance;
     }
 
     class WebRTCUI {
-        String applicationId;
+        String configurationId;
     }
 
     AndroidConfiguration android;

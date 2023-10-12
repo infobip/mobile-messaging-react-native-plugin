@@ -42,7 +42,7 @@ export default class App extends Component {
   configuration = {
     applicationCode: 'Your mobile push profile application code',
     webRTCUI: {
-      applicationId: 'Your webrtc application id'
+      configurationId: 'Your webrtc push configuration id'
     },
     ios: {
       notificationTypes: ['alert', 'badge', 'sound'],
@@ -126,7 +126,9 @@ export default class App extends Component {
   }
 
   componentDidMount() {
-    mobileMessaging.supportedEvents.forEach(event => {
+  mobileMessaging.supportedEvents.concat(
+    mobileMessaging.inAppChatEvents,
+  ).forEach(event => {
       let subscription = mobileMessaging.subscribe(
         event,
         this.handleMobileMessagingEvent,
@@ -167,7 +169,7 @@ export default class App extends Component {
       this.configuration,
       () => {
         this.updateLogInfo('MobileMessaging started');
-        webRTCUI.enableCalls(
+        webRTCUI.enableChatCalls(
           () => console.log("Calls enabled"),
           error => console.log("Calls enable error "+JSON.stringify(error))
         )
