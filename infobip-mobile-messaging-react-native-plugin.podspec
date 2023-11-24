@@ -19,10 +19,10 @@ Pod::Spec.new do |s|
   s.requires_arc = true
 
   s.dependency "React-Core"
-  s.dependency "MobileMessaging/Core", "12.1.1"
-  s.dependency "MobileMessaging/Geofencing", "12.1.1"
-  s.dependency "MobileMessaging/InAppChat", "12.1.1"
+  s.dependency "MobileMessaging/Core", "12.2.1"
+  s.dependency "MobileMessaging/Geofencing", "12.2.1"
+  s.dependency "MobileMessaging/InAppChat", "12.2.1"
   if defined?($WebRTCUIEnabled)
-    s.dependency "MobileMessaging/WebRTCUI", "12.1.1"
+    s.dependency "MobileMessaging/WebRTCUI", "12.2.1"
   end
 end
