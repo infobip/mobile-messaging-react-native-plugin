@@ -6,9 +6,9 @@ import android.util.Log;
 
 import org.infobip.reactlibrary.mobilemessaging.Utils;
 
+import java.lang.reflect.Method;
+
 import org.infobip.mobile.messaging.Message;
-import org.infobip.mobile.messaging.geo.Area;
-import org.infobip.mobile.messaging.geo.Geo;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -144,31 +144,16 @@ public class MessageJson {
      */
     @NonNull
     public static List<JSONObject> geosFromBundle(Bundle bundle) {
-        Geo geo = Geo.createFrom(bundle);
-        JSONObject message = bundleToJSON(bundle);
-        if (geo == null || geo.getAreasList() == null || geo.getAreasList().isEmpty() || message == null) {
-            return new ArrayList<JSONObject>();
+        try {
+            Class<?> cls = Class.forName("org.infobip.mobile.messaging.geo.mapper.GeoBundleMapper");
+            Method geosFromBundle_method = cls.getDeclaredMethod("geosFromBundle", Bundle.class);
+            List<JSONObject> geos = (List<JSONObject>) geosFromBundle_method.invoke(cls, bundle);
+            return geos;
+        } catch (Exception e) {
+            Log.w(Utils.TAG, "Cannot convert geo to JSON: " + e.getMessage());
+            Log.d(Utils.TAG, Log.getStackTraceString(e));
         }
-
-        List<JSONObject> geos = new ArrayList<JSONObject>();
-        for (final Area area : geo.getAreasList()) {
-            try {
-                geos.add(new JSONObject()
-                        .put("area", new JSONObject()
-                                .put("id", area.getId())
-                                .put("center", new JSONObject()
-                                        .put("lat", area.getLatitude())
-                                        .put("lon", area.getLongitude()))
-                                .put("radius", area.getRadius())
-                                .put("title", area.getTitle()))
-                );
-            } catch (JSONException e) {
-                Log.w(Utils.TAG, "Cannot convert geo to JSON: " + e.getMessage());
-                Log.d(Utils.TAG, Log.getStackTraceString(e));
-            }
-        }
-
-        return geos;
+        return new ArrayList<JSONObject>();
     }
 
     @NonNull

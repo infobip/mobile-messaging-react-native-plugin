@@ -7,6 +7,7 @@ buildscript {
         compileSdkVersion = 33
         targetSdkVersion = 33
         withCryptorMigration = false
+        withGeofencingModule = false
         withWebRTCUI = true
         overrideKotlinVersion = "1.8.10"
 

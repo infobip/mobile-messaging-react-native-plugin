@@ -11,6 +11,7 @@ def overrideGmsVersion = getRootProjectProperty('overrideGmsVersion', '')
 def overrideFirebaseVersion = getRootProjectProperty('overrideFirebaseVersion', '')
 def overrideKotlinVersion = getRootProjectProperty('overrideKotlinVersion', '')
 def withCryptorMigration = getRootProjectProperty('withCryptorMigration', false)
+def withGeofencingModule = getRootProjectProperty('withGeofencingModule', false)
 def withWebRTCUI = getRootProjectProperty('withWebRTCUI', false)
 
 apply plugin: 'com.android.library'
@@ -86,7 +87,7 @@ repositories {
 }
 
 dependencies {
-    def mmVersion = '11.1.4'
+    def mmVersion = "11.2.0"
     //react and mm dependencies clash
     if (!overrideKotlinVersion.empty) {
         constraints {
@@ -99,10 +100,10 @@ dependencies {
     implementation 'com.google.android.material:material:1.8.0'
     implementation 'androidx.exifinterface:exifinterface:1.3.6'
     implementation 'androidx.databinding:viewbinding:8.0.2'
+    implementation 'com.google.android.gms:play-services-base:18.2.0'
 
     implementation "com.infobip:infobip-mobile-messaging-android-resources:$mmVersion@aar"
     implementation "com.infobip:infobip-mobile-messaging-android-chat-sdk:$mmVersion@aar"
-    implementation "com.infobip:infobip-mobile-messaging-android-geo-sdk:$mmVersion@aar"
     implementation ("com.infobip:infobip-mobile-messaging-android-sdk:$mmVersion@aar") {
         transitive = true;
 
@@ -127,5 +128,11 @@ dependencies {
 
     if (withCryptorMigration.toBoolean()) {
         implementation "com.infobip:infobip-mobile-messaging-android-cryptor-migration:$mmVersion@aar"
+    }
+
+    if (withGeofencingModule.toBoolean()) {
+        implementation ("com.infobip:infobip-mobile-messaging-android-geo-sdk:$mmVersion@aar"){
+            transitive = true
+        }
     }
 }
