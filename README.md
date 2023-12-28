@@ -84,18 +84,6 @@ This guide is designed to get you up and running with Mobile Messaging SDK plugi
 
       3. Add a Firebase configuration file (google-services.json) as described in <a href="https://firebase.google.com/docs/android/setup#add-config-file" target="_blank">`Firebase documentation`</a>. Check <a href="https://github.com/infobip/mobile-messaging-react-native-plugin/wiki/Applying-Firebase-configuration-in-MobileMessaging-SDK">Applying Firebase configuration in MobileMessaging SDK Guide</a> for alternatives.
 
-     > ### Notice (check if you don't plan to use [Geofencing](https://github.com/infobip/mobile-messaging-react-native-plugin/wiki/Geofencing#android)):
-     > As long as Geofencing is automatically included to the plugin, it adds required geo permissions automatically. You can remove them from `/android/app/src/main/AndroidManifest.xml` by adding following:
-     > ```
-       > <manifest ... xmlns:tools="http://schemas.android.com/tools">
-       > ...
-       > <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" tools:node="remove"  />
-       > <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" tools:node="remove"  />
-       > <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" tools:node="remove"  />
-       > ...
-       > </manifest>
-       > ```
-
      > ### Notice (when targeting Android 13):
      >  Starting from Android 13, Google requires to ask user for notification permission. Follow [this guide](https://github.com/infobip/mobile-messaging-react-native-plugin/wiki/Android-13-Notification-Permission-Handling) to make a permission request.
        
