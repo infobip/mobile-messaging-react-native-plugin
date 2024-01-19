@@ -106,7 +106,8 @@ class RNMMChat: NSObject  {
         let localeS = String(localeString)
         let separator = localeS.contains("_") ? "_" : "-"
         let components = localeS.components(separatedBy: separator)
-        let lang = MMLanguage.mapLanguage(from: components.first ??
+        let langCode = localeS.contains("zh") ? localeS : components.first
+        let lang = MMLanguage.mapLanguage(from: langCode ??
                                                          String(localeS.prefix(2)))
         chatVC.setLanguage(lang) { error in
             if let error = error {
