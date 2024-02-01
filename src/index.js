@@ -146,6 +146,7 @@ class MobileMessaging {
      *		geofencingEnabled: true,
      *		messageStorage: '<Message storage save callback>',
      *		defaultMessageStorage: true,
+     *	    fullFeaturedInAppsEnabled: true,
      *		ios: {
      *			notificationTypes: ['alert', 'sound', 'badge'],
      *			logging: <Boolean>

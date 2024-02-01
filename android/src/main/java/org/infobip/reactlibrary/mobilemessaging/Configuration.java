@@ -93,6 +93,7 @@ class Configuration {
     String applicationCode;
     boolean geofencingEnabled;
     boolean inAppChatEnabled;
+    boolean fullFeaturedInAppsEnabled;
     Map<String, ?> messageStorage;
     boolean defaultMessageStorage;
     boolean loggingEnabled;

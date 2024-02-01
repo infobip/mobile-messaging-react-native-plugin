@@ -50,6 +50,7 @@ export default class App extends Component {
     },
     messageStorage: myMessageStorage,
     inAppChatEnabled: true,
+    fullFeaturedInAppsEnabled: true,
     geofencingEnabled: false,
     loggingEnabled: true,
   };

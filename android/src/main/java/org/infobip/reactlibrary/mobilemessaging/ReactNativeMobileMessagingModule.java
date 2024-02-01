@@ -392,6 +392,9 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
                 .withoutRegisteringForRemoteNotifications()
                 .withApplicationCode(configuration.applicationCode);
 
+        if(configuration.fullFeaturedInAppsEnabled)
+            builder.withFullFeaturedInApps();
+
         if (configuration.privacySettings.userDataPersistingDisabled) {
             builder.withoutStoringUserData();
         }

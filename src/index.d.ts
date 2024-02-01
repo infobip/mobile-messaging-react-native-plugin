@@ -28,6 +28,7 @@ declare namespace MobileMessagingReactNative {
         } | undefined;
         geofencingEnabled?: boolean | undefined;
         inAppChatEnabled?: boolean | undefined;
+        fullFeaturedInAppsEnabled?: boolean | undefined;
         /**
          * Message storage save callback
          */
