@@ -144,7 +144,7 @@ public class RNMMWebRTCUI extends ReactContextBaseJavaModule {
     @SuppressWarnings("unchecked")
     @NonNull
     private Object pushListenType() throws ClassNotFoundException {
-        return Enum.valueOf((Class<? extends Enum>)Class.forName("com.infobip.webrtc.ui.model.ListenType"), "PUSH");
+        return Enum.valueOf((Class<? extends Enum>) Class.forName("com.infobip.webrtc.ui.model.ListenType"), "PUSH");
     }
 
     @ReactMethod

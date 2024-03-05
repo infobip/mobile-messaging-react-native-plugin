@@ -2,20 +2,14 @@ package org.infobip.reactlibrary.mobilemessaging;
 
 import android.content.Context;
 import android.os.Build;
-import android.os.Bundle;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
@@ -71,7 +65,7 @@ class ReactChatView extends FrameLayout {
         fragmentManager.executePendingTransactions();
         Fragment inAppChatFragment = fragmentManager.findFragmentByTag(Utils.RN_IN_APP_CHAT_FRAGMENT_TAG);
         Log.e(Utils.TAG, "InAppChatFragment found " + (inAppChatFragment != null));
-        if (inAppChatFragment instanceof InAppChatFragment){
+        if (inAppChatFragment instanceof InAppChatFragment) {
             ((InAppChatFragment) inAppChatFragment).setWithToolbar(false);
         }
     }

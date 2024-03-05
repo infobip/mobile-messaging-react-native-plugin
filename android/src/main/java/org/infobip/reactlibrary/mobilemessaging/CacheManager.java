@@ -25,7 +25,7 @@ class CacheManager {
         JSONObject jsonObject;
         Object[] objects = null;
 
-        Event(String type, JSONObject object, Object ... objects) {
+        Event(String type, JSONObject object, Object... objects) {
             this.type = type;
             this.jsonObject = object;
             this.objects = objects;

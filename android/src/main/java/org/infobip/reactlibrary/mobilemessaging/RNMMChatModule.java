@@ -110,8 +110,7 @@ public class RNMMChatModule extends ReactContextBaseJavaModule implements Activi
             public void onResult(Result<String, MobileMessagingError> result) {
                 if (result.isSuccess()) {
                     onSuccess.invoke(result.getData());
-                }
-                else {
+                } else {
                     onError.invoke(Utils.callbackError(result.getError().getMessage(), null));
                 }
             }
@@ -135,8 +134,7 @@ public class RNMMChatModule extends ReactContextBaseJavaModule implements Activi
         if (inAppChat.getJwtProvider() == null) {
             inAppChat.setJwtProvider(jwtProvider);
             this.isJwtProviderInitialInvocation = true;
-        }
-        else if (inAppChat.getJwtProvider() != null && StringUtils.isBlank(jwt)) {
+        } else if (inAppChat.getJwtProvider() != null && StringUtils.isBlank(jwt)) {
             inAppChat.setJwtProvider(null);
         }
     }
@@ -210,7 +208,7 @@ public class RNMMChatModule extends ReactContextBaseJavaModule implements Activi
     }
 
     private Drawable loadDrawable(String drawableUri) {
-        try (InputStream drawableStream = new URL(drawableUri).openStream()){
+        try (InputStream drawableStream = new URL(drawableUri).openStream()) {
             return new BitmapDrawable(reactContext.getResources(), drawableStream);
         } catch (IOException e) {
             Log.e(Utils.TAG, "Failed to load image " + drawableUri, e);

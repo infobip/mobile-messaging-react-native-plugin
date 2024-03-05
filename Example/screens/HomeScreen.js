@@ -1,7 +1,8 @@
-import {Alert, Linking, Platform, View, ScrollView} from 'react-native';
-import {mobileMessaging, webRTCUI} from 'infobip-mobile-messaging-react-native-plugin';
-
-import Colors from '../constants/Colors';
+import {Alert, Linking, Platform, ScrollView, View} from 'react-native';
+import {
+  mobileMessaging,
+  webRTCUI,
+} from 'infobip-mobile-messaging-react-native-plugin';
 import PrimaryButton from '../components/PrimaryButton';
 import React, {useEffect} from 'react';
 import {URL} from 'react-native-url-polyfill';
@@ -65,10 +66,10 @@ function HomeScreen({navigation}) {
   }
 
   function showChatHandler() {
-//    call mobileMessaging.personalize() first, then setJwtProvider
-//    mobileMessaging.setJwtProvider(() => {
-//       return 'your JWT';
-//    });
+    //    call mobileMessaging.personalize() first, then setJwtProvider
+    //    mobileMessaging.setJwtProvider(() => {
+    //       return 'your JWT';
+    //    });
     mobileMessaging.setLanguage('en');
     setTimeout(() => {
       mobileMessaging.sendContextualData(
@@ -95,15 +96,22 @@ function HomeScreen({navigation}) {
 
   function enableWebRTC() {
     webRTCUI.enableChatCalls(
-        () => console.log('WebRTCUI enabled chat calls'),
-        error => console.log('WebRTCUI could not enable chat calls, error: ' + JSON.stringify(error)),
+      () => console.log('WebRTCUI enabled chat calls'),
+      error =>
+        console.log(
+          'WebRTCUI could not enable chat calls, error: ' +
+            JSON.stringify(error),
+        ),
     );
   }
 
-   function disableWebRTC() {
-     webRTCUI.disableCalls(
-        () => console.log('WebRTCUI disabled calls'),
-        error => console.log('WebRTCUI could not disable calls, error: ' + JSON.stringify(error)),
+  function disableWebRTC() {
+    webRTCUI.disableCalls(
+      () => console.log('WebRTCUI disabled calls'),
+      error =>
+        console.log(
+          'WebRTCUI could not disable calls, error: ' + JSON.stringify(error),
+        ),
     );
   }
 
@@ -122,25 +130,30 @@ function HomeScreen({navigation}) {
 
   function registerForDeeplinkEvents() {
     subscriptionDeeplink = mobileMessaging.subscribe(
-      'notificationTapped',
-      message => {
-        if (!message.deeplink) {
-          return;
-        }
-        handleDeeplinkEvent(message.deeplink);
-      },
+      'actionTapped',
+      handleDeeplink,
     );
     subscriptionNotificationTapped = mobileMessaging.subscribe(
       'notificationTapped',
-      handleNotificationTappedEvent,
+      handleDeeplink,
     );
+    // Needed for opening from Intent / webPage, check Linking documentation
     Linking.addEventListener('url', initialUrlDict => {
       handleDeeplinkEvent(initialUrlDict.url);
     });
   }
 
+  // If eventData contains deeplink, proceeding to open it
+  function handleDeeplink(eventData) {
+    if (!eventData[0].deeplink) {
+      return;
+    }
+    handleDeeplinkEvent(eventData[0].deeplink);
+  }
+
   function unregisterFromDeeplinkEvents() {
     mobileMessaging.unsubscribe(subscriptionNotificationTapped);
+    mobileMessaging.unsubscribe(subscriptionDeeplink);
     Linking.removeAllListeners('url');
   }
 
@@ -157,13 +170,6 @@ function HomeScreen({navigation}) {
       });
   }
 
-  function handleNotificationTappedEvent(message) {
-    if (!message.deeplink) {
-      return;
-    }
-    handleDeeplinkEvent(message.deeplink);
-  }
-
   function handleDeeplinkEvent(deeplinkUrl) {
     console.log(deeplinkUrl);
     let pathSegments = new URL(deeplinkUrl).pathname.split('/').filter(Boolean);
@@ -173,56 +179,56 @@ function HomeScreen({navigation}) {
     }
   }
 
-  function customize(){
-    const sendButtonIcon = require("../assets/ic_send.png");
-    const attachmentIcon = require("../assets/ic_add_circle.png");
-    const navigationIcon = require("../assets/ic_back.png");
+  function customize() {
+    const sendButtonIcon = require('../assets/ic_send.png');
+    const attachmentIcon = require('../assets/ic_add_circle.png');
+    const navigationIcon = require('../assets/ic_back.png');
     const resolveAssetSource = require('react-native/Libraries/Image/resolveAssetSource');
 
     const settings = {
-     toolbarTitle: "Chat",
-     toolbarTitleColor: "#FFFFFF",
-     toolbarTintColor: "#FFFFFF",
-     toolbarBackgroundColor: "#673AB7",
-     sendButtonTintColor: "#9E9E9E",
-     chatBackgroundColor: "#D1C4E9",
-     noConnectionAlertTextColor: "#FFFFFF",
-     noConnectionAlertBackgroundColor: "#212121",
-     chatInputPlaceholderTextColor: "#757575",
-     chatInputCursorColor: "#9E9E9E",
-     chatInputBackgroundColor: "#D1C4E9",
-     sendButtonIconUri: resolveAssetSource(sendButtonIcon).uri,
-     attachmentButtonIconUri: resolveAssetSource(attachmentIcon).uri,
-     chatInputSeparatorVisible: true,
-     //android
-     navigationIconTint: "#FFFFFF",
-     subtitleTextColor: "#FFFFFF",
-     inputTextColor: "#212121",
-     progressBarColor: "#9E9E9E",
-     sendBackgroundColor: "#71ea53",
-     attachmentBackgroundColor: "#71ea53",
-     inputAttachmentIconTint: "#9E9E9E",
-     inputSendIconTint: "#9E9E9E",
-     inputSeparatorLineColor: "#BDBDBD",
-     inputHintText: "Message",
-     subtitleText: "#1",
-     subtitleTextAppearanceRes: "TextAppearance_AppCompat_Subtitle",
-     subtitleCentered: true,
-     titleCentered: true,
-     inputTextAppearance: "TextAppearance_AppCompat",
-     networkConnectionErrorTextAppearanceRes: "TextAppearance_AppCompat_Small",
-     networkConnectionErrorText: "Offline",
-     navigationIconUri: resolveAssetSource(navigationIcon).uri,
-     statusBarColorLight: true,
-     titleTextAppearanceRes: "TextAppearance_AppCompat_Title",
-     statusBarBackgroundColor: "#673AB7",
-     //ios
-     initialHeightUri: 125,
-     mainFont: 'Apple Chancery',
+      toolbarTitle: 'Chat',
+      toolbarTitleColor: '#FFFFFF',
+      toolbarTintColor: '#FFFFFF',
+      toolbarBackgroundColor: '#673AB7',
+      sendButtonTintColor: '#9E9E9E',
+      chatBackgroundColor: '#D1C4E9',
+      noConnectionAlertTextColor: '#FFFFFF',
+      noConnectionAlertBackgroundColor: '#212121',
+      chatInputPlaceholderTextColor: '#757575',
+      chatInputCursorColor: '#9E9E9E',
+      chatInputBackgroundColor: '#D1C4E9',
+      sendButtonIconUri: resolveAssetSource(sendButtonIcon).uri,
+      attachmentButtonIconUri: resolveAssetSource(attachmentIcon).uri,
+      chatInputSeparatorVisible: true,
+      //android
+      navigationIconTint: '#FFFFFF',
+      subtitleTextColor: '#FFFFFF',
+      inputTextColor: '#212121',
+      progressBarColor: '#9E9E9E',
+      sendBackgroundColor: '#71ea53',
+      attachmentBackgroundColor: '#71ea53',
+      inputAttachmentIconTint: '#9E9E9E',
+      inputSendIconTint: '#9E9E9E',
+      inputSeparatorLineColor: '#BDBDBD',
+      inputHintText: 'Message',
+      subtitleText: '#1',
+      subtitleTextAppearanceRes: 'TextAppearance_AppCompat_Subtitle',
+      subtitleCentered: true,
+      titleCentered: true,
+      inputTextAppearance: 'TextAppearance_AppCompat',
+      networkConnectionErrorTextAppearanceRes: 'TextAppearance_AppCompat_Small',
+      networkConnectionErrorText: 'Offline',
+      navigationIconUri: resolveAssetSource(navigationIcon).uri,
+      statusBarColorLight: true,
+      titleTextAppearanceRes: 'TextAppearance_AppCompat_Title',
+      statusBarBackgroundColor: '#673AB7',
+      //ios
+      initialHeightUri: 125,
+      mainFont: 'Apple Chancery',
     };
     mobileMessaging.setupChatSettings(settings);
 
-    console.log("Style applied");
+    console.log('Style applied');
   }
 
   return (
@@ -254,15 +260,9 @@ function HomeScreen({navigation}) {
       <PrimaryButton onPress={showMTChatSubviewHandler}>
         Show Chat (React Component with Multi-thread handling)
       </PrimaryButton>
-      <PrimaryButton onPress={enableWebRTC}>
-        Enable calls
-      </PrimaryButton>
-      <PrimaryButton onPress={disableWebRTC}>
-        Disable calls
-      </PrimaryButton>
-      <PrimaryButton onPress={customize}>
-        Runtime customization
-      </PrimaryButton>
+      <PrimaryButton onPress={enableWebRTC}>Enable calls</PrimaryButton>
+      <PrimaryButton onPress={disableWebRTC}>Disable calls</PrimaryButton>
+      <PrimaryButton onPress={customize}>Runtime customization</PrimaryButton>
     </ScrollView>
   );
 }

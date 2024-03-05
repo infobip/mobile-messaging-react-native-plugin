@@ -1,5 +1,9 @@
 package org.infobip.reactlibrary.mobilemessaging;
 
+import androidx.annotation.NonNull;
+
+import com.google.firebase.FirebaseOptions;
+
 import org.infobip.mobile.messaging.api.support.http.serialization.JsonSerializer;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -7,10 +11,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import androidx.annotation.NonNull;
-
-import com.google.firebase.FirebaseOptions;
 
 class Configuration {
 

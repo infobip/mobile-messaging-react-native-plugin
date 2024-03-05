@@ -1,18 +1,17 @@
 package org.infobip.reactlibrary.mobilemessaging.datamappers;
 
 import android.os.Bundle;
-import androidx.annotation.NonNull;
 import android.util.Log;
 
-import org.infobip.reactlibrary.mobilemessaging.Utils;
-
-import java.lang.reflect.Method;
+import androidx.annotation.NonNull;
 
 import org.infobip.mobile.messaging.Message;
+import org.infobip.reactlibrary.mobilemessaging.Utils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 

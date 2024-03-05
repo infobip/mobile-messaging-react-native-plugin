@@ -10,7 +10,6 @@ import com.facebook.react.bridge.WritableNativeArray;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 
 import org.infobip.reactlibrary.mobilemessaging.datamappers.ReactNativeJson;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -30,7 +29,6 @@ class ReactNativeEvent {
         }
 
         WritableArray array = new WritableNativeArray();
-        array.pushString(eventName);
 
         try {
 

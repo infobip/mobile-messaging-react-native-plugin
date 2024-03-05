@@ -130,6 +130,6 @@ class RNMobileMessagingEventsManager {
         default: break
         }
 
-        eventEmitter.sendEvent(withName: eventName, body: [eventName, notificationResult])
+        eventEmitter.sendEvent(withName: eventName, body: [notificationResult])
     }
 }

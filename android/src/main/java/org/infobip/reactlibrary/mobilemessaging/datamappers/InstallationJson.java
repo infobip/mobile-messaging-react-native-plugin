@@ -1,22 +1,23 @@
 package org.infobip.reactlibrary.mobilemessaging.datamappers;
 
-import org.infobip.mobile.messaging.*;
-import org.infobip.mobile.messaging.api.support.http.serialization.JsonSerializer;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
-import java.util.List;
-import java.util.Map;
-import java.lang.reflect.Type;
 
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.google.gson.reflect.TypeToken;
+
+import org.infobip.mobile.messaging.CustomAttributeValue;
+import org.infobip.mobile.messaging.CustomAttributesMapper;
+import org.infobip.mobile.messaging.Installation;
+import org.infobip.mobile.messaging.InstallationMapper;
+import org.infobip.mobile.messaging.api.support.http.serialization.JsonSerializer;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.lang.reflect.Type;
+import java.util.List;
+import java.util.Map;
 
 public class InstallationJson extends Installation {
 
