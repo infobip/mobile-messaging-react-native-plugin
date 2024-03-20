@@ -183,6 +183,7 @@ function HomeScreen({navigation}) {
     const sendButtonIcon = require('../assets/ic_send.png');
     const attachmentIcon = require('../assets/ic_add_circle.png');
     const navigationIcon = require('../assets/ic_back.png');
+    const downloadIcon = require('../assets/ic_download.png');
     const resolveAssetSource = require('react-native/Libraries/Image/resolveAssetSource');
 
     const settings = {
@@ -192,6 +193,7 @@ function HomeScreen({navigation}) {
       toolbarBackgroundColor: '#673AB7',
       sendButtonTintColor: '#9E9E9E',
       chatBackgroundColor: '#D1C4E9',
+      widgetTheme: 'dark',
       noConnectionAlertTextColor: '#FFFFFF',
       noConnectionAlertBackgroundColor: '#212121',
       chatInputPlaceholderTextColor: '#757575',
@@ -201,27 +203,33 @@ function HomeScreen({navigation}) {
       attachmentButtonIconUri: resolveAssetSource(attachmentIcon).uri,
       chatInputSeparatorVisible: true,
       //android
+      //status bar
+      statusBarColorLight: true,
+      statusBarBackgroundColor: '#673AB7',
+      //toolbar properties
+      navigationIconUri: resolveAssetSource(navigationIcon).uri,
       navigationIconTint: '#FFFFFF',
-      subtitleTextColor: '#FFFFFF',
-      inputTextColor: '#212121',
-      progressBarColor: '#9E9E9E',
-      sendBackgroundColor: '#71ea53',
-      attachmentBackgroundColor: '#71ea53',
-      inputAttachmentIconTint: '#9E9E9E',
-      inputSendIconTint: '#9E9E9E',
-      inputSeparatorLineColor: '#BDBDBD',
-      inputHintText: 'Message',
       subtitleText: '#1',
+      subtitleTextColor: '#FFFFFF',
       subtitleTextAppearanceRes: 'TextAppearance_AppCompat_Subtitle',
       subtitleCentered: true,
+      titleTextAppearanceRes: 'TextAppearance_AppCompat_Title',
       titleCentered: true,
-      inputTextAppearance: 'TextAppearance_AppCompat',
+      menuItemsIconTint: '#FFFFFF',
+      menuItemSaveAttachmentIcon: resolveAssetSource(downloadIcon).uri,
+      //chat properties
+      progressBarColor: '#9E9E9E',
       networkConnectionErrorTextAppearanceRes: 'TextAppearance_AppCompat_Small',
       networkConnectionErrorText: 'Offline',
-      navigationIconUri: resolveAssetSource(navigationIcon).uri,
-      statusBarColorLight: true,
-      titleTextAppearanceRes: 'TextAppearance_AppCompat_Title',
-      statusBarBackgroundColor: '#673AB7',
+      //chat input properties
+      inputTextColor: '#212121',
+      inputAttachmentIconTint: '#9E9E9E',
+      inputAttachmentBackgroundColor: '#673AB7',
+      inputSendIconTint: '#9E9E9E',
+      inputSendBackgroundColor: '#673AB7',
+      inputSeparatorLineColor: '#BDBDBD',
+      inputHintText: 'Message',
+      inputTextAppearance: 'TextAppearance_AppCompat',
       //ios
       initialHeightUri: 125,
       mainFont: 'Apple Chancery',

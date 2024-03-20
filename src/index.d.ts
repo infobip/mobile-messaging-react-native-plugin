@@ -227,6 +227,7 @@ declare namespace MobileMessagingReactNative {
         toolbarBackgroundColor: string;
         toolbarTitleColor: string;
         chatBackgroundColor: string;
+        widgetTheme: string;
         noConnectionAlertTextColor: string;
         noConnectionAlertBackgroundColor: string;
         chatInputPlaceholderTextColor: string;
@@ -265,6 +266,8 @@ declare namespace MobileMessagingReactNative {
         subtitleCentered: boolean;
         titleTextAppearanceRes: string;
         titleCentered: boolean;
+        menuItemsIconTint: string;
+        menuItemSaveAttachmentIcon: string;
         //chat properties
         progressBarColor: string;
         networkConnectionErrorTextAppearanceRes: string;

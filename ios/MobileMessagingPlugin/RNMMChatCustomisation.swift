@@ -23,6 +23,7 @@ enum CustomisationKeys: String {
     case noConnectionAlertBackgroundColor = "noConnectionAlertBackgroundColor"
     case chatInputPlaceholderTextColor = "chatInputPlaceholderTextColor"
     case chatInputCursorColor = "chatInputCursorColor"
+    case widgetTheme = "widgetTheme"
     /// Icons
     case sendButtonIcon = "sendButtonIconUri"
     case attachmentButtonIcon = "attachmentButtonIconUri"

@@ -43,6 +43,7 @@ class Configuration {
 
     class InAppChatCustomization {
         //common
+        String widgetTheme;
         String toolbarTitle;
         String toolbarTitleColor;
         String toolbarBackgroundColor;
@@ -68,6 +69,8 @@ class Configuration {
         boolean subtitleCentered;
         String titleTextAppearanceRes;
         boolean titleCentered;
+        String menuItemsIconTint;
+        String menuItemSaveAttachmentIcon;
         //chat properties
         String progressBarColor;
         String networkConnectionErrorTextAppearanceRes;

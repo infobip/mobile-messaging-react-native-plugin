@@ -142,7 +142,11 @@ public class RNMMChatModule extends ReactContextBaseJavaModule implements Activi
     @ReactMethod
     public void setupChatSettings(ReadableMap settings) throws JSONException {
         Configuration.InAppChatCustomization inAppChatCustomization = Configuration.resolveChatSettings(ReactNativeJson.convertMapToJson(settings));
-        InAppChat.getInstance(reactContext).setTheme(createTheme(inAppChatCustomization));
+        InAppChat inAppChat = InAppChat.getInstance(reactContext);
+        inAppChat.setTheme(createTheme(inAppChatCustomization));
+        if (inAppChatCustomization.widgetTheme != null) {
+            inAppChat.setWidgetTheme(inAppChatCustomization.widgetTheme);
+        }
     }
 
     private InAppChatTheme createTheme(Configuration.InAppChatCustomization customisation) {
@@ -154,6 +158,8 @@ public class RNMMChatModule extends ReactContextBaseJavaModule implements Activi
                         customisation.statusBarColorLight,
                         loadDrawable(customisation.navigationIconUri),
                         Color.parseColor(customisation.navigationIconTint),
+                        loadDrawable(customisation.menuItemSaveAttachmentIcon),
+                        Color.parseColor(customisation.menuItemsIconTint),
                         getResId(reactContext.getResources(), customisation.titleTextAppearanceRes, reactContext.getPackageName()),
                         Color.parseColor(customisation.toolbarTitleColor),
                         customisation.toolbarTitle,
@@ -163,8 +169,7 @@ public class RNMMChatModule extends ReactContextBaseJavaModule implements Activi
                         Color.parseColor(customisation.subtitleTextColor),
                         customisation.subtitleText,
                         null,
-                        customisation.subtitleCentered,
-                        false
+                        customisation.subtitleCentered
                 );
                 return new InAppChatTheme(
                         toolbarStyle,
@@ -176,8 +181,7 @@ public class RNMMChatModule extends ReactContextBaseJavaModule implements Activi
                                 null,
                                 getResId(reactContext.getResources(), customisation.networkConnectionErrorTextAppearanceRes, reactContext.getPackageName()),
                                 Color.parseColor(customisation.noConnectionAlertTextColor),
-                                Color.parseColor(customisation.noConnectionAlertBackgroundColor),
-                                false
+                                Color.parseColor(customisation.noConnectionAlertBackgroundColor)
                         ),
                         new InAppChatInputViewStyle(
                                 getResId(reactContext.getResources(), customisation.inputTextAppearance, reactContext.getPackageName()),

@@ -60,6 +60,8 @@ class RNMMChat: NSObject  {
         setNotNil(&chatSettings.backgroungColor, CustomisationKeys.chatBackgroundColor.getColor(from: settings))
         setNotNil(&chatSettings.errorLabelTextColor, CustomisationKeys.noConnectionAlertTextColor.getColor(from: settings))
         setNotNil(&chatSettings.errorLabelBackgroundColor, CustomisationKeys.noConnectionAlertBackgroundColor.getColor(from: settings))
+        setNotNil(&chatSettings.widgetTheme, CustomisationKeys.widgetTheme.getString(from: settings))
+
         setNotNil(&chatSettings.advancedSettings.mainPlaceholderTextColor, CustomisationKeys.chatInputPlaceholderTextColor.getColor(from: settings))
         setNotNil(&chatSettings.advancedSettings.typingIndicatorColor, CustomisationKeys.chatInputCursorColor.getColor(from: settings))
         /// Icons
