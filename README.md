@@ -22,7 +22,7 @@ For iOS project:
 For Android project:
 - Android Studio (Bumblebee | 2021.1.1)
 - Gradle (v7.3.3)
-- Supported API Levels: 21 (Android 5.0 - [Lollipop](https://developer.android.com/about/versions/lollipop)) - 33 (Android 13.0)
+- Supported API Levels: 21 (Android 5.0 - [Lollipop](https://developer.android.com/about/versions/lollipop)) - 34 ([Android 14.0](https://developer.android.com/about/versions/14))
 
 ## Quick start guide
 

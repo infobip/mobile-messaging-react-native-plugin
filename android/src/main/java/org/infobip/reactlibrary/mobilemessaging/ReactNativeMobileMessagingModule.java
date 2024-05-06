@@ -1,5 +1,7 @@
 package org.infobip.reactlibrary.mobilemessaging;
 
+import static android.content.Context.RECEIVER_NOT_EXPORTED;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -352,7 +354,11 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
             commonLibIntentFilter.addAction(action);
         }
 
-        reactContext.registerReceiver(commonLibraryBroadcastReceiver, commonLibIntentFilter);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            reactContext.registerReceiver(commonLibraryBroadcastReceiver, commonLibIntentFilter, RECEIVER_NOT_EXPORTED);
+        } else {
+            reactContext.registerReceiver(commonLibraryBroadcastReceiver, commonLibIntentFilter);
+        }
 
         IntentFilter messageStorageIntentFilter = new IntentFilter();
         for (String action : messageStorageEventMap.keySet()) {
