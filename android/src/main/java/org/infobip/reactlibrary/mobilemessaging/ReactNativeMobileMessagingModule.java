@@ -162,6 +162,7 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
     private static final String EVENT_INAPPCHAT_VIEW_STATE_CHANGED = "inAppChat.viewStateChanged";
     private static final String EVENT_INAPPCHAT_CONFIGURATION_SYNCED = "inAppChat.configurationSynced";
     private static final String EVENT_INAPPCHAT_LIVECHAT_REGISTRATION_ID_UPDATED = "inAppChat.livechatRegistrationIdUpdated";
+    private static final String EVENT_INAPPCHAT_AVAILABILITY_UPDATED = "inAppChat.availabilityUpdated";
     //endregion
 
     //Geo dependency is opt-out by default. Extracted from GeoEvent.GEOFENCE_AREA_ENTERED module 'infobip-mobile-messaging-android-geo-sdk'
@@ -291,6 +292,7 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
         put(InAppChatEvent.CHAT_VIEW_CHANGED.getKey(), EVENT_INAPPCHAT_VIEW_STATE_CHANGED);
         put(InAppChatEvent.CHAT_CONFIGURATION_SYNCED.getKey(), EVENT_INAPPCHAT_CONFIGURATION_SYNCED);
         put(InAppChatEvent.LIVECHAT_REGISTRATION_ID_UPDATED.getKey(), EVENT_INAPPCHAT_LIVECHAT_REGISTRATION_ID_UPDATED);
+        put(InAppChatEvent.IN_APP_CHAT_AVAILABILITY_UPDATED.getKey(), EVENT_INAPPCHAT_AVAILABILITY_UPDATED);
     }};
 
     private final BroadcastReceiver commonLibraryBroadcastReceiver = new BroadcastReceiver() {
@@ -336,6 +338,9 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
                 data = intent.getStringExtra(BroadcastParameter.EXTRA_CHAT_VIEW);
             } else if (InAppChatEvent.LIVECHAT_REGISTRATION_ID_UPDATED.getKey().equals(intent.getAction())) {
                 data = intent.getStringExtra(BroadcastParameter.EXTRA_LIVECHAT_REGISTRATION_ID);
+            } else if (InAppChatEvent.IN_APP_CHAT_AVAILABILITY_UPDATED.getKey().equals(intent.getAction())) {
+                boolean isChatAvailable = intent.getBooleanExtra(BroadcastParameter.EXTRA_IS_CHAT_AVAILABLE, false);
+                data = String.valueOf(isChatAvailable);
             }
 
             if (data == null) {
