@@ -106,6 +106,7 @@ declare namespace MobileMessagingReactNative {
         applicationUserId?: string | undefined;
         deviceName?: string | undefined;
         customAttributes?: Record<string, string | number | boolean> | undefined;
+        pushRegistrationId?: string;
     }
 
     export interface UserIdentity {
