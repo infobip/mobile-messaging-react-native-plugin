@@ -55,6 +55,7 @@ class RNMMChat: NSObject  {
         setNotNil(&chatSettings.navBarItemsTintColor, CustomisationKeys.toolbarTintColor.getColor(from: settings))
         setNotNil(&chatSettings.navBarColor, CustomisationKeys.toolbarBackgroundColor.getColor(from: settings))
         setNotNil(&chatSettings.navBarTitleColor, CustomisationKeys.toolbarTitleColor.getColor(from: settings))
+        setNotNil(&chatSettings.advancedSettings.mainTextColor, CustomisationKeys.inputTextColor.getColor(from: settings))
     
         setNotNil(&chatSettings.sendButtonTintColor, CustomisationKeys.sendButtonTintColor.getColor(from: settings))
         setNotNil(&chatSettings.backgroungColor, CustomisationKeys.chatBackgroundColor.getColor(from: settings))

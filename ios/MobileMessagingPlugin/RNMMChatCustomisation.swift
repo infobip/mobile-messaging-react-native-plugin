@@ -24,6 +24,7 @@ enum CustomisationKeys: String {
     case chatInputPlaceholderTextColor = "chatInputPlaceholderTextColor"
     case chatInputCursorColor = "chatInputCursorColor"
     case widgetTheme = "widgetTheme"
+    case inputTextColor = "inputTextColor"
     /// Icons
     case sendButtonIcon = "sendButtonIconUri"
     case attachmentButtonIcon = "attachmentButtonIconUri"
