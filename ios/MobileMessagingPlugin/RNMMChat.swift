@@ -58,7 +58,7 @@ class RNMMChat: NSObject  {
         setNotNil(&chatSettings.advancedSettings.mainTextColor, CustomisationKeys.inputTextColor.getColor(from: settings))
     
         setNotNil(&chatSettings.sendButtonTintColor, CustomisationKeys.sendButtonTintColor.getColor(from: settings))
-        setNotNil(&chatSettings.backgroungColor, CustomisationKeys.chatBackgroundColor.getColor(from: settings))
+        setNotNil(&chatSettings.backgroundColor, CustomisationKeys.chatBackgroundColor.getColor(from: settings))
         setNotNil(&chatSettings.errorLabelTextColor, CustomisationKeys.noConnectionAlertTextColor.getColor(from: settings))
         setNotNil(&chatSettings.errorLabelBackgroundColor, CustomisationKeys.noConnectionAlertBackgroundColor.getColor(from: settings))
         setNotNil(&chatSettings.widgetTheme, CustomisationKeys.widgetTheme.getString(from: settings))
