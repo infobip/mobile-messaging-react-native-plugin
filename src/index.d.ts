@@ -530,8 +530,11 @@ declare namespace MobileMessagingReactNative {
         setupChatSettings(configuration: ChatCustomizationConfiguration): void;
 
         /**
-         * Set contextual data of the widget
+         * Set contextual data of the Livechat Widget.
+         * If the function is called when the chat is loaded, data will be sent immediately, otherwise they will be sent to the chat once it is loaded.
+         * Every function invocation will overwrite the previous contextual data.
          *
+         * @name sendContextualData
          * @param data contextual data in the form of JSON string
          * @param allMultiThreadStrategy multi-thread strategy flag, true -> ALL, false -> ACTIVE
          * @param {Function} onSuccess success callback

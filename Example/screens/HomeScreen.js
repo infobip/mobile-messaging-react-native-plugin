@@ -71,14 +71,12 @@ function HomeScreen({navigation}) {
     //       return 'your JWT';
     //    });
     mobileMessaging.setLanguage('en');
-    setTimeout(() => {
-      mobileMessaging.sendContextualData(
-        "{'metadata': 'from react demo'}",
-        false,
-        () => console.log('MobileMessaging metadata sent'),
-        error => console.log('MobileMessaging metadata error: ' + error),
-      );
-    }, 1000);
+    mobileMessaging.sendContextualData(
+      "{'metadata': 'from react demo'}",
+      false,
+      () => console.log('MobileMessaging metadata sent'),
+      error => console.log('MobileMessaging metadata error: ' + error),
+    );
     mobileMessaging.showChat();
   }
 
