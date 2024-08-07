@@ -14,7 +14,8 @@ public enum RNMobileMessagingErrorType: Error {
     case InvalidUserIdentity
     case DefaultStorageNotInitialized
     case NotSupported
-    
+    case NoData
+
     fileprivate var errorCode: Int {
         switch self {
         case .InvalidArguments:
@@ -25,13 +26,15 @@ public enum RNMobileMessagingErrorType: Error {
             return 2
         case .NotSupported:
             return 3
+        case .NoData:
+            return 4
         }
-        
+
     }
-    
+
     fileprivate var errorDescription: String {
         var errorDescription: String = ""
-        
+
         switch self {
         case .InvalidArguments:
             errorDescription = NSLocalizedString("Could not retrieve required arguments.", comment: "")
@@ -41,8 +44,9 @@ public enum RNMobileMessagingErrorType: Error {
             errorDescription = NSLocalizedString("Default storage not initialized.", comment: "")
         case .NotSupported:
             errorDescription = NSLocalizedString("Functionality is not supported.", comment: "")
+        case .NoData:
+            errorDescription = NSLocalizedString("No data retrieved.", comment: "")
         }
-        
         return errorDescription
     }
 

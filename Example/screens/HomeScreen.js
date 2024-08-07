@@ -35,12 +35,23 @@ function HomeScreen({navigation}) {
   }
 
   function saveUserDataHandler() {
-    let user = {
-      // phones: ['79123456789'],
-      // emails: ['john.doe.123@infobip.com'],
-      // externalUserId: 'someExternalUserId',
-    };
-    mobileMessaging.saveUser(user, returnedUser => {});
+    mobileMessaging.getUser(user => {
+      console.log(user);
+      Alert.alert('User Information', JSON.stringify(user), [
+        {text: 'Ok', style: 'destructive'},
+      ]);
+      user.externalUserId = 'someExternalUserId';
+      mobileMessaging.saveUser(
+        user,
+        updatedUser => {
+          console.log(updatedUser);
+          Alert.alert('User Information', JSON.stringify(updatedUser), [
+            {text: 'Ok', style: 'destructive'},
+          ]);
+        },
+        error => console.log('Error saving user: ' + error),
+      );
+    });
   }
 
   function getUserDataHandler() {
@@ -51,6 +62,71 @@ function HomeScreen({navigation}) {
       ]);
       return;
     });
+  }
+
+  function fetchInbox() {
+    mobileMessaging.getUser(user => {
+      let filterOptions = {
+        fromDateTime: formatInboxFilterDate(new Date(2024, 3, 13, 0, 0, 0)),
+        toDateTime: formatInboxFilterDate(new Date(2024, 3, 15, 0, 0, 0)),
+        topic: 'test',
+        limit: 10,
+      };
+      mobileMessaging.fetchInboxMessagesWithoutToken(
+        user.externalUserId,
+        filterOptions,
+        inbox => {
+          console.log('filterOptions' + filterOptions.fromDateTime),
+            console.log('Successfully fetched inbox messages'),
+            console.log(inbox);
+          Alert.alert('Inbox Messages', JSON.stringify(inbox), [
+            {text: 'Ok', style: 'destructive'},
+          ]);
+        },
+        error =>
+          console.log('Error fetching inbox messages: ' + error.description),
+      );
+    });
+  }
+
+  function setInboxSeen() {
+    mobileMessaging.getUser(user => {
+      let setSeenMessages = [];
+      mobileMessaging.setInboxMessagesSeen(
+        user.externalUserId,
+        setSeenMessages,
+        messages => {
+          console.log('Successfully set messages as seen'),
+            console.log(messages);
+          Alert.alert('Inbox Messages', JSON.stringify(messages), [
+            {text: 'Ok', style: 'destructive'},
+          ]);
+        },
+        error =>
+          console.log('Error setting messages as seen: ' + error.description),
+      );
+    });
+  }
+
+  function formatInboxFilterDate(date) {
+    const pad = num => (num < 10 ? '0' + num : num);
+
+    const yyyy = date.getUTCFullYear();
+    const MM = pad(date.getUTCMonth() + 1); // Months are zero indexed, so +1
+    const dd = pad(date.getUTCDate());
+    const HH = pad(date.getUTCHours());
+    const mm = pad(date.getUTCMinutes());
+    const ss = pad(date.getUTCSeconds());
+
+    // Construct timezone offset in '+hh:mm' format
+    const timezoneOffsetMinutes = date.getTimezoneOffset();
+    const offsetHours = Math.abs(Math.floor(timezoneOffsetMinutes / 60));
+    const offsetMinutes = Math.abs(timezoneOffsetMinutes % 60);
+    const timezoneOffset =
+      (timezoneOffsetMinutes > 0 ? '-' : '+') +
+      pad(offsetHours) + ':' + pad(offsetMinutes);
+
+    return `${yyyy}-${MM}-${dd}T${HH}:${mm}:${ss}${timezoneOffset}`;
   }
 
   function registerForAndroidNotificationsHandler() {
@@ -238,7 +314,7 @@ function HomeScreen({navigation}) {
   }
 
   return (
-    <ScrollView>
+    <ScrollView style={{marginTop: 100}}>
       <PrimaryButton onPress={personalizeHandler}>Personalize</PrimaryButton>
       <View>{button}</View>
       <PrimaryButton onPress={depersonalizeHandler}>
@@ -269,6 +345,8 @@ function HomeScreen({navigation}) {
       <PrimaryButton onPress={enableWebRTC}>Enable calls</PrimaryButton>
       <PrimaryButton onPress={disableWebRTC}>Disable calls</PrimaryButton>
       <PrimaryButton onPress={customize}>Runtime customization</PrimaryButton>
+      <PrimaryButton onPress={fetchInbox}>Fetch Inbox</PrimaryButton>
+      <PrimaryButton onPress={setInboxSeen}>Set Inbox Seen</PrimaryButton>
     </ScrollView>
   );
 }

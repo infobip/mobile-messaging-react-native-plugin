@@ -23,6 +23,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.facebook.react.ReactApplication;
 import com.facebook.react.bridge.ActivityEventListener;
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -31,6 +32,7 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.PermissionAwareActivity;
 import com.facebook.react.modules.core.PermissionListener;
 import com.google.android.gms.common.ConnectionResult;
@@ -49,6 +51,9 @@ import org.infobip.mobile.messaging.User;
 import org.infobip.mobile.messaging.chat.InAppChat;
 import org.infobip.mobile.messaging.chat.core.InAppChatEvent;
 import org.infobip.mobile.messaging.dal.bundle.MessageBundleMapper;
+import org.infobip.mobile.messaging.inbox.Inbox;
+import org.infobip.mobile.messaging.inbox.MobileInbox;
+import org.infobip.mobile.messaging.inbox.MobileInboxFilterOptions;
 import org.infobip.mobile.messaging.interactive.InteractiveEvent;
 import org.infobip.mobile.messaging.interactive.MobileInteractive;
 import org.infobip.mobile.messaging.interactive.NotificationAction;
@@ -63,8 +68,10 @@ import org.infobip.mobile.messaging.util.Cryptor;
 import org.infobip.mobile.messaging.util.DeviceInformation;
 import org.infobip.mobile.messaging.util.PreferenceHelper;
 import org.infobip.reactlibrary.mobilemessaging.datamappers.CustomEventJson;
+import org.infobip.reactlibrary.mobilemessaging.datamappers.InboxJson;
 import org.infobip.reactlibrary.mobilemessaging.datamappers.InstallationJson;
 import org.infobip.reactlibrary.mobilemessaging.datamappers.MessageJson;
+import org.infobip.reactlibrary.mobilemessaging.datamappers.MobileInboxFilterOptionsJson;
 import org.infobip.reactlibrary.mobilemessaging.datamappers.PersonalizationCtx;
 import org.infobip.reactlibrary.mobilemessaging.datamappers.ReactNativeJson;
 import org.infobip.reactlibrary.mobilemessaging.datamappers.UserJson;
@@ -78,6 +85,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule implements LifecycleEventListener,
@@ -403,7 +411,7 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
                 .withoutRegisteringForRemoteNotifications()
                 .withApplicationCode(configuration.applicationCode);
 
-        if(configuration.fullFeaturedInAppsEnabled)
+        if (configuration.fullFeaturedInAppsEnabled)
             builder.withFullFeaturedInApps();
 
         if (configuration.privacySettings.userDataPersistingDisabled) {
@@ -601,6 +609,73 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
         onSuccess.invoke();
     }
 
+    @ReactMethod
+    public void fetchInboxMessages(@NonNull String token, @NonNull String externalUserId, ReadableMap args, final Callback successCallback, final Callback errorCallback) throws JSONException {
+        try {
+            mobileMessagingInbox().fetchInbox(token, externalUserId, MobileInboxFilterOptionsJson.resolveMobileInboxFilterOptions(ReactNativeJson.convertMapToJson(args)), inboxResultListener(successCallback, errorCallback));
+        } catch (IllegalArgumentException e) {
+            Log.d(Utils.TAG, "Error fetching inbox:" + e.getMessage());
+        }
+    }
+
+    @ReactMethod
+    public void fetchInboxMessagesWithoutToken(@NonNull String externalUserId, ReadableMap args, final Callback successCallback, final Callback errorCallback) throws JSONException {
+        try {
+            mobileMessagingInbox().fetchInbox(externalUserId, MobileInboxFilterOptionsJson.resolveMobileInboxFilterOptions(ReactNativeJson.convertMapToJson(args)), inboxResultListener(successCallback, errorCallback));
+        } catch (IllegalArgumentException e) {
+            Log.d(Utils.TAG, "Error fetching inbox:" + e.getMessage());
+        }
+    }
+
+    @ReactMethod
+    public void setInboxMessagesSeen(@NonNull String externalUserId, ReadableArray args, final Callback successCallback, final Callback errorCallback) {
+        mobileMessagingInbox().setSeen(externalUserId, convertReadableArrayToStringArray(args), setSeenResultListener(successCallback, errorCallback));
+    }
+
+    private String[] convertReadableArrayToStringArray(ReadableArray readableArray) {
+        String[] stringArray = new String[readableArray.size()];
+        for (int i = 0; i < readableArray.size(); i++) {
+            stringArray[i] = readableArray.getString(i);
+        }
+        return stringArray;
+    }
+
+    @NonNull
+    private MobileMessaging.ResultListener<Inbox> inboxResultListener(final Callback successCallback, final Callback errorCallback) {
+        return new MobileMessaging.ResultListener<Inbox>() {
+            @Override
+            public void onResult(Result<Inbox, MobileMessagingError> result) {
+                if (result.isSuccess()) {
+                    ReadableMap readableMap = InboxJson.toReadableMap(result.getData());
+                    successCallback.invoke(readableMap);
+                } else {
+                    errorCallback.invoke(Utils.callbackError(result.getError().getMessage(), null));
+                }
+            }
+        };
+    }
+
+    @NonNull
+    private MobileMessaging.ResultListener<String[]> setSeenResultListener(final Callback successCallback, final Callback errorCallback) {
+        return new MobileMessaging.ResultListener<String[]>() {
+            @Override
+            public void onResult(Result<String[], MobileMessagingError> result) {
+                if (result.isSuccess()) {
+                    String[] messagesSetSeen = result.getData();
+                    WritableMap writableMap = Arguments.createMap();
+
+                    for (int i = 0; i < messagesSetSeen.length; i++) {
+                        writableMap.putString(Integer.toString(i), messagesSetSeen[i]);
+                    }
+
+                    successCallback.invoke(writableMap);
+                } else {
+                    errorCallback.invoke(Utils.callbackError(result.getError().getMessage(), null));
+                }
+            }
+        };
+    }
+
 
     /*User Profile Management*/
 
@@ -749,6 +824,11 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
 
     private MobileMessaging mobileMessaging() {
         return MobileMessaging.getInstance(this.reactContext.getApplicationContext());
+    }
+
+
+    private MobileInbox mobileMessagingInbox() {
+        return MobileInbox.getInstance(this.reactContext.getApplicationContext());
     }
 
     /* Messages and Notifications management */

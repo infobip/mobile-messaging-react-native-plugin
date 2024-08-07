@@ -175,6 +175,55 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
             }
         })
     }
+    
+    @objc(fetchInboxMessages:externalUserId:inboxFilterOptions:onSuccess:onError:)
+    func fetchInboxMessages(token: String, externalUserId: String, inboxFilterOptions: NSDictionary, onSuccess: @escaping RCTResponseSenderBlock, onError: @escaping RCTResponseSenderBlock) {
+        var filteringOptions: MMInboxFilterOptions? = nil
+        if let inboxFilterOptionsDictionary = inboxFilterOptions as? [String: Any] {
+            let inboxFilterOptions = MMInboxFilterOptions(dictRepresentation: inboxFilterOptionsDictionary)
+             filteringOptions = inboxFilterOptions
+        }
+        MobileMessaging.inbox?.fetchInbox(token: token, externalUserId: externalUserId, options: filteringOptions, completion: { (inbox, error) in
+            if let error = error {
+                onError([error.reactNativeObject])
+            } else {
+                onSuccess([inbox?.dictionary ?? [:]])
+               }
+        })
+    }
+
+    @objc(fetchInboxMessagesWithoutToken:inboxFilterOptions:onSuccess:onError:)
+    func fetchInboxMessagesWithoutToken(externalUserId: String, inboxFilterOptions: NSDictionary, onSuccess: @escaping RCTResponseSenderBlock, onError: @escaping RCTResponseSenderBlock) {
+        var filteringOptions: MMInboxFilterOptions? = nil
+        if let inboxFilterOptionsDictionary = inboxFilterOptions as? [String: Any] {
+            let inboxFilterOptions = MMInboxFilterOptions(dictRepresentation: inboxFilterOptionsDictionary)
+             filteringOptions = inboxFilterOptions
+        }
+        MobileMessaging.inbox?.fetchInbox(externalUserId: externalUserId, options: filteringOptions, completion: { (inbox, error) in
+            if let error = error {
+                onError([error.reactNativeObject])
+            } else {
+                onSuccess([inbox?.dictionary ?? [:]])
+               }
+        })
+    }
+
+    @objc(setInboxMessagesSeen:messages:onSuccess:onError:)
+    func setInboxMessagesSeen(externalUserId: String, messages: [String]?, onSuccess: @escaping RCTResponseSenderBlock, onError: @escaping RCTResponseSenderBlock) {
+        guard let messagesIDs = messages else
+        {
+            onError([NSError(type: .InvalidArguments).reactNativeObject])
+            return
+        }
+        MobileMessaging.inbox?.setSeen(externalUserId: externalUserId, messageIds: messagesIDs, completion: { (error) in
+            if let error = error {
+                onError([error.reactNativeObject])
+            } else {
+                onSuccess(messagesIDs)
+            }
+        })
+    }
+    
 
     @objc(fetchUser:onError:)
     func fetchUser(onSuccess: @escaping RCTResponseSenderBlock, onError: @escaping RCTResponseSenderBlock) {

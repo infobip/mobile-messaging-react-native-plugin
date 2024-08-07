@@ -255,6 +255,46 @@ class MobileMessaging {
     };
 
     /**
+     *Fetch mobile inbox data from the server.
+     *
+     * @name fetchInboxMessages
+     * @param token access token (JWT in a strictly predefined format) required for current user to have access to the Inbox messages
+     * @param externalUserId External User ID is meant to be an ID of a user in an external (non-Infobip) service
+     * @param filterOptions filtering options applied to messages list in response. Nullable, will return default number of messages
+     * @param onSuccess will be called on success
+     * @param {Function} onError will be called on error
+     */
+    fetchInboxMessages(token, externalUserId, filterOptions, onSuccess  = function() {}, onError = function() {}) {
+        ReactNativeMobileMessaging.fetchInboxMessages(token, externalUserId, filterOptions, onSuccess, onError);
+    };
+
+    /**
+     *Fetch mobile inbox data from the server.
+     *
+     * @name fetchInboxMessagesWithoutToken
+     * @param externalUserId External User ID is meant to be an ID of a user in an external (non-Infobip) service
+     * @param filterOptions filtering options applied to messages list in response. Nullable, will return default number of messages
+     * @param onSuccess will be called on success
+     * @param {Function} onError will be called on error
+     */
+    fetchInboxMessagesWithoutToken(externalUserId, filterOptions, onSuccess  = function() {}, onError = function() {}) {
+        ReactNativeMobileMessaging.fetchInboxMessagesWithoutToken(externalUserId, filterOptions, onSuccess, onError);
+    };
+
+    /**
+     * Set inbox messages as seen.
+     *
+     * @name setInboxMessagesSeen
+     * @param externalUserId External User ID is meant to be an ID of a user in an external (non-Infobip) service
+     * @param {Function} messages - array of inbox message IDs to be set seen
+     * @param {Function} onSuccess will be called with fetched inbox seen messages data on success
+     * @param {Function} onError will be called on error
+     */
+    setInboxMessagesSeen(externalUserId, messages, onSuccess, onError = function() {}) {
+       ReactNativeMobileMessaging.setInboxMessagesSeen(externalUserId, messages, onSuccess, onError);
+   };
+
+    /**
      * Saves user data to the server.
      *
      * @name saveUser

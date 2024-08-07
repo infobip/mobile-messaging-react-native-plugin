@@ -42,7 +42,7 @@ export default class App extends Component {
   configuration = {
     applicationCode: 'Your mobile push profile application code',
     webRTCUI: {
-      configurationId: 'Your webrtc push configuration id'
+      configurationId: 'Your webrtc push configuration id',
     },
     ios: {
       notificationTypes: ['alert', 'badge', 'sound'],
@@ -127,15 +127,15 @@ export default class App extends Component {
   }
 
   componentDidMount() {
-  mobileMessaging.supportedEvents.concat(
-    mobileMessaging.inAppChatEvents,
-  ).forEach(event => {
-      let subscription = mobileMessaging.subscribe(
-        event,
-        this.handleMobileMessagingEvent,
-      );
-      this.subscriptions.push(subscription);
-    });
+    mobileMessaging.supportedEvents
+      .concat(mobileMessaging.inAppChatEvents)
+      .forEach(event => {
+        let subscription = mobileMessaging.subscribe(
+          event,
+          this.handleMobileMessagingEvent,
+        );
+        this.subscriptions.push(subscription);
+      });
   }
 
   componentWillUnmount() {
@@ -171,11 +171,12 @@ export default class App extends Component {
       () => {
         this.updateLogInfo('MobileMessaging started');
         webRTCUI.enableChatCalls(
-          () => console.log("Calls enabled"),
-          error => console.log("Calls enable error "+JSON.stringify(error))
-        )
+          () => console.log('Calls enabled'),
+          error => console.log('Calls enable error ' + JSON.stringify(error)),
+        );
       },
-      error => this.updateLogInfo('MobileMessaging error: ' + JSON.stringify(error)),
+      error =>
+        this.updateLogInfo('MobileMessaging error: ' + JSON.stringify(error)),
     );
   }
 
@@ -194,7 +195,10 @@ export default class App extends Component {
             headerTintColor: 'white',
             headerStyle: {backgroundColor: Colors.primary500},
           }}>
-          <Stack.Screen name="HomeScreen" component={HomeScreen} />
+          <Stack.Screen
+            name="HomeScreen"
+            component={HomeScreen}
+          />
           <Stack.Screen
             name="PersonalizeScreen"
             component={PersonalizeScreen}
@@ -266,7 +270,6 @@ export default class App extends Component {
           />
         </Stack.Navigator>
       </NavigationContainer>
-
     );
   }
 }

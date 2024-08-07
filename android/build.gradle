@@ -104,6 +104,7 @@ dependencies {
 
     implementation "com.infobip:infobip-mobile-messaging-android-resources:$mmVersion@aar"
     implementation "com.infobip:infobip-mobile-messaging-android-chat-sdk:$mmVersion@aar"
+    implementation "com.infobip:infobip-mobile-messaging-android-inbox-sdk:$mmVersion@aar"
     implementation ("com.infobip:infobip-mobile-messaging-android-sdk:$mmVersion@aar") {
         transitive = true;
 

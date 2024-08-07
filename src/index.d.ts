@@ -90,6 +90,7 @@ declare namespace MobileMessagingReactNative {
     }
 
     export interface Installation {
+        pushRegistrationId?: string | undefined;
         isPrimaryDevice?: boolean | undefined;
         isPushRegistrationEnabled?: boolean | undefined;
         notificationsEnabled?: boolean | undefined;
@@ -112,6 +113,19 @@ declare namespace MobileMessagingReactNative {
         phones?: string[] | undefined;
         emails?: string[] | undefined;
         externalUserId?: string;
+    }
+
+    export interface MMInbox {
+        countTotal: number;
+        countUnread: number;
+        messages?: [Message] | undefined;
+    }
+
+    export interface MMInboxFilterOptions {
+        fromDateTime?: String | undefined;
+        toDateTime?: String | undefined;
+        topic?: string | undefined;
+        limit?: number | undefined;
     }
 
     export interface PersonalizeContext {
@@ -242,7 +256,7 @@ declare namespace MobileMessagingReactNative {
         textContainerTopMargin: double;
         textContainerLeftPadding: double;
         textContainerCornerRadius: double;
-        textViewTopMargin: double; 
+        textViewTopMargin: double;
         placeholderHeight: double;
         placeholderSideMargin: double;
         buttonHeight: double;
@@ -324,9 +338,7 @@ declare namespace MobileMessagingReactNative {
          * @param callback. callback
          * @param onInitError. Error callback
          */
-        init(config: Configuration,
-                callback: () => void,
-                onInitError?: (error: MobileMessagingError) => void): void;
+        init(config: Configuration, callback: () => void, onInitError?: (error: MobileMessagingError) => void): void;
 
         /**
          * Add subscription to event coming from MobileMessaging library.
@@ -335,9 +347,7 @@ declare namespace MobileMessagingReactNative {
          * @param handler will be called when event occurs
          * @return subscription, to unregister from this subscription call `unsubscribe(subscription)`
          */
-        subscribe(eventName: string,
-                  handler: (data: any) => void
-        ): EmitterSubscription;
+        subscribe(eventName: string, handler: (data: any) => void): EmitterSubscription;
 
         /**
          * Unsubscribe from MobileMessaging library event.
@@ -388,6 +398,7 @@ declare namespace MobileMessagingReactNative {
                                callback: () => void,
                                errorCallback: () => void): void;
 
+
         /**
          * Saves user data to the server.
          *
@@ -407,6 +418,39 @@ declare namespace MobileMessagingReactNative {
          */
         fetchUser(callback: (userData: UserData) => void, errorCallback: (error: MobileMessagingError) => void): void;
 
+
+        /**
+         *Fetch mobile inbox data from the server.
+         *@name fetchInboxMessages
+         *@param token access token (JWT in a strictly predefined format) required for current user to have access to the Inbox messages
+         *@param externalUserId External User ID is meant to be an ID of a user in an external (non-Infobip) service
+         *@param filterOptions filtering options applied to messages list in response. Nullable, will return default number of messages
+         *@param callback will be called on success
+         *@param {Function} errorCallback will be called on error
+         */
+        fetchInboxMessages(token: String, externalUserId: String, filterOptions: MMInboxFilterOptions, callback: (inbox: MMInbox) => void, errorCallback: (error: MobileMessagingError) => void): void;
+
+        /**
+         *Fetch mobile inbox data from the server.
+         *@name fetchInboxMessagesWithoutToken
+         *@param externalUserId External User ID is meant to be an ID of a user in an external (non-Infobip) service
+         *@param filterOptions filtering options applied to messages list in response. Nullable, will return default number of messages
+         *@param callback will be called on success
+         *@param {Function} errorCallback will be called on error
+         */
+        fetchInboxMessagesWithoutToken(externalUserId: String, filterOptions: MMInboxFilterOptions, callback: (inbox: MMInbox) => void, errorCallback: (error: MobileMessagingError) => void): void;
+
+        /**
+         * Set inbox messages as seen.
+         *
+         * @name setInboxMessagesSeen
+         * @param externalUserId External User ID is meant to be an ID of a user in an external (non-Infobip) service
+         * @param {Function} messages list of message identifiers to mark as seen
+         * @param callback will be called on success
+         * @param {Function} errorCallback will be called on error
+         */
+        setInboxMessagesSeen(externalUserId: String, messages: String[], callback: (messages: String[]) => void, errorCallback: (error: MobileMessagingError) => void): void;
+
         /**
          * Gets user data from the locally stored cache.
          *
@@ -422,9 +466,7 @@ declare namespace MobileMessagingReactNative {
          * @param callback will be called on success
          * @param errorCallback will be called on error
          */
-        saveInstallation(installation: Installation,
-                         callback: (data: Installation) => void,
-                         errorCallback: (error: MobileMessagingError) => void): void;
+        saveInstallation(installation: Installation, callback: (data: Installation) => void, errorCallback: (error: MobileMessagingError) => void): void;
 
         /**
          * Fetches installation from the server.
@@ -450,10 +492,7 @@ declare namespace MobileMessagingReactNative {
          * @param callback will be called on success
          * @param errorCallback will be called on error
          */
-        setInstallationAsPrimary(pushRegistrationId: string,
-                                 primary: boolean,
-                                 callback: (installation: Installation) => void,
-                                 errorCallback: (error: MobileMessagingError) => void): void;
+        setInstallationAsPrimary(pushRegistrationId: string, primary: boolean, callback: (installation: Installation) => void, errorCallback: (error: MobileMessagingError) => void): void;
 
         /**
          * Performs personalization of the current installation on the platform.
@@ -462,9 +501,7 @@ declare namespace MobileMessagingReactNative {
          * @param callback will be called on success
          * @param errorCallback will be called on error
          */
-        personalize(context: PersonalizeContext,
-                    callback: (personalizeContext: PersonalizeContext) => void,
-                    errorCallback: (error: MobileMessagingError) => void): void;
+        personalize(context: PersonalizeContext, callback: (personalizeContext: PersonalizeContext) => void, errorCallback: (error: MobileMessagingError) => void): void;
 
         /**
          * Performs depersonalization of the current installation on the platform.
@@ -472,8 +509,7 @@ declare namespace MobileMessagingReactNative {
          * @param callback will be called on success
          * @param errorCallback will be called on error
          */
-        depersonalize(callback: (personalizeContext: PersonalizeContext) => void,
-                      errorCallback: (error: MobileMessagingError) => void): void;
+        depersonalize(callback: (personalizeContext: PersonalizeContext) => void, errorCallback: (error: MobileMessagingError) => void): void;
 
         /**
          * Performs depersonalization of the installation referenced by pushRegistrationId.
@@ -482,9 +518,7 @@ declare namespace MobileMessagingReactNative {
          * @param callback will be called on success
          * @param errorCallback will be called on error
          */
-        depersonalizeInstallation(pushRegistrationId: string,
-                                  callback: (installation: Installation) => void,
-                                  errorCallback: (error: MobileMessagingError) => void): void;
+        depersonalizeInstallation(pushRegistrationId: string, callback: (installation: Installation) => void, errorCallback: (error: MobileMessagingError) => void): void;
 
         /**
          * Mark messages as seen
@@ -493,9 +527,7 @@ declare namespace MobileMessagingReactNative {
          * @param callback will be called upon completion
          * @param errorCallback will be called on error
          */
-        markMessagesSeen(messageIds: string[],
-                         callback: (messages: Message[]) => void,
-                         errorCallback: (error: MobileMessagingError) => void): void;
+        markMessagesSeen(messageIds: string[], callback: (messages: Message[]) => void, errorCallback: (error: MobileMessagingError) => void): void;
 
         /**
          * Displays built-in error dialog so that user can resolve errors during sdk initialization.
@@ -504,9 +536,7 @@ declare namespace MobileMessagingReactNative {
          * @param callback will be called upon completion
          * @param errorCallback will be called on error
          */
-        showDialogForError(errorCode: number,
-                           callback: () => void,
-                           errorCallback: (error: MobileMessagingError) => void): void;
+        showDialogForError(errorCode: number, callback: () => void, errorCallback: (error: MobileMessagingError) => void): void;
 
         defaultMessageStorage(): DefaultMessageStorage | undefined;
 
@@ -514,7 +544,7 @@ declare namespace MobileMessagingReactNative {
          * Displays chat view
          * @param config
          */
-        showChat(config?: ChatConfig): void;
+        showChat(config ?: ChatConfig): void;
 
         /**
          * Set custom style of In-app chat
@@ -591,7 +621,7 @@ declare namespace MobileMessagingReactNative {
          * ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION, ACCESS_BACKGROUND_LOCATION
          * @return
          */
-        requestAndroidLocationPermissions(rationale?: Rationale): Promise<boolean>;
+        requestAndroidLocationPermissions(rationale ?: Rationale): Promise<boolean>;
 
         /**
          * Registering for POST_NOTIFICATIONS permission for Android 13+
@@ -621,29 +651,30 @@ declare namespace MobileMessagingReactNative {
 declare var mobileMessaging: MobileMessagingReactNative.Api;
 
 declare namespace WebRTCUI {
-        /**
-         * Manually enable WebRTCUI calls.
-         * @name enableCalls
-         * @param identity String to be used as identity for the WebRTC registration. If left empty, push registration Id will be used instead
-         * @param {Function} onSuccess success callback
-         * @param {Function} onError error callback
-         */
-        enableCalls(identity: string, onSuccess: () => void, onError: (error: MobileMessagingError) => void): void;
+    import MobileMessagingError = MobileMessagingReactNative.MobileMessagingError;
+    /**
+     * Manually enable WebRTCUI calls.
+     * @name enableCalls
+     * @param identity String to be used as identity for the WebRTC registration. If left empty, push registration Id will be used instead
+     * @param {Function} onSuccess success callback
+     * @param {Function} onError error callback
+     */
+    enableCalls(identity:string, onSuccess:() => void, onError:(error: MobileMessagingError) => void):void;
 
-        /**
-         * Manually enable WebRTCUI LiveChat calls.
-         * @name enableChatCalls
-         * @param {Function} onSuccess success callback
-         * @param {Function} onError error callback
-         */
-        enableChatCalls(onSuccess: () => void, onError: (error: MobileMessagingError) => void): void;
+    /**
+     * Manually enable WebRTCUI LiveChat calls.
+     * @name enableChatCalls
+     * @param {Function} onSuccess success callback
+     * @param {Function} onError error callback
+     */
+    enableChatCalls(onSuccess:() => void, onError:(error: MobileMessagingError) => void):void;
 
-        /**
-         * Manually disable WebRTCUI calls if they were previously enabled. Note: This action may need up to half a minute to be completed,
-         * and calls may still be received in the meantime.
-         * @name disableCalls
-         * @param {Function} onSuccess success callback
-         * @param {Function} onError error callback
-         */
-        disableCalls(onSuccess: () => void, onError: (error: MobileMessagingError) => void): void;
+    /**
+     * Manually disable WebRTCUI calls if they were previously enabled. Note: This action may need up to half a minute to be completed,
+     * and calls may still be received in the meantime.
+     * @name disableCalls
+     * @param {Function} onSuccess success callback
+     * @param {Function} onError error callback
+     */
+    disableCalls(onSuccess:() => void, onError:(error: MobileMessagingError) => void):void;
 }
