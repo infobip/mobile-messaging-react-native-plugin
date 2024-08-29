@@ -40,9 +40,9 @@ export default class App extends Component {
   }
 
   configuration = {
-    applicationCode: 'Your mobile push profile application code',
+    applicationCode: '12f6b57eb734984d42791daa8494f719-3ecdefbb-cead-42f1-853e-24d959b3572e',
     webRTCUI: {
-      configurationId: 'Your webrtc push configuration id',
+      configurationId: '6decc5f9-1319-4f2c-89d9-fd01ce8a1e77'
     },
     ios: {
       notificationTypes: ['alert', 'badge', 'sound'],

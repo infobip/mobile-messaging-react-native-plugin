@@ -767,6 +767,24 @@ class MobileMessaging {
         }
         RNMMChat.stopConnection();
     };
+
+    /**
+     * Set and override default push notification title for in-app chat messages.
+     * @param title for notifications to be set
+     * @name setChatPushTitle
+     */
+    setChatPushTitle(title) {
+        RNMMChat.setChatPushTitle(title);
+    };
+
+    /**
+     * Set and override default push notification body for in-app chat messages.
+     * @param body for notifications to be set
+     * @name setChatPushBody
+     */
+    setChatPushBody(body) {
+        RNMMChat.setChatPushBody(body);
+    };
 }
 
 export {ChatView, RNMMChatView} from './components/RNMMChatViewNativeComponent';
@@ -809,7 +827,6 @@ class WebRTCUI {
     disableCalls(onSuccess = function() {}, onError = function() {}) {
         RNMMWebRTCUI.disableCalls(onSuccess, onError);
     }
-
 }
 
 export const webRTCUI = new WebRTCUI();
