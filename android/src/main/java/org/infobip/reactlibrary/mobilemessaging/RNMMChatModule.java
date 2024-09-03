@@ -149,16 +149,6 @@ public class RNMMChatModule extends ReactContextBaseJavaModule implements Activi
         }
     }
 
-    @ReactMethod
-    public void setChatPushTitle(String title) {
-        InAppChat.getInstance(reactContext).setChatPushTitle(title);
-    }
-
-    @ReactMethod
-    public void setChatPushBody(String body) {
-        InAppChat.getInstance(reactContext).setChatPushBody(body);
-    }
-
     private InAppChatTheme createTheme(Configuration.InAppChatCustomization customisation) {
         if (customisation != null) {
             try {

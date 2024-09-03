@@ -146,8 +146,6 @@ function HomeScreen({navigation}) {
     //    mobileMessaging.setJwtProvider(() => {
     //       return 'your JWT';
     //    });
-    mobileMessaging.setChatPushBody('Custom Chat Body');
-    mobileMessaging.setChatPushTitle('Custom Chat Title');
     mobileMessaging.setLanguage('en');
     mobileMessaging.sendContextualData(
       "{'metadata': 'from react demo'}",
