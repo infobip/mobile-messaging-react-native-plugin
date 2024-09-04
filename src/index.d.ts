@@ -645,6 +645,20 @@ declare namespace MobileMessagingReactNative {
          * @name stopConnection
          */
         stopConnection(): void;
+
+        /**
+         * Set and override default push notification title for in-app chat messages.
+         * @param title for notifications to be set
+         * @name setChatPushTitle
+         */
+        setChatPushTitle(title: string): void;
+
+        /**
+         * Set and override default push notification body for in-app chat messages.
+         * @param body for notifications to be set
+         * @name setChatPushBody
+         */
+        setChatPushBody(body: string): void;
     }
 }
 
