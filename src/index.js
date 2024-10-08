@@ -571,6 +571,22 @@ class MobileMessaging {
 
     /**
      * Set custom style of In-app chat
+     * @param customization various colors in hex format, texts, margins etc.
+     * example:
+     * {
+     *   toolbarTitle: "Chat",
+     *   toolbarTitleColor: "#FFFFFF",
+     *   toolbarTintColor: "#FFFFFF",
+     *   ...
+     * }
+     */
+     setChatCustomization(customization) {
+         RNMMChat.setChatCustomization(customization)
+     };
+
+    /**
+     * Set custom style of In-app chat
+     * @deprecated use setChatCustomization instead
      * @param configuration various colors in hex format, texts, margins etc.
      * example:
      * {
@@ -583,6 +599,14 @@ class MobileMessaging {
     setupChatSettings(configuration) {
         RNMMChat.setupChatSettings(configuration)
     };
+
+    /**
+    * Set widget theme for In-app chat messages
+    * @param widgetTheme the name of the existing widget theme to be applied to customize the chat messages.
+    */
+    setWidgetTheme(widgetTheme) {
+        RNMMChat.setWidgetTheme(widgetTheme)
+    }
 
     /**
      * The predefined messages prompted within the In-app chat (such as status updates, button titles, input field prompt) by default are

@@ -32,7 +32,9 @@ import org.infobip.mobile.messaging.mobileapi.MobileMessagingError;
 import org.infobip.mobile.messaging.mobileapi.Result;
 import org.infobip.mobile.messaging.util.StringUtils;
 import org.infobip.reactlibrary.mobilemessaging.datamappers.ReactNativeJson;
+import org.infobip.mobile.messaging.api.support.http.serialization.JsonSerializer;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -147,6 +149,24 @@ public class RNMMChatModule extends ReactContextBaseJavaModule implements Activi
         if (inAppChatCustomization.widgetTheme != null) {
             inAppChat.setWidgetTheme(inAppChatCustomization.widgetTheme);
         }
+    }
+
+    @ReactMethod
+    public void  setWidgetTheme(String widgetTheme) {
+        if (widgetTheme != null) {
+            InAppChat inAppChat = InAppChat.getInstance(reactContext);
+            inAppChat.setWidgetTheme(widgetTheme);
+        }
+    }
+
+    @ReactMethod
+    public void setChatCustomization(ReadableMap map) throws JSONException {
+        ChatCustomization customization = new JsonSerializer().deserialize(ReactNativeJson.convertMapToJson(map).toString(), ChatCustomization.class);
+        if (customization == null) {
+            throw new IllegalArgumentException("customization is invalid");
+        }
+        InAppChat inAppChat = InAppChat.getInstance(reactContext);
+        inAppChat.setTheme(customization.createTheme(reactContext));
     }
 
     @ReactMethod

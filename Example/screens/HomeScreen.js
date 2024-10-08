@@ -261,54 +261,60 @@ function HomeScreen({navigation}) {
     const resolveAssetSource = require('react-native/Libraries/Image/resolveAssetSource');
 
     const settings = {
-      toolbarTitle: 'Chat',
-      toolbarTitleColor: '#FFFFFF',
-      toolbarTintColor: '#FFFFFF',
-      toolbarBackgroundColor: '#673AB7',
-      sendButtonTintColor: '#9E9E9E',
-      chatBackgroundColor: '#D1C4E9',
-      widgetTheme: 'dark',
-      noConnectionAlertTextColor: '#FFFFFF',
-      noConnectionAlertBackgroundColor: '#212121',
-      chatInputPlaceholderTextColor: '#757575',
-      chatInputCursorColor: '#9E9E9E',
-      chatInputBackgroundColor: '#D1C4E9',
-      sendButtonIconUri: resolveAssetSource(sendButtonIcon).uri,
-      attachmentButtonIconUri: resolveAssetSource(attachmentIcon).uri,
-      chatInputSeparatorVisible: true,
-      //android
-      //status bar
-      statusBarColorLight: true,
-      statusBarBackgroundColor: '#673AB7',
-      //toolbar properties
-      navigationIconUri: resolveAssetSource(navigationIcon).uri,
-      navigationIconTint: '#FFFFFF',
-      subtitleText: '#1',
-      subtitleTextColor: '#FFFFFF',
-      subtitleTextAppearanceRes: 'TextAppearance_AppCompat_Subtitle',
-      subtitleCentered: true,
-      titleTextAppearanceRes: 'TextAppearance_AppCompat_Title',
-      titleCentered: true,
-      menuItemsIconTint: '#FFFFFF',
-      menuItemSaveAttachmentIcon: resolveAssetSource(downloadIcon).uri,
-      //chat properties
-      progressBarColor: '#9E9E9E',
-      networkConnectionErrorTextAppearanceRes: 'TextAppearance_AppCompat_Small',
-      networkConnectionErrorText: 'Offline',
-      //chat input properties
-      inputTextColor: '#212121',
-      inputAttachmentIconTint: '#9E9E9E',
-      inputAttachmentBackgroundColor: '#673AB7',
-      inputSendIconTint: '#9E9E9E',
-      inputSendBackgroundColor: '#673AB7',
-      inputSeparatorLineColor: '#BDBDBD',
-      inputHintText: 'Message',
-      inputTextAppearance: 'TextAppearance_AppCompat',
-      //ios
-      initialHeightUri: 125,
-      mainFont: 'Apple Chancery',
+      chatStatusBarBackgroundColor: "#673AB7",
+          chatStatusBarIconsColorMode: "dark",
+          attachmentPreviewToolbarSaveMenuItemIcon: resolveAssetSource(downloadIcon).uri,
+          attachmentPreviewToolbarMenuItemsIconTint: '#9E9E9E',
+          chatToolbar: {
+            titleTextAppearance: 'TextAppearance_AppCompat_Title',
+            titleTextColor: '#FFFFFF',
+            titleText: 'Some new title',
+            titleCentered: true,
+            backgroundColor: '#673AB7',
+            navigationIcon: resolveAssetSource(navigationIcon).uri,
+            navigationIconTint: '#FFFFFF',        
+            subtitleTextAppearance: 'TextAppearance_AppCompat_Subtitle',
+            subtitleTextColor: '#FFFFFF',
+            subtitleText: '#1',
+            subtitleCentered: true,
+    
+          },
+          attachmentPreviewToolbar: {
+            titleTextAppearance: 'TextAppearance_AppCompat_Title',
+            titleTextColor: '#212121',
+            titleText: 'Attachment preview',
+            titleCentered: true,
+            backgroundColor: '#673AB7',
+            navigationIcon: resolveAssetSource(navigationIcon).uri,
+            navigationIconTint: '#FFFFFF',          
+            subtitleTextAppearance: 'TextAppearance_AppCompat_Subtitle',
+            subtitleTextColor: '#FFFFFF',
+            subtitleText: 'Attachment preview subtitle',
+            subtitleCentered: false,
+    
+          },
+
+          networkErrorText: 'Network error',
+          networkErrorTextColor: '#FFFFFF',
+          networkErrorLabelBackgroundColor: '#212121',
+
+          chatProgressBarColor: '#9E9E9E',
+          chatInputTextColor: '#212121',
+          chatInputBackgroundColor: '#D1C4E9',
+          chatInputHintText: 'Input Message',
+          chatInputHintTextColor: '#212121',
+          chatInputAttachmentIcon: resolveAssetSource(attachmentIcon).uri,
+          chatInputAttachmentIconTint: '#9E9E9E',
+          chatInputAttachmentBackgroundColor: '#673AB7',
+          chatInputSendIcon: resolveAssetSource(sendButtonIcon).uri,
+          chatInputSendIconTint: '#9E9E9E',
+          chatInputSendBackgroundColor: '#673AB7',
+          chatInputSeparatorLineColor: '#BDBDBD',
+          chatInputSeparatorLineVisible: true,
+          chatInputCursorColor: '#9E9E9E',
     };
-    mobileMessaging.setupChatSettings(settings);
+    mobileMessaging.setChatCustomization(settings);
+    mobileMessaging.setWidgetTheme('dark');
 
     console.log('Style applied');
   }

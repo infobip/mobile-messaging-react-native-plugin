@@ -235,6 +235,52 @@ declare namespace MobileMessagingReactNative {
         properties: Record<string, any>;
     }
 
+    export interface ToolbarCustomization {
+        titleTextAppearance: string; 
+        titleTextColor: string; 
+        titleText: string; 
+        titleCentered: boolean; 
+        backgroundColor: string; 
+        navigationIcon: string; 
+        navigationIconTint: string;
+        subtitleTextAppearance: string; // android only
+        subtitleTextColor: string; // android only
+        subtitleText: string; // android only
+        subtitleCentered: boolean;  // android only
+    }
+
+    export interface ChatCustomization {
+        chatStatusBarBackgroundColor: string;
+        chatStatusBarIconsColorMode: string;
+        chatToolbar: ToolbarCustomization;
+        attachmentPreviewToolbar: ToolbarCustomization;
+        attachmentPreviewToolbarSaveMenuItemIcon: string; 
+        attachmentPreviewToolbarMenuItemsIconTint: string; 
+	    networkErrorText: string;
+	    networkErrorTextColor: string;
+	    networkErrorTextAppearance: string;
+        networkErrorLabelBackgroundColor: string;
+        chatBackgroundColor: string;
+        chatProgressBarColor: string;
+        chatInputTextAppearance: string;
+        chatInputTextColor: string;
+        chatInputBackgroundColor: string;
+        chatInputHintText: string;
+        chatInputHintTextColor: string;
+        chatInputAttachmentIcon: string;
+        chatInputAttachmentIconTint: string;
+        chatInputAttachmentBackgroundDrawable: string;
+        chatInputAttachmentBackgroundColor: string;
+        chatInputSendIcon: string;
+        chatInputSendIconTint: string;
+        chatInputSendBackgroundDrawable: string;
+        chatInputSendBackgroundColor: string;
+        chatInputSeparatorLineColor: string;
+        chatInputSeparatorLineVisible: boolean;
+        chatInputCursorColor: string;
+    }
+
+    // To be deprecated in favour of ChatCustomization above
     export interface ChatCustomizationConfiguration {
         toolbarTitle: string;
         toolbarTintColor: string;
@@ -548,6 +594,19 @@ declare namespace MobileMessagingReactNative {
 
         /**
          * Set custom style of In-app chat
+         * @param customization various colors in hex format, texts, margins etc.
+         * example:
+         * {
+         *   chatTitleText: "Chat",
+         *   chatTitleTextColor: "#FFFFFF",
+         *   ...
+         * }
+         */
+        setChatCustomization(customization: ChatCustomization): void;
+
+        /**
+         * Set custom style of In-app chat
+         * @deprecated use setChatCustomization above
          * @param configuration various colors in hex format, texts, margins etc.
          * example:
          * {
@@ -558,6 +617,12 @@ declare namespace MobileMessagingReactNative {
          * }
          */
         setupChatSettings(configuration: ChatCustomizationConfiguration): void;
+
+        /**
+         * Set widget theme for In-app chat messages
+         * @param widgetTheme the name of the existing widget theme to be applied to customize the chat messages.
+         */
+        setWidgetTheme(widgetTheme: string): void;
 
         /**
          * Set contextual data of the Livechat Widget.
@@ -673,7 +738,7 @@ declare namespace WebRTCUI {
      * @param {Function} onSuccess success callback
      * @param {Function} onError error callback
      */
-    enableCalls(identity:string, onSuccess:() => void, onError:(error: MobileMessagingError) => void):void;
+    function enableCalls(identity:string, onSuccess:() => void, onError:(error: MobileMessagingError) => void):void;
 
     /**
      * Manually enable WebRTCUI LiveChat calls.
@@ -681,7 +746,7 @@ declare namespace WebRTCUI {
      * @param {Function} onSuccess success callback
      * @param {Function} onError error callback
      */
-    enableChatCalls(onSuccess:() => void, onError:(error: MobileMessagingError) => void):void;
+    function enableChatCalls(onSuccess:() => void, onError:(error: MobileMessagingError) => void):void;
 
     /**
      * Manually disable WebRTCUI calls if they were previously enabled. Note: This action may need up to half a minute to be completed,
@@ -690,5 +755,5 @@ declare namespace WebRTCUI {
      * @param {Function} onSuccess success callback
      * @param {Function} onError error callback
      */
-    disableCalls(onSuccess:() => void, onError:(error: MobileMessagingError) => void):void;
+    function disableCalls(onSuccess:() => void, onError:(error: MobileMessagingError) => void):void;
 }

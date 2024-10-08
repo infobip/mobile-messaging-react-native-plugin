@@ -1,5 +1,5 @@
 //
-//  RNMobileMessagingConfiguration.swift
+//  RNMMChatCustomization.swift
 //  infobip-mobile-messaging-react-native-plugin
 //
 //  Created by Maksym Svitlovskyi on 10.08.2023.
@@ -9,7 +9,89 @@ import Foundation
 import UIKit
 import MobileMessaging
 
-enum CustomisationKeys: String {
+enum ToolbarCustomizationKeys: String {
+    case titleTextAppearance = "titleTextAppearance"
+    case titleTextColor = "titleTextColor"
+    case titleText = "titleText"
+    case backgroundColor = "backgroundColor"
+    case navigationIcon = "navigationIcon"
+    case navigationIconTint = "navigationIconTint"
+
+    func getString(from settings: [String: AnyObject]) -> String? {
+        return settings[self.rawValue] as? String
+    }
+
+    func getImage(from settings: [String: AnyObject]) -> UIImage? {
+        guard let uri = settings[self.rawValue] as? String else { return nil }
+        guard let url = URL(string: uri) else { return nil }
+        guard let data = try? Data(contentsOf: url) else { return nil }
+        return UIImage(data: data)
+    }
+
+    func getColor(from settings: [String: AnyObject]) -> UIColor? {
+        guard let colorHexString = getString(from: settings) else { return nil }
+        return UIColor(hexString: colorHexString)
+    }
+}
+
+enum ChatCustomizationKeys: String {
+    case chatStatusBarBackgroundColor = "chatStatusBarBackgroundColor"
+    case chatStatusBarIconsColorMode = "chatStatusBarIconsColorMode"
+    case chatToolbar = "chatToolbar"
+    case attachmentPreviewToolbar = "attachmentPreviewToolbar"
+    case attachmentPreviewToolbarMenuItemsIconTint = "attachmentPreviewToolbarMenuItemsIconTint"
+    case attachmentPreviewToolbarSaveMenuItemIcon = "attachmentPreviewToolbarSaveMenuItemIcon"
+    case networkErrorText = "networkErrorText"
+    case networkErrorTextColor = "networkErrorTextColor"
+    case networkErrorTextAppearance = "networkErrorTextAppearance"
+    case networkErrorLabelBackgroundColor = "networkErrorLabelBackgroundColor"
+    case chatBackgroundColor = "chatBackgroundColor"
+    case chatProgressBarColor = "chatProgressBarColor"
+    case chatInputTextAppearance = "chatInputTextAppearance"
+    case chatInputTextColor = "chatInputTextColor"
+    case chatInputBackgroundColor = "chatInputBackgroundColor"
+    case chatInputHintText = "chatInputHintText"
+    case chatInputHintTextColor = "chatInputHintTextColor"
+    case chatInputAttachmentIcon = "chatInputAttachmentIcon"
+    case chatInputAttachmentIconTint = "chatInputAttachmentIconTint"
+    case chatInputAttachmentBackgroundDrawable = "chatInputAttachmentBackgroundDrawable"
+    case chatInputAttachmentBackgroundColor = "chatInputAttachmentBackgroundColor"
+    case chatInputSendIcon = "chatInputSendIcon"
+    case chatInputSendIconTint = "chatInputSendIconTint"
+    case chatInputSendBackgroundDrawable = "chatInputSendBackgroundDrawable"
+    case chatInputSendBackgroundColor = "chatInputSendBackgroundColor"
+    case chatInputSeparatorLineColor = "chatInputSeparatorLineColor"
+    case chatInputSeparatorLineVisible = " chatInputSeparatorLineVisible"
+    case chatInputCursorColor = "chatInputCursorColor"
+
+    func getDict(from settings: [String: AnyObject]) -> [String: AnyObject]? {
+        return settings[self.rawValue] as? [String: AnyObject]
+    }
+
+    func getString(from settings: [String: AnyObject]) -> String? {
+        return settings[self.rawValue] as? String
+    }
+
+    func getImage(from settings: [String: AnyObject]) -> UIImage? {
+        guard let uri = settings[self.rawValue] as? String else { return nil }
+        guard let url = URL(string: uri) else { return nil }
+        guard let data = try? Data(contentsOf: url) else { return nil }
+        return UIImage(data: data)
+    }
+
+    func getColor(from settings: [String: AnyObject]) -> UIColor? {
+        guard let colorHexString = getString(from: settings) else { return nil }
+        return UIColor(hexString: colorHexString)
+    }
+
+    func getBool(from settings: [String: AnyObject]) -> Bool? {
+        guard let value = settings[self.rawValue] else { return nil }
+        return value as? Bool
+    }
+}
+
+// Deprecated in favour of ChatCustomizationKeys
+enum CustomizationKeys: String {
     // MARK: Common Settings
     case toolbarTitle = "toolbarTitle"
 
