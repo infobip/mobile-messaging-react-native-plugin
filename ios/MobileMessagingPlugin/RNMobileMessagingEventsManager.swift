@@ -17,7 +17,6 @@ class RNMobileMessagingEventsManager {
         EventName.messageReceived: MMNotificationMessageReceived,
         EventName.tokenReceived:  MMNotificationDeviceTokenReceived,
         EventName.registrationUpdated:  MMNotificationRegistrationUpdated,
-        EventName.geofenceEntered: MMNotificationGeographicalRegionDidEnter,
         EventName.notificationTapped: MMNotificationMessageTapped,
         EventName.actionTapped: MMNotificationActionTapped,
         EventName.depersonalized: MMNotificationDepersonalized,
@@ -85,11 +84,6 @@ class RNMobileMessagingEventsManager {
             if let internalId = notification.userInfo?[MMNotificationKeyRegistrationInternalId] as? String {
                 notificationResult = internalId
             }
-        case MMNotificationGeographicalRegionDidEnter:
-            eventName = EventName.geofenceEntered
-           if let region = notification.userInfo?[MMNotificationKeyGeographicalRegion] as? MMRegion {
-               notificationResult = region.dictionary()
-           }
         case MMNotificationMessageTapped:
             eventName = EventName.notificationTapped
             if let message = notification.userInfo?[MMNotificationKeyMessage] as? MM_MTMessage {

@@ -11,7 +11,6 @@ def overrideGmsVersion = getRootProjectProperty('overrideGmsVersion', '')
 def overrideFirebaseVersion = getRootProjectProperty('overrideFirebaseVersion', '')
 def overrideKotlinVersion = getRootProjectProperty('overrideKotlinVersion', '')
 def withCryptorMigration = getRootProjectProperty('withCryptorMigration', false)
-def withGeofencingModule = getRootProjectProperty('withGeofencingModule', false)
 def withWebRTCUI = getRootProjectProperty('withWebRTCUI', false)
 
 apply plugin: 'com.android.library'
@@ -131,9 +130,4 @@ dependencies {
         implementation "com.infobip:infobip-mobile-messaging-android-cryptor-migration:$mmVersion@aar"
     }
 
-    if (withGeofencingModule.toBoolean()) {
-        implementation ("com.infobip:infobip-mobile-messaging-android-geo-sdk:$mmVersion@aar"){
-            transitive = true
-        }
-    }
 }

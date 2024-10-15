@@ -7,7 +7,6 @@ declare namespace MobileMessagingReactNative {
         'notificationTapped' |
         'tokenReceived' |
         'registrationUpdated' |
-        'geofenceEntered' |
         'actionTapped' |
         'installationUpdated' |
         'userUpdated' |
@@ -26,7 +25,6 @@ declare namespace MobileMessagingReactNative {
         webRTCUI?: {
             configurationId: string;
         } | undefined;
-        geofencingEnabled?: boolean | undefined;
         inAppChatEnabled?: boolean | undefined;
         fullFeaturedInAppsEnabled?: boolean | undefined;
         /**
@@ -94,7 +92,6 @@ declare namespace MobileMessagingReactNative {
         isPrimaryDevice?: boolean | undefined;
         isPushRegistrationEnabled?: boolean | undefined;
         notificationsEnabled?: boolean | undefined;
-        geoEnabled?: boolean | undefined;
         sdkVersion?: string | undefined;
         appVersion?: string | undefined;
         os?: OS | undefined;
@@ -134,22 +131,6 @@ declare namespace MobileMessagingReactNative {
         forceDepersonalize?: boolean | undefined;
     }
 
-    export interface GeoData {
-        area: GeoArea;
-    }
-
-    export interface GeoArea {
-        id: string;
-        center: GeoCenter;
-        radius: number;
-        title: string;
-    }
-
-    export interface GeoCenter {
-        lat: number;
-        lon: number;
-    }
-
     export interface Message {
         messageId: string;
         title?: string | undefined;
@@ -162,7 +143,6 @@ declare namespace MobileMessagingReactNative {
         seenDate?: number | undefined;
         contentUrl?: string | undefined;
         seen?: boolean | undefined;
-        geo?: boolean | undefined;
         originalPayload?: Record<string, string> | undefined; // iOS only
         vibrate?: boolean | undefined; // Android only
         icon?: string | undefined; // Android only
@@ -360,7 +340,6 @@ declare namespace MobileMessagingReactNative {
             "notificationTapped",
             "tokenReceived",
             "registrationUpdated",
-            "geofenceEntered",
             "actionTapped",
             "installationUpdated",
             "userUpdated",
@@ -678,15 +657,6 @@ declare namespace MobileMessagingReactNative {
          * @param {Function} jwtProvider callback returning JWT token
          */
         setJwtProvider(jwtProvider: () => string): void;
-
-        /**
-         * This is used for requesting Location permissions for Android
-         * @param rationale rationale to display if it's needed. Describing why this permissions required.
-         * Mobile Messaging SDK requires following permissions to be able to send geo targeted notifications, even if application is killed or on background.
-         * ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION, ACCESS_BACKGROUND_LOCATION
-         * @return
-         */
-        requestAndroidLocationPermissions(rationale ?: Rationale): Promise<boolean>;
 
         /**
          * Registering for POST_NOTIFICATIONS permission for Android 13+

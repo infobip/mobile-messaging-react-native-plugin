@@ -21,7 +21,6 @@ extension MM_MTMessage {
         result["contentUrl"] = contentUrl
         result["seen"] = seenStatus != .NotSeen
         result["seenDate"] = seenDate?.timeIntervalSince1970
-        result["geo"] = isGeoMessage
         result["chat"] = isChatMessage
         result["browserUrl"] = browserUrl?.absoluteString
         result["deeplink"] = deeplink?.absoluteString
@@ -31,10 +30,6 @@ extension MM_MTMessage {
         return result
     }
 
-    var isGeoMessage: Bool {
-        let geoAreasDicts = (originalPayload["internalData"] as? [String: Any])?["geo"] as? [[String: Any]]
-        return geoAreasDicts != nil
-    }
 }
 
 extension MMInbox {
@@ -80,24 +75,6 @@ extension MMBaseMessage {
     }
 }
 
-extension MMRegion {
-    func dictionary() -> [String: Any] {
-        var areaCenter = [String: Any]()
-        areaCenter["lat"] = center.latitude
-        areaCenter["lon"] = center.longitude
-
-        var area = [String: Any]()
-        area["id"] = identifier
-        area["center"] = areaCenter
-        area["radius"] = radius
-        area["title"] = title
-
-        var result = [String: Any]()
-        result["area"] = area
-        return result
-    }
-}
-
 extension Optional {
     func unwrap<T>(orDefault fallbackValue: T) -> T {
         switch self {
@@ -116,7 +93,6 @@ struct EventName {
     static let userUpdated = "userUpdated"
     static let personalized = "personalized"
     static let depersonalized = "depersonalized"
-    static let geofenceEntered = "geofenceEntered"
     static let actionTapped = "actionTapped"
     static let notificationTapped = "notificationTapped"
     static let messageReceived = "messageReceived"

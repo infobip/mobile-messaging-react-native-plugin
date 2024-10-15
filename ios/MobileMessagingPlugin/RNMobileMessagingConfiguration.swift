@@ -17,7 +17,6 @@ class RNMobileMessagingConfiguration {
         static let carrierInfoSendingDisabled = "carrierInfoSendingDisabled"
         static let systemInfoSendingDisabled = "systemInfoSendingDisabled"
         static let applicationCodePersistingDisabled = "applicationCodePersistingDisabled"
-        static let geofencingEnabled = "geofencingEnabled"
         static let applicationCode = "applicationCode"
         static let webRTCUI = "webRTCUI"
         static let configurationId = "configurationId"
@@ -34,7 +33,6 @@ class RNMobileMessagingConfiguration {
 
     let appCode: String
     let webRTCUI: [String: AnyObject]?
-    let geofencingEnabled: Bool
     let messageStorageEnabled: Bool
     let defaultMessageStorage: Bool
     let notificationType: MMUserNotificationType
@@ -55,7 +53,6 @@ class RNMobileMessagingConfiguration {
 
         self.appCode = appCode
         self.webRTCUI = rawConfig[RNMobileMessagingConfiguration.Keys.webRTCUI] as? [String: AnyObject]
-        self.geofencingEnabled = rawConfig[RNMobileMessagingConfiguration.Keys.geofencingEnabled].unwrap(orDefault: false)
         self.logging = ios[RNMobileMessagingConfiguration.Keys.logging].unwrap(orDefault: false)
         self.defaultMessageStorage = rawConfig[RNMobileMessagingConfiguration.Keys.defaultMessageStorage].unwrap(orDefault: false)
         self.messageStorageEnabled = rawConfig[RNMobileMessagingConfiguration.Keys.messageStorage] != nil ? true : false

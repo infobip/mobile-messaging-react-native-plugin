@@ -27,7 +27,6 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
             EventName.userUpdated,
             EventName.personalized,
             EventName.depersonalized,
-            EventName.geofenceEntered,
             EventName.actionTapped,
             EventName.notificationTapped,
             EventName.messageReceived,
@@ -122,10 +121,6 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
         MobileMessaging.privacySettings.userDataPersistingDisabled = configuration.privacySettings[RNMobileMessagingConfiguration.Keys.userDataPersistingDisabled].unwrap(orDefault: false)
 
         var mobileMessaging = MobileMessaging.withApplicationCode(configuration.appCode, notificationType: configuration.notificationType)
-
-        if configuration.geofencingEnabled {
-            mobileMessaging = mobileMessaging?.withGeofencingService()
-        }
 
         if let storageAdapter = messageStorageAdapter, configuration.messageStorageEnabled {
             mobileMessaging = mobileMessaging?.withMessageStorage(storageAdapter)

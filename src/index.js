@@ -2,11 +2,8 @@ import {
     EmitterSubscription,
     NativeEventEmitter,
     NativeModules,
-    Permission,
-    PermissionsAndroid,
     Platform,    
 } from 'react-native';
-import type {Rationale} from 'react-native/Libraries/PermissionsAndroid/PermissionsAndroid';
 
 
 const { ReactNativeMobileMessaging, RNMMChat, RNMMWebRTCUI } = NativeModules;
@@ -23,7 +20,6 @@ class MobileMessaging {
             "notificationTapped",
             "tokenReceived",
             "registrationUpdated",
-            "geofenceEntered",
             "actionTapped",
             "installationUpdated",
             "userUpdated",
@@ -55,7 +51,6 @@ class MobileMessaging {
      *   - notificationTapped
      *   - tokenReceived
      *   - registrationUpdated
-     *	 - geofenceEntered
      *	 - actionTapped
      *	 - installationUpdated
      *	 - userUpdated
@@ -91,7 +86,6 @@ class MobileMessaging {
      *   - notificationTapped
      *   - tokenReceived
      *   - registrationUpdated
-     *	 - geofenceEntered
      *	 - actionTapped
      *	 - installationUpdated
      *	 - userUpdated
@@ -143,7 +137,6 @@ class MobileMessaging {
      *		webRTCUI: {
      *			configurationId: <String>
      *		},
-     *		geofencingEnabled: true,
      *		messageStorage: '<Message storage save callback>',
      *		defaultMessageStorage: true,
      *	    fullFeaturedInAppsEnabled: true,
@@ -353,7 +346,6 @@ class MobileMessaging {
      *   isPrimaryDevice: true,
      *   isPushRegistrationEnabled: true,
      *   notificationsEnabled: true,
-     *   geoEnabled: false,
      *   sdkVersion: "1.2.3",
      *   appVersion: "2.3.4"
      *   os: "iOS",
@@ -705,63 +697,6 @@ class MobileMessaging {
             return;
         }
         ReactNativeMobileMessaging.registerForAndroidRemoteNotifications();
-    };
-
-    /* Geofencing permissions */
-
-    /**
-     * This is used for requesting Location permissions for Android
-     * @param rationale rationale to display if it's needed. Describing why this permissions required.
-     * Mobile Messaging SDK requires following permissions to be able to send geo targeted notifications, even if application is killed or on background.
-     * ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION, ACCESS_BACKGROUND_LOCATION
-     * @return {Promise<boolean>}
-     */
-    async requestAndroidLocationPermissions(rationale?: Rationale): Promise<Boolean> {
-        const requiredPermissions = await this.requiredAndroidLocationPermissions();
-        if (requiredPermissions.length === 0) {
-            return Promise.resolve(true);
-        }
-
-        return this.checkAndroidLocationPermission(requiredPermissions, rationale).then(granted => {
-            if (!granted) {
-                return Promise.resolve(false);
-            } else {
-                return this.requestAndroidLocationPermissions(rationale);
-            }
-        });
-    };
-
-    async checkAndroidLocationPermission(permissions: Array<Permission>, rationale?: Rationale): Promise<Boolean> {
-        for (permission of permissions) {
-            const granted = await PermissionsAndroid.request(permission, rationale);
-            if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
-                console.log("Permissions Result != Granted ", permission, granted);
-                return Promise.resolve(false);
-            }
-        }
-        console.log("Permissions Result == Granted ");
-        return Promise.resolve(true);
-    };
-
-    async requiredAndroidLocationPermissions(): Promise<Array<Permission>> {
-        let permissions: Array<Permission> = [];
-        const fineLocationGranted = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION);
-        if (!fineLocationGranted) {
-            if (Platform.Version > 29) {
-                permissions = [PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION, PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION];
-            } else if (Platform.Version === 29) {
-                permissions = [PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION, PermissionsAndroid.PERMISSIONS.ACCESS_BACKGROUND_LOCATION];
-            } else {
-                permissions = [PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION];
-            }
-        } else {
-            const backgroundLocationGranted = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.ACCESS_BACKGROUND_LOCATION);
-            if (!backgroundLocationGranted && Platform.Version > 29) {
-                permissions = [PermissionsAndroid.PERMISSIONS.ACCESS_BACKGROUND_LOCATION];
-            }
-        }
-
-        return Promise.resolve(permissions);
     };
 
     /**

@@ -54,7 +54,6 @@ public class MessageJson {
                     .putOpt("contentUrl", message.getContentUrl())
                     .putOpt("seen", message.getSeenTimestamp() != 0)
                     .putOpt("seenDate", message.getSeenTimestamp())
-                    .putOpt("geo", hasGeo(message))
                     .putOpt("chat", message.isChatMessage())
                     .putOpt("browserUrl", message.getBrowserUrl())
                     .putOpt("webViewUrl", message.getWebViewUrl())
@@ -65,19 +64,6 @@ public class MessageJson {
             Log.w(Utils.TAG, "Cannot convert message to JSON: " + e.getMessage());
             Log.d(Utils.TAG, Log.getStackTraceString(e));
             return null;
-        }
-    }
-
-    private static boolean hasGeo(Message message) {
-        if (message == null || message.getInternalData() == null) {
-            return false;
-        }
-
-        try {
-            JSONObject geo = new JSONObject(message.getInternalData());
-            return geo.getJSONArray("geo") != null && geo.getJSONArray("geo").length() > 0;
-        } catch (JSONException e) {
-            return false;
         }
     }
 
@@ -133,26 +119,6 @@ public class MessageJson {
             message.setMessageType(Message.MESSAGE_TYPE_CHAT);
         }
         return message;
-    }
-
-    /**
-     * Geo mapper
-     *
-     * @param bundle where to read geo objects from
-     * @return list of json objects representing geo objects
-     */
-    @NonNull
-    public static List<JSONObject> geosFromBundle(Bundle bundle) {
-        try {
-            Class<?> cls = Class.forName("org.infobip.mobile.messaging.geo.mapper.GeoBundleMapper");
-            Method geosFromBundle_method = cls.getDeclaredMethod("geosFromBundle", Bundle.class);
-            List<JSONObject> geos = (List<JSONObject>) geosFromBundle_method.invoke(cls, bundle);
-            return geos;
-        } catch (Exception e) {
-            Log.w(Utils.TAG, "Cannot convert geo to JSON: " + e.getMessage());
-            Log.d(Utils.TAG, Log.getStackTraceString(e));
-        }
-        return new ArrayList<JSONObject>();
     }
 
     @NonNull

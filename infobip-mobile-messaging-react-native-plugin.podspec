@@ -20,7 +20,6 @@ Pod::Spec.new do |s|
 
   s.dependency "React-Core"
   s.dependency "MobileMessaging/Core", "12.13.2"
-  s.dependency "MobileMessaging/Geofencing", "12.13.2"
   s.dependency "MobileMessaging/InAppChat", "12.13.2"
   s.dependency "MobileMessaging/Inbox", "12.13.2"
   if defined?($WebRTCUIEnabled)

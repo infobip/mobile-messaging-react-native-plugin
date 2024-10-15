@@ -94,7 +94,6 @@ class Configuration {
 
     AndroidConfiguration android;
     String applicationCode;
-    boolean geofencingEnabled;
     boolean inAppChatEnabled;
     boolean fullFeaturedInAppsEnabled;
     Map<String, ?> messageStorage;

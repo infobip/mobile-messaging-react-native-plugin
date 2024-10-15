@@ -161,7 +161,6 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
     private static final String EVENT_PERSONALIZED = "personalized";
     private static final String EVENT_DEPERSONALIZED = "depersonalized";
 
-    private static final String EVENT_GEOFENCE_ENTERED = "geofenceEntered";
     private static final String EVENT_NOTIFICATION_TAPPED = "notificationTapped";
     private static final String EVENT_NOTIFICATION_ACTION_TAPPED = "actionTapped";
     private static final String EVENT_MESSAGE_RECEIVED = "messageReceived";
@@ -172,9 +171,6 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
     private static final String EVENT_INAPPCHAT_LIVECHAT_REGISTRATION_ID_UPDATED = "inAppChat.livechatRegistrationIdUpdated";
     private static final String EVENT_INAPPCHAT_AVAILABILITY_UPDATED = "inAppChat.availabilityUpdated";
     //endregion
-
-    //Geo dependency is opt-out by default. Extracted from GeoEvent.GEOFENCE_AREA_ENTERED module 'infobip-mobile-messaging-android-geo-sdk'
-    private static final String GEO_EVENT_GEOFENCE_AREA_ENTERED_KEY = "org.infobip.mobile.messaging.geo.GEOFENCE_AREA_ENTERED";
 
 
     //region MessageStorageBroadcastReceiver
@@ -296,7 +292,6 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
         put(Event.USER_UPDATED.getKey(), EVENT_USER_UPDATED);
         put(Event.PERSONALIZED.getKey(), EVENT_PERSONALIZED);
         put(Event.DEPERSONALIZED.getKey(), EVENT_DEPERSONALIZED);
-        put(GEO_EVENT_GEOFENCE_AREA_ENTERED_KEY, EVENT_GEOFENCE_ENTERED);
         put(InAppChatEvent.CHAT_VIEW_CHANGED.getKey(), EVENT_INAPPCHAT_VIEW_STATE_CHANGED);
         put(InAppChatEvent.CHAT_CONFIGURATION_SYNCED.getKey(), EVENT_INAPPCHAT_CONFIGURATION_SYNCED);
         put(InAppChatEvent.LIVECHAT_REGISTRATION_ID_UPDATED.getKey(), EVENT_INAPPCHAT_LIVECHAT_REGISTRATION_ID_UPDATED);
@@ -310,13 +305,6 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
             String event = broadcastEventMap.get(intent.getAction());
             if (event == null) {
                 Log.w(Utils.TAG, "Cannot process event for broadcast: " + intent.getAction());
-                return;
-            }
-
-            if (GEO_EVENT_GEOFENCE_AREA_ENTERED_KEY.equals(intent.getAction())) {
-                for (JSONObject geo : MessageJson.geosFromBundle(intent.getExtras())) {
-                    ReactNativeEvent.send(event, reactContext, geo);
-                }
                 return;
             }
 
@@ -471,19 +459,6 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
             @SuppressLint("MissingPermission")
             @Override
             public void onSuccess() {
-                if (configuration.geofencingEnabled) {
-                    try {
-                        Class<?> cls = Class.forName("org.infobip.mobile.messaging.geo.MobileGeo");
-                        Method newInstance_method = cls.getDeclaredMethod("getInstance", Context.class);
-                        Method activateGeofencing_method = cls.getDeclaredMethod("activateGeofencing");
-                        Object geoInstance = newInstance_method.invoke(cls, context);
-                        activateGeofencing_method.invoke(geoInstance);
-                    } catch (Exception e) {
-                        Log.d(Utils.TAG, "Geofencing is not enabled.");
-                        e.printStackTrace();
-                    }
-                }
-
                 NotificationCategory categories[] = notificationCategoriesFromConfiguration(configuration.notificationCategories);
                 if (categories.length > 0) {
                     MobileInteractive.getInstance(context).setNotificationCategories(categories);
