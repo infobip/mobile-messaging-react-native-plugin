@@ -134,8 +134,8 @@ public class PermissionsRequestManager {
             AlertDialog.Builder builder = new AlertDialog.Builder((Activity) activity)
                     .setMessage(permissionsRequester.permissionsNotGrantedDialogMessage())
                     .setTitle(permissionsRequester.permissionsNotGrantedDialogTitle())
-                    .setPositiveButton(R.string.mm_button_settings, onPositiveButtonClick)
-                    .setNegativeButton(R.string.mm_button_cancel, new DialogInterface.OnClickListener() {
+                    .setPositiveButton(org.infobip.mobile.messaging.resources.R.string.mm_button_settings, onPositiveButtonClick)
+                    .setNegativeButton(org.infobip.mobile.messaging.resources.R.string.mm_button_cancel, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.dismiss();
