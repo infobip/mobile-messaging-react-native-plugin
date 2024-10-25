@@ -13,7 +13,7 @@ import androidx.collection.ArraySet;
 import com.facebook.react.modules.core.PermissionAwareActivity;
 import com.facebook.react.modules.core.PermissionListener;
 
-import org.infobip.mobile.messaging.R;
+import org.infobip.mobile.messaging.resources.R;
 import org.infobip.mobile.messaging.logging.MobileMessagingLogger;
 import org.infobip.mobile.messaging.permissions.PermissionsHelper;
 

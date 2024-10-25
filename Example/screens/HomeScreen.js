@@ -54,6 +54,16 @@ function HomeScreen({navigation}) {
     });
   }
 
+  function fetchUserDataHandler() {
+    mobileMessaging.fetchUser(user => {
+      console.log(user);
+      Alert.alert('Fetched User Information', JSON.stringify(user), [
+        {text: 'Ok', style: 'destructive'},
+      ]);
+      return;
+    });
+  }
+
   function getUserDataHandler() {
     mobileMessaging.getUser(user => {
       console.log(user);
@@ -332,7 +342,12 @@ function HomeScreen({navigation}) {
       <PrimaryButton onPress={saveUserDataHandler}>
         Save User Data
       </PrimaryButton>
-      <PrimaryButton onPress={getUserDataHandler}>Get User Data</PrimaryButton>
+      <PrimaryButton onPress={fetchUserDataHandler}>
+        Fetch User Data
+      </PrimaryButton>
+      <PrimaryButton onPress={getUserDataHandler}>
+        Get User Data
+      </PrimaryButton>
       <PrimaryButton onPress={setInstallationAsPrimaryHandler}>
         Set This Installation as Primary
       </PrimaryButton>

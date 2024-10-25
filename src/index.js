@@ -420,7 +420,8 @@ class MobileMessaging {
      *	   firstName: "John",
      *     lastName: "Smith"
      *   },
-     *   forceDepersonalize: false
+     *   forceDepersonalize: false,
+     8   keepAsLead: false
      * }
      * @param {Function} onSuccess will be called on success
      * @param {Function} onError will be called on error

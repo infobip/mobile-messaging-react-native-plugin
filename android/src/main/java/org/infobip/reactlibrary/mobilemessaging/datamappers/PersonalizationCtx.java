@@ -9,6 +9,7 @@ public class PersonalizationCtx {
     public UserIdentity userIdentity;
     public UserAttributes userAttributes;
     public boolean forceDepersonalize;
+    public boolean keepAsLead;
 
     public static PersonalizationCtx resolvePersonalizationCtx(JSONObject args) throws JSONException, IllegalArgumentException {
         if (args == null) {
@@ -19,6 +20,7 @@ public class PersonalizationCtx {
         ctx.forceDepersonalize = args.optBoolean("forceDepersonalize", false);
         ctx.userIdentity = UserJson.userIdentityFromJson(args.getJSONObject("userIdentity"));
         ctx.userAttributes = UserJson.userAttributesFromJson(args.optJSONObject("userAttributes"));
+        ctx.keepAsLead = args.optBoolean("keepAsLead", false);
         return ctx;
     }
 }

@@ -728,7 +728,7 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
     public void personalize(ReadableMap args, final Callback successCallback, final Callback errorCallback) throws JSONException {
         try {
             final PersonalizationCtx ctx = PersonalizationCtx.resolvePersonalizationCtx(ReactNativeJson.convertMapToJson(args));
-            mobileMessaging().personalize(ctx.userIdentity, ctx.userAttributes, ctx.forceDepersonalize, new MobileMessaging.ResultListener<User>() {
+            mobileMessaging().personalize(ctx.userIdentity, ctx.userAttributes, ctx.forceDepersonalize, ctx.keepAsLead, new MobileMessaging.ResultListener<User>() {
                 @Override
                 public void onResult(Result<User, MobileMessagingError> result) {
                     if (result.isSuccess()) {

@@ -104,7 +104,7 @@ public class UserJson extends User {
 
         try {
             if (json.has(UserAtts.customAttributes)) {
-                Type type = new TypeToken<Map<String, Object>>() {
+                java.lang.reflect.Type type = new TypeToken<Map<String, Object>>() {
                 }.getType();
                 Map<String, Object> customAttributes = new JsonSerializer().deserialize(json.optString(UserAtts.customAttributes), type);
                 if (!CustomAttributesMapper.validate(customAttributes)) {
@@ -156,7 +156,7 @@ public class UserJson extends User {
 
         try {
             if (json.has(UserAtts.customAttributes)) {
-                Type type = new TypeToken<Map<String, Object>>() {
+                java.lang.reflect.Type type = new TypeToken<Map<String, Object>>() {
                 }.getType();
                 Map<String, Object> customAttributes = new JsonSerializer().deserialize(json.optString(UserAtts.customAttributes), type);
                 if (!CustomAttributesMapper.validate(customAttributes)) {
