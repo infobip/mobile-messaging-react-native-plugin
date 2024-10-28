@@ -146,7 +146,7 @@ someMethod(): void {
 #### More details on SDK features and FAQ you can find on [Wiki](https://github.com/infobip/mobile-messaging-react-native-plugin/wiki)
 
 <br>
-<p align="center"><b>NEXT STEPS: <a href="https://github.com/infobip/mobile-messaging-react-native-plugin/wiki/User-profile">User profile</a></b></p>
+<p align="center"><b>NEXT STEPS: <a href="https://github.com/infobip/mobile-messaging-react-native-plugin/wiki/Users-and-installations">Users and installations</a></b></p>
 <br>
 
 | If you have any questions or suggestions, feel free to send an email to support@infobip.com or create an <a href="https://github.com/infobip/mobile-messaging-react-native-plugin/issues" target="_blank">issue</a>. |
