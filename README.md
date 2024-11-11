@@ -15,8 +15,8 @@ The document describes library integration steps for your React Native project.
 - React Native (v0.70.8)
 
 For iOS project:
-- Xcode and Command Line Tools (13.2.1)
-- CocoaPods (v1.11.3)
+- Xcode and Command Line Tools (16.1)
+- CocoaPods (v1.15.2)
 - Minimum deployment target 12.4
 
 For Android project:
