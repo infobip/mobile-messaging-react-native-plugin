@@ -52,8 +52,10 @@ import org.infobip.mobile.messaging.chat.InAppChat;
 import org.infobip.mobile.messaging.chat.core.InAppChatEvent;
 import org.infobip.mobile.messaging.dal.bundle.MessageBundleMapper;
 import org.infobip.mobile.messaging.inbox.Inbox;
+import org.infobip.mobile.messaging.inbox.InboxMapper;
 import org.infobip.mobile.messaging.inbox.MobileInbox;
 import org.infobip.mobile.messaging.inbox.MobileInboxFilterOptions;
+import org.infobip.mobile.messaging.inbox.MobileInboxFilterOptionsJson;
 import org.infobip.mobile.messaging.interactive.InteractiveEvent;
 import org.infobip.mobile.messaging.interactive.MobileInteractive;
 import org.infobip.mobile.messaging.interactive.NotificationAction;
@@ -67,14 +69,12 @@ import org.infobip.mobile.messaging.storage.SQLiteMessageStore;
 import org.infobip.mobile.messaging.util.Cryptor;
 import org.infobip.mobile.messaging.util.DeviceInformation;
 import org.infobip.mobile.messaging.util.PreferenceHelper;
-import org.infobip.reactlibrary.mobilemessaging.datamappers.CustomEventJson;
-import org.infobip.reactlibrary.mobilemessaging.datamappers.InboxJson;
-import org.infobip.reactlibrary.mobilemessaging.datamappers.InstallationJson;
-import org.infobip.reactlibrary.mobilemessaging.datamappers.MessageJson;
-import org.infobip.reactlibrary.mobilemessaging.datamappers.MobileInboxFilterOptionsJson;
-import org.infobip.reactlibrary.mobilemessaging.datamappers.PersonalizationCtx;
+import org.infobip.mobile.messaging.plugins.CustomEventJson;
+import org.infobip.mobile.messaging.plugins.InstallationJson;
+import org.infobip.mobile.messaging.plugins.MessageJson;
+import org.infobip.mobile.messaging.plugins.PersonalizationCtx;
+import org.infobip.mobile.messaging.plugins.UserJson;
 import org.infobip.reactlibrary.mobilemessaging.datamappers.ReactNativeJson;
-import org.infobip.reactlibrary.mobilemessaging.datamappers.UserJson;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -587,7 +587,7 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
     @ReactMethod
     public void fetchInboxMessages(@NonNull String token, @NonNull String externalUserId, ReadableMap args, final Callback successCallback, final Callback errorCallback) throws JSONException {
         try {
-            mobileMessagingInbox().fetchInbox(token, externalUserId, MobileInboxFilterOptionsJson.resolveMobileInboxFilterOptions(ReactNativeJson.convertMapToJson(args)), inboxResultListener(successCallback, errorCallback));
+            mobileMessagingInbox().fetchInbox(token, externalUserId, MobileInboxFilterOptionsJson.mobileInboxFilterOptionsFromJSON(ReactNativeJson.convertMapToJson(args)), inboxResultListener(successCallback, errorCallback));
         } catch (IllegalArgumentException e) {
             Log.d(Utils.TAG, "Error fetching inbox:" + e.getMessage());
         }
@@ -596,7 +596,7 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
     @ReactMethod
     public void fetchInboxMessagesWithoutToken(@NonNull String externalUserId, ReadableMap args, final Callback successCallback, final Callback errorCallback) throws JSONException {
         try {
-            mobileMessagingInbox().fetchInbox(externalUserId, MobileInboxFilterOptionsJson.resolveMobileInboxFilterOptions(ReactNativeJson.convertMapToJson(args)), inboxResultListener(successCallback, errorCallback));
+            mobileMessagingInbox().fetchInbox(externalUserId, MobileInboxFilterOptionsJson.mobileInboxFilterOptionsFromJSON(ReactNativeJson.convertMapToJson(args)), inboxResultListener(successCallback, errorCallback));
         } catch (IllegalArgumentException e) {
             Log.d(Utils.TAG, "Error fetching inbox:" + e.getMessage());
         }
@@ -621,7 +621,12 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
             @Override
             public void onResult(Result<Inbox, MobileMessagingError> result) {
                 if (result.isSuccess()) {
-                    ReadableMap readableMap = InboxJson.toReadableMap(result.getData());
+                    ReadableMap readableMap = null;
+                    try {
+                        readableMap = ReactNativeJson.convertJsonToMap(InboxMapper.toJSON(result.getData()));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                     successCallback.invoke(readableMap);
                 } else {
                     errorCallback.invoke(Utils.callbackError(result.getError().getMessage(), null));
@@ -675,7 +680,12 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
             @Override
             public void onResult(Result<User, MobileMessagingError> result) {
                 if (result.isSuccess()) {
-                    ReadableMap readableMap = UserJson.toReadableMap(result.getData());
+                    ReadableMap readableMap = null;
+                    try {
+                        readableMap = ReactNativeJson.convertJsonToMap(UserJson.toJSON(result.getData()));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                     successCallback.invoke(readableMap);
                 } else {
                     errorCallback.invoke(Utils.callbackError(result.getError().getMessage(), null));
@@ -687,8 +697,13 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
     @ReactMethod
     public void getUser(final Callback successCallback) {
         User user = mobileMessaging().getUser();
-        ReadableMap userReadableMap = UserJson.toReadableMap(user);
-        successCallback.invoke(userReadableMap);
+        ReadableMap readableMap = null;
+        try {
+            readableMap = ReactNativeJson.convertJsonToMap(UserJson.toJSON(user));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        successCallback.invoke(readableMap);
     }
 
     @ReactMethod
@@ -708,7 +723,12 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
             @Override
             public void onResult(Result<Installation, MobileMessagingError> result) {
                 if (result.isSuccess()) {
-                    ReadableMap readableMap = InstallationJson.toReadableMap(result.getData());
+                    ReadableMap readableMap = null;
+                    try {
+                        readableMap = ReactNativeJson.convertJsonToMap(InstallationJson.toJSON(result.getData()));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                     successCallback.invoke(readableMap);
                 } else {
                     errorCallback.invoke(Utils.callbackError(result.getError().getMessage(), null));
@@ -720,8 +740,13 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
     @ReactMethod
     public void getInstallation(final Callback successCallback) {
         Installation installation = mobileMessaging().getInstallation();
-        ReadableMap installationReadableMap = InstallationJson.toReadableMap(installation);
-        successCallback.invoke(installationReadableMap);
+        ReadableMap readableMap = null;
+        try {
+            readableMap = ReactNativeJson.convertJsonToMap(InstallationJson.toJSON(installation));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        successCallback.invoke(readableMap);
     }
 
     @ReactMethod
@@ -732,7 +757,12 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
                 @Override
                 public void onResult(Result<User, MobileMessagingError> result) {
                     if (result.isSuccess()) {
-                        ReadableMap readableMap = UserJson.toReadableMap(result.getData());
+                        ReadableMap readableMap = null;
+                        try {
+                            readableMap = ReactNativeJson.convertJsonToMap(UserJson.toJSON(result.getData()));
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                         successCallback.invoke(readableMap);
                     } else {
                         errorCallback.invoke(Utils.callbackError(result.getError().getMessage(), null));
@@ -788,7 +818,12 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
             @Override
             public void onResult(Result<List<Installation>, MobileMessagingError> result) {
                 if (result.isSuccess()) {
-                    ReadableArray readableArray = InstallationJson.toReadableArray(result.getData());
+                    ReadableArray readableArray = null;
+                    try {
+                        readableArray = ReactNativeJson.convertJsonToArray(InstallationJson.toJSON(result.getData()));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                     successCallback.invoke(readableArray);
                 } else {
                     errorCallback.invoke(Utils.callbackError(result.getError().getMessage(), null));
