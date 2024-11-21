@@ -29,7 +29,10 @@ function PersonalizeScreen() {
       phones: [enteredNumber],
     };
 
-    mobileMessaging.personalize({userIdentity: userIdentity, keepAsLead: true}, () => {});
+    mobileMessaging.personalize(
+      {forceDepersonalize: true, userIdentity: userIdentity, keepAsLead: true},
+      () => {},
+    );
   }
 
   return (
