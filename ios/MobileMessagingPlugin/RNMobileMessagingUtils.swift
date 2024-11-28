@@ -12,6 +12,7 @@ extension MM_MTMessage {
     override func dictionary() -> [String: Any] {
         var result = [String: Any]()
         result["messageId"] = messageId
+        result["title"] = title
         result["body"] = text
         result["sound"] = sound
         result["silent"] = isSilent
