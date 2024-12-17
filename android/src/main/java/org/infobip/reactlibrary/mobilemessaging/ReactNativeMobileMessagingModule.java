@@ -876,65 +876,6 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
         }.execute();
     }
 
-    @ReactMethod
-    public synchronized void defaultMessageStorage_find(String messageId, final Callback callback) throws JSONException {
-        MessageStore messageStore = MobileMessaging.getInstance(reactContext).getMessageStore();
-        if (messageStore == null) {
-            callback.invoke();
-            return;
-        }
-
-        for (Message m : messageStore.findAll(reactContext)) {
-            if (messageId.equals(m.getMessageId())) {
-                callback.invoke(ReactNativeJson.convertJsonToMap(MessageJson.toJSON(m)));
-                return;
-            }
-        }
-        callback.invoke();
-    }
-
-    @ReactMethod
-    public synchronized void defaultMessageStorage_findAll(final Callback callback) throws JSONException {
-        MessageStore messageStore = MobileMessaging.getInstance(reactContext).getMessageStore();
-        if (messageStore == null) {
-            callback.invoke();
-            return;
-        }
-        List<Message> messages = messageStore.findAll(reactContext);
-        callback.invoke(ReactNativeJson.convertJsonToArray(MessageJson.toJSONArray(messages.toArray(new Message[messages.size()]))));
-    }
-
-    @ReactMethod
-    public synchronized void defaultMessageStorage_delete(String messageId, final Callback callback) throws JSONException {
-        MessageStore messageStore = MobileMessaging.getInstance(reactContext).getMessageStore();
-        if (messageStore == null) {
-            callback.invoke();
-            return;
-        }
-
-        List<Message> messagesToKeep = new ArrayList<Message>();
-        for (Message m : messageStore.findAll(reactContext)) {
-            if (messageId.equals(m.getMessageId())) {
-                continue;
-            }
-            messagesToKeep.add(m);
-        }
-        messageStore.deleteAll(reactContext);
-        messageStore.save(reactContext, messagesToKeep.toArray(new Message[messagesToKeep.size()]));
-        callback.invoke();
-    }
-
-    @ReactMethod
-    public synchronized void defaultMessageStorage_deleteAll(final Callback callback) {
-        MessageStore messageStore = MobileMessaging.getInstance(reactContext).getMessageStore();
-        if (messageStore == null) {
-            callback.invoke();
-            return;
-        }
-        messageStore.deleteAll(reactContext);
-        callback.invoke();
-    }
-
     /**
      * Message store adapter for JS layer
      */

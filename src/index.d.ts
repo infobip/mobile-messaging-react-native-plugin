@@ -168,13 +168,13 @@ declare namespace MobileMessagingReactNative {
     }
 
     export interface DefaultMessageStorage {
-        find(messageId: string, callback: (message: Message) => void): void;
+        find(messageId: string, onSuccess: (message: Message) => void, onError: () => void): void;
 
-        findAll(callback: (messages: Message[]) => void): void;
+        findAll(onSuccess: (messages: Message[]) => void, onError: () => void): void;
 
-        delete(messageId: string, callback: () => void): void;
+        delete(messageId: string, onSuccess: () => void, onError: () => void): void;
 
-        deleteAll(callback: () => void): void;
+        deleteAll(onSuccess: () => void, onError: () => void): void;
     }
 
     export interface CustomMessageStorage {
