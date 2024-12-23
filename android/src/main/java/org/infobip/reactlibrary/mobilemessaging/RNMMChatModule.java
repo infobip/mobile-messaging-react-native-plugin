@@ -33,6 +33,7 @@ import org.infobip.mobile.messaging.mobileapi.Result;
 import org.infobip.mobile.messaging.util.StringUtils;
 import org.infobip.reactlibrary.mobilemessaging.datamappers.ReactNativeJson;
 import org.infobip.mobile.messaging.api.support.http.serialization.JsonSerializer;
+import org.infobip.mobile.messaging.chat.core.MultithreadStrategy;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -120,9 +121,10 @@ public class RNMMChatModule extends ReactContextBaseJavaModule implements Activi
     }
 
     @ReactMethod
-    public void sendContextualData(String data, Boolean allMultiThreadStrategy, Callback onSuccess, Callback onError) {
+    public void sendContextualData(String data, String multithreadStrategyFlag, Callback onSuccess, Callback onError) {
         try {
-            InAppChat.getInstance(reactContext).sendContextualData(data, allMultiThreadStrategy);
+            MultithreadStrategy multithreadStrategy = MultithreadStrategy.valueOf(multithreadStrategyFlag);
+            InAppChat.getInstance(reactContext).sendContextualData(data, multithreadStrategy);
             onSuccess.invoke();
         } catch (Throwable t) {
             onError.invoke(Utils.callbackError(t.getMessage(), null));

@@ -159,20 +159,31 @@ class RNMMChat: NSObject  {
         }    
     }
 
-    @objc(sendContextualData:multiThreadStrategy:onSuccess:onError:)
-    func sendContextualData(data: NSString, multiThreadStrategy: Bool,  onSuccess: @escaping RCTResponseSenderBlock, onError: @escaping RCTResponseSenderBlock) {
-        if let chatVC = RNMMChatView.viewController  {
-            chatVC.sendContextualData(String(data), multiThreadStrategy: multiThreadStrategy ? .ALL : .ACTIVE) { error in
-                if let error = error {
-                    onError([error.reactNativeObject])
-                } else {
-                    onSuccess(nil)
-                }
-            }
-        } else if let inAppChat = MobileMessaging.inAppChat {
-            inAppChat.sendContextualData(String(data), multiThreadStrategy: multiThreadStrategy ? .ALL : .ACTIVE)
-            onSuccess(nil)
+    @objc(sendContextualData:chatMultiThreadStrategy:onSuccess:onError:)
+    func sendContextualData(data: NSString, chatMultiThreadStrategy: NSString, onSuccess: @escaping RCTResponseSenderBlock, onError: @escaping RCTResponseSenderBlock) {
+        var strategy: MMChatMultiThreadStrategy
+        switch chatMultiThreadStrategy {
+            case "ACTIVE": strategy = .ACTIVE
+            case "ALL": strategy = .ALL
+            case "ALL_PLUS_NEW": strategy = .ALL_PLUS_NEW
+            default: 
+                onError([NSError(type: .InvalidArguments)])
+                return
         }
+
+        
+         if let chatVC = RNMMChatView.viewController {
+             chatVC.sendContextualData(String(data), multiThreadStrategy: strategy) { error in
+                 if let error = error {
+                     onError([error.reactNativeObject])
+                 } else {
+                     onSuccess(nil)
+                 }
+             }
+         } else if let inAppChat = MobileMessaging.inAppChat {
+             inAppChat.sendContextualData(String(data), multiThreadStrategy: strategy)
+             onSuccess(nil)
+         }
     }
 
     @objc(setJwt:)

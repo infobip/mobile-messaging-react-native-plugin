@@ -615,6 +615,7 @@ class MobileMessaging {
     };
 
     /**
+     * @deprecated use sendContextualData with chatMultiThreadStrategy string param instead of allMultiThreadStrategy bool.
      * Set contextual data of the Livechat Widget.
      * If the function is called when the chat is loaded, data will be sent immediately, otherwise they will be sent to the chat once it is loaded.
      * Every function invocation will overwrite the previous contextual data.
@@ -626,7 +627,26 @@ class MobileMessaging {
      * @param {Function} onError error callback
      */
     sendContextualData(data, allMultiThreadStrategy = false, onSuccess = function() {}, onError = function() {}) {
-        RNMMChat.sendContextualData(data, allMultiThreadStrategy, onSuccess, onError);
+        if (allMultiThreadStrategy) {
+            sendContextualData(data, 'ALL', onSuccess, onError)
+        } else { 
+            sendContextualData(data, 'ACTIVE', onSuccess, onError)            
+        }
+    };
+
+    /**
+     * Set contextual data of the Livechat Widget.
+     * If the function is called when the chat is loaded, data will be sent immediately, otherwise they will be sent to the chat once it is loaded.
+     * Every function invocation will overwrite the previous contextual data.
+     *
+     * @name sendContextualData
+     * @param data - contextual data in the form of JSON string
+     * @param chatMultiThreadStrategy - multi-thread strategy flag: ACTIVE, ALL, ALL_PLUS_NEW
+     * @param {Function} onSuccess success callback
+     * @param {Function} onError error callback
+    */
+    sendContextualData(data, chatMultiThreadStrategy = 'ACTIVE', onSuccess = function() {}, onError = function() {}) {
+        RNMMChat.sendContextualData(data, chatMultiThreadStrategy, onSuccess, onError);
     };
 
     /**

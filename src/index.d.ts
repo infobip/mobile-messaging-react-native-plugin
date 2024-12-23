@@ -325,6 +325,12 @@ declare namespace MobileMessagingReactNative {
         inputTextAppearance: string;
     }
 
+    export enum ChatMultithreadStrategy { 
+        active = "ACTIVE",
+        all = "ALL",
+        allPlusNew = "ALL_PLUS_NEW"
+    } 
+
     interface Api {
 
         inAppChatEvents: [
@@ -604,6 +610,7 @@ declare namespace MobileMessagingReactNative {
         setWidgetTheme(widgetTheme: string): void;
 
         /**
+         * @deprecated use sendContextualData with chatMultiThreadStrategy string param instead of allMultiThreadStrategy bool.
          * Set contextual data of the Livechat Widget.
          * If the function is called when the chat is loaded, data will be sent immediately, otherwise they will be sent to the chat once it is loaded.
          * Every function invocation will overwrite the previous contextual data.
@@ -615,6 +622,19 @@ declare namespace MobileMessagingReactNative {
          * @param {Function} onError error callback
          */
         sendContextualData(data: string, allMultiThreadStrategy: boolean, onSuccess: () => void, onError: (error: MobileMessagingError) => void): void;
+
+        /**
+         * Set contextual data of the Livechat Widget.
+         * If the function is called when the chat is loaded, data will be sent immediately, otherwise they will be sent to the chat once it is loaded.
+         * Every function invocation will overwrite the previous contextual data.
+         *
+         * @name sendContextualData
+         * @param data contextual data in the form of JSON string
+         * @param chatMultiThreadStrategy multi-thread strategy: 'ACTIVE', 'ALL', 'ALL_PLUS_NEW'
+         * @param {Function} onSuccess success callback
+         * @param {Function} onError error callback
+         */
+        sendContextualData(data: string, chatMultiThreadStrategy: ChatMultithreadStrategy, onSuccess: () => void, onError: (error: MobileMessagingError) => void): void;
 
         /**
          * Set chat language

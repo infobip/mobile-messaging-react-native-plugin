@@ -159,7 +159,7 @@ function HomeScreen({navigation}) {
     mobileMessaging.setLanguage('en');
     mobileMessaging.sendContextualData(
       "{'metadata': 'from react demo'}",
-      false,
+      'ALL',
       () => console.log('MobileMessaging metadata sent'),
       error => console.log('MobileMessaging metadata error: ' + error),
     );
