@@ -182,7 +182,7 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
             if let error = error {
                 onError([error.reactNativeObject])
             } else {
-                onSuccess([inbox?.dictionary ?? [:]])
+                onSuccess([inbox?.dictionary() ?? [:]])
             }
         })
     }
@@ -198,7 +198,7 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
             if let error = error {
                 onError([error.reactNativeObject])
             } else {
-                onSuccess([inbox?.dictionary ?? [:]])
+                onSuccess([inbox?.dictionary() ?? [:]])
             }
         })
     }

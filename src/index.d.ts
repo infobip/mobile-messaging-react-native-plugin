@@ -129,6 +129,7 @@ declare namespace MobileMessagingReactNative {
         userIdentity: UserIdentity;
         userAttributes?: Record<string, string | number | boolean | object[]> | undefined;
         forceDepersonalize?: boolean | undefined;
+        keepAsLead?: boolean | undefined;
     }
 
     export interface Message {
