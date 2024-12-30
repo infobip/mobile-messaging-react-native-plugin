@@ -12,7 +12,7 @@ The document describes library integration steps for your React Native project.
 ## Requirements
 - node (v16.10.0 or higher)
 - ruby (2.6.10 or higher)
-- React Native (v0.70.8)
+- React Native (v0.75.4)
 
 For iOS project:
 - Xcode and Command Line Tools (16.1)
@@ -21,7 +21,7 @@ For iOS project:
 
 For Android project:
 - Android Studio (Bumblebee | 2021.1.1)
-- Gradle (v7.3.3)
+- Gradle (v8.5.2)
 - Supported API Levels: 21 (Android 5.0 - [Lollipop](https://developer.android.com/about/versions/lollipop)) - 34 ([Android 14.0](https://developer.android.com/about/versions/14))
 
 ## Quick start guide

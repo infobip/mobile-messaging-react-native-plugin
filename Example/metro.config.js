@@ -1,3 +1,6 @@
+const {getDefaultConfig, mergeConfig} = require('@react-native/metro-config');
+
+
 /**
  * Metro configuration for React Native
  * https://github.com/facebook/react-native
@@ -15,3 +18,13 @@ module.exports = {
     }),
   },
 };
+
+/**
+ * Metro configuration
+ * https://metrobundler.dev/docs/configuration
+ *
+ * @type {import('metro-config').MetroConfig}
+ */
+const config = {};
+
+module.exports = mergeConfig(getDefaultConfig(__dirname), config);

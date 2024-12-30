@@ -1,7 +1,7 @@
-def defaultCompileSDKVersion = 33
-def defaultBuildToolsVersion = '33.0.0'
+def defaultCompileSDKVersion = 34
+def defaultBuildToolsVersion = '34.0.0'
 def defaultMinSDKVersion = 21
-def defaultTargetSDKVersion = 33
+def defaultTargetSDKVersion = 34
 
 def getRootProjectProperty(property, fallback) {
     rootProject.ext.has(property) ? rootProject.ext.get(property) : fallback
@@ -34,7 +34,7 @@ buildscript {
             }
         }
         dependencies {
-            classpath 'com.android.tools.build:gradle:7.2.2'
+            classpath 'com.android.tools.build:gradle:8.5.2'
         }
     }
 }
@@ -43,6 +43,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'maven-publish'
 
 android {
+    namespace "org.infobip.reactlibrary.mobilemessaging"
     compileSdkVersion getRootProjectProperty('compileSdkVersion', defaultCompileSDKVersion)
     buildToolsVersion getRootProjectProperty('buildToolsVersion', defaultBuildToolsVersion)
     defaultConfig {

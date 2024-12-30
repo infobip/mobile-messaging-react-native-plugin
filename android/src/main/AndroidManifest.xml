@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="org.infobip.reactlibrary.mobilemessaging">
+          xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Mobile Messaging permissions -->
 
@@ -26,7 +26,10 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <!-- Infobip rtc ui permissions -->
 
-    <application>
+    <application
+            tools:replace="android:usesCleartextTraffic"
+                   android:usesCleartextTraffic="true"
+    >
         <!-- Mobile Messaging components -->
         <service
             android:name="org.infobip.mobile.messaging.cloud.MobileMessagingCloudService"
