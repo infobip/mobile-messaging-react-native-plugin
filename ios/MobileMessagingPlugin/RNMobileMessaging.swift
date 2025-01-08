@@ -134,9 +134,13 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
         if configuration.logging {
             MobileMessaging.logger = MMDefaultLogger()
         }
-        
+
         if configuration.inAppChatEnabled {
             mobileMessaging = mobileMessaging?.withInAppChat()
+        }
+
+        if configuration.fullFeaturedInAppsEnabled {
+            mobileMessaging = mobileMessaging?.withFullFeaturedInApps()
         }
         
         if let webViewSettings = configuration.webViewSettings {
