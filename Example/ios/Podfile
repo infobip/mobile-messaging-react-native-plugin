@@ -1,21 +1,24 @@
-require_relative '../node_modules/react-native/scripts/react_native_pods'
-require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
+# Resolve react_native_pods.rb with node to allow for hoisting
+require Pod::Executable.execute_command('node', ['-p',
+  'require.resolve(
+    "react-native/scripts/react_native_pods.rb",
+    {paths: [process.argv[1]]},
+  )', __dir__]).strip
 
-platform :ios, '13.0'
-install! 'cocoapods', :deterministic_uuids => false
+platform :ios, min_ios_version_supported
+prepare_react_native_project!
+
+linkage = ENV['USE_FRAMEWORKS']
+if linkage != nil
+  Pod::UI.puts "Configuring Pod with #{linkage}ally linked Frameworks".green
+  use_frameworks! :linkage => linkage.to_sym
+end
 
 target 'Example' do
   config = use_native_modules!
-  $WebRTCUIEnabled = true
-
-  # Flags change depending on the env values.
-  flags = get_default_flags()
 
   use_react_native!(
     :path => config[:reactNativePath],
-    # to enable hermes on iOS, change `false` to `true` and then install pods
-    :hermes_enabled => flags[:hermes_enabled],
-    :fabric_enabled => flags[:fabric_enabled],
     # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
@@ -29,35 +32,13 @@ target 'Example' do
       inherit! :search_paths
   end
 
-  # Enables Flipper.
-  #
-  # Note that if you have use_frameworks! enabled, Flipper will not work and
-  # you should disable the next line.
-  use_flipper!()
-
   post_install do |installer|
-    react_native_post_install(installer)
-    __apply_Xcode_12_5_M1_post_install_workaround(installer)
-
-    #fix for issue https://github.com/facebook/react-native/issues/31034
-    installer.pods_project.targets.each do |target|
-        if (target.name&.eql?('FBReactNativeSpec'))
-          target.build_phases.each do |build_phase|
-            if (build_phase.respond_to?(:name) && build_phase.name.eql?('[CP-User] Generate Specs'))
-              target.build_phases.move(build_phase, 0)
-            end
-          end
-        end
-
-        if (target.name&.eql?('infobip-mobile-messaging-react-native-plugin'))
-          target.build_configurations.each do |config|
-            config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] = '$(inherited) COCOAPODS=1 WEBRTCUI_ENABLED=1'
-            config.build_settings['OTHER_SWIFT_FLAGS'] = '$(inherited) -D WEBRTCUI_ENABLED'
-          end
-        end
-
-      end
-
+    # https://github.com/facebook/react-native/blob/main/packages/react-native/scripts/react_native_pods.rb#L197-L202
+    react_native_post_install(
+      installer,
+      config[:reactNativePath],
+      :mac_catalyst_enabled => false,
+      # :ccache_enabled => true
+    )
   end
-
 end

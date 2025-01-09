@@ -326,11 +326,7 @@ declare namespace MobileMessagingReactNative {
         inputTextAppearance: string;
     }
 
-    export enum ChatMultithreadStrategy { 
-        active = "ACTIVE",
-        all = "ALL",
-        allPlusNew = "ALL_PLUS_NEW"
-    } 
+    export type ChatMultithreadStrategy = 'ACTIVE' | 'ALL' | 'ALL_PLUS_NEW';
 
     interface Api {
 
