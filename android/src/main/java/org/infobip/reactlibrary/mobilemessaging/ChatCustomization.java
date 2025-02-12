@@ -12,6 +12,7 @@ import android.graphics.drawable.Drawable;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.NonNull;
 
 import org.infobip.mobile.messaging.MobileMessaging;
 import org.infobip.mobile.messaging.MobileMessagingCore;
@@ -25,6 +26,10 @@ import org.infobip.mobile.messaging.chat.view.styles.InAppChatToolbarStyle;
 import org.infobip.mobile.messaging.interactive.NotificationAction;
 import org.infobip.mobile.messaging.interactive.NotificationCategory;
 import org.infobip.mobile.messaging.storage.SQLiteMessageStore;
+
+import org.infobip.mobile.messaging.api.support.http.serialization.JsonSerializer;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.List;
 import java.io.IOException;
@@ -168,6 +173,20 @@ public class ChatCustomization {
         public void setSubtitleCentered(boolean subtitleCentered) {
             this.subtitleCentered = subtitleCentered;
         }
+    }
+
+    @NonNull
+    public static ChatCustomization resolve(JSONObject args) throws JSONException {
+        if (args == null) {
+            throw new IllegalArgumentException("Cannot resolve ChatCustomization from arguments");
+        }
+
+        ChatCustomization customization = new JsonSerializer().deserialize(args.toString(), ChatCustomization.class);
+        if (customization == null) {
+            throw new IllegalArgumentException("ChatCustomization is invalid");
+        }
+
+        return customization;
     }
 
     public InAppChatTheme createTheme(Context context) {
@@ -318,7 +337,6 @@ public class ChatCustomization {
     public ToolbarCustomization getAttachmentPreviewToolbar() {
         return attachmentPreviewToolbar;
     }
-
 
     public void setAttachmentPreviewToolbar(ToolbarCustomization attachmentPreviewToolbar) {
         this.attachmentPreviewToolbar = attachmentPreviewToolbar;

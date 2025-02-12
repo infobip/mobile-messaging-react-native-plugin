@@ -163,10 +163,7 @@ public class RNMMChatModule extends ReactContextBaseJavaModule implements Activi
 
     @ReactMethod
     public void setChatCustomization(ReadableMap map) throws JSONException {
-        ChatCustomization customization = new JsonSerializer().deserialize(ReactNativeJson.convertMapToJson(map).toString(), ChatCustomization.class);
-        if (customization == null) {
-            throw new IllegalArgumentException("customization is invalid");
-        }
+        ChatCustomization customization = ChatCustomization.resolve(ReactNativeJson.convertMapToJson(map));
         InAppChat inAppChat = InAppChat.getInstance(reactContext);
         inAppChat.setTheme(customization.createTheme(reactContext));
     }
