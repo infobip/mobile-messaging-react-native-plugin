@@ -24,5 +24,10 @@ git commit -a -m "Release: $RELEASE_VERSION"
 # Create and push tag
 git tag $RELEASE_VERSION -m "Release: $RELEASE_VERSION"
 
+# Setting username and password for HTTPS to BitBucket
+encoded_username=$(echo ${GIT_USERNAME} | jq -Rr @uri)
+encoded_password=$(echo ${GIT_PASSWORD} | jq -Rr @uri)
+git remote set-url origin https://${encoded_username}:${encoded_password}@git.ib-ci.com/scm/mml/infobip-mobile-messaging-react-native-plugin.git
+
 # Push changes
 git push origin master --tags
