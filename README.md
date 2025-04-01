@@ -17,7 +17,7 @@ The document describes library integration steps for your React Native project.
 For iOS project:
 - Xcode and Command Line Tools (16.x)
 - CocoaPods (v1.15.2)
-- Minimum deployment target 12.4
+- Minimum deployment target 13.0
 
 For Android project:
 - Android Studio (Ladybug | 2024.2.1)
