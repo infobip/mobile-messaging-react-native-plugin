@@ -1,7 +1,7 @@
-def defaultCompileSDKVersion = 34
-def defaultBuildToolsVersion = '34.0.0'
+def defaultCompileSDKVersion = 35
+def defaultBuildToolsVersion = '35.0.0'
 def defaultMinSDKVersion = 21
-def defaultTargetSDKVersion = 34
+def defaultTargetSDKVersion = 35
 
 def getRootProjectProperty(property, fallback) {
     rootProject.ext.has(property) ? rootProject.ext.get(property) : fallback
@@ -87,7 +87,7 @@ repositories {
 }
 
 dependencies {
-    def mmVersion = '13.4.0'
+    def mmVersion = '13.9.1'
     //react and mm dependencies clash
     if (!overrideKotlinVersion.empty) {
         constraints {

@@ -22,7 +22,7 @@ For iOS project:
 For Android project:
 - Android Studio (Ladybug | 2024.2.1)
 - Gradle (v8.8)
-- Supported API Levels: 21 (Android 5.0 - [Lollipop](https://developer.android.com/about/versions/lollipop)) - 34 ([Android 14.0](https://developer.android.com/about/versions/14))
+- Supported API Levels: 21 (Android 5.0 - [Lollipop](https://developer.android.com/about/versions/lollipop)) - 35 ([Android 15.0](https://developer.android.com/about/versions/15))
 
 ## Quick start guide
 
