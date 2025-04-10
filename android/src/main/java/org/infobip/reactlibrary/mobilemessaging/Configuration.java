@@ -16,6 +16,9 @@ class Configuration {
 
     class AndroidConfiguration {
         String notificationIcon;
+        String notificationChannelId;
+        String notificationChannelName;
+        String notificationSound;
         boolean multipleNotifications;
         String notificationAccentColor;
         FirebaseOptions firebaseOptions;

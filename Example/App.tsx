@@ -45,6 +45,7 @@ class App extends Component<{}, AppState> {
     },
     ios: {
       notificationTypes: ['alert', 'badge', 'sound'],
+        logging: true,
     },
     android: {
       // firebaseOptions: {
@@ -56,7 +57,6 @@ class App extends Component<{}, AppState> {
     messageStorage: myMessageStorage,
     inAppChatEnabled: true,
     fullFeaturedInAppsEnabled: true,
-    loggingEnabled: true,
   };
 
   subscriptions: any[] = [];
