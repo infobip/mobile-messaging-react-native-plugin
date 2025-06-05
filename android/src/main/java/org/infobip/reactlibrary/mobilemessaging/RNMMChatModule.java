@@ -28,6 +28,7 @@ import org.infobip.mobile.messaging.chat.view.styles.InAppChatInputViewStyle;
 import org.infobip.mobile.messaging.chat.view.styles.InAppChatStyle;
 import org.infobip.mobile.messaging.chat.view.styles.InAppChatTheme;
 import org.infobip.mobile.messaging.chat.view.styles.InAppChatToolbarStyle;
+import org.infobip.mobile.messaging.chat.core.widget.LivechatWidgetLanguage;
 import org.infobip.mobile.messaging.mobileapi.MobileMessagingError;
 import org.infobip.mobile.messaging.mobileapi.Result;
 import org.infobip.mobile.messaging.util.StringUtils;
@@ -108,11 +109,12 @@ public class RNMMChatModule extends ReactContextBaseJavaModule implements Activi
 
     @ReactMethod
     public void setLanguage(String localeString, final Callback onSuccess, final Callback onError) {
-        InAppChat.getInstance(reactContext).setLanguage(localeString, new MobileMessaging.ResultListener<String>() {
+        LivechatWidgetLanguage widgetLanguage = LivechatWidgetLanguage.findLanguageOrDefault(localeString);
+        InAppChat.getInstance(reactContext).setLanguage(widgetLanguage, new MobileMessaging.ResultListener<LivechatWidgetLanguage>() {
             @Override
-            public void onResult(Result<String, MobileMessagingError> result) {
+            public void onResult(Result<LivechatWidgetLanguage, MobileMessagingError> result) {
                 if (result.isSuccess()) {
-                    onSuccess.invoke(result.getData());
+                    onSuccess.invoke(result.getData().toString());
                 } else {
                     onError.invoke(Utils.callbackError(result.getError().getMessage(), null));
                 }
@@ -154,7 +156,7 @@ public class RNMMChatModule extends ReactContextBaseJavaModule implements Activi
     }
 
     @ReactMethod
-    public void  setWidgetTheme(String widgetTheme) {
+    public void setWidgetTheme(String widgetTheme) {
         if (widgetTheme != null) {
             InAppChat inAppChat = InAppChat.getInstance(reactContext);
             inAppChat.setWidgetTheme(widgetTheme);

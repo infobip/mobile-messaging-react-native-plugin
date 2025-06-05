@@ -10,6 +10,7 @@ buildscript {
     repositories {
         google()
         mavenCentral()
+        mavenLocal()
     }
     dependencies {
         classpath("com.android.tools.build:gradle")
@@ -17,6 +18,14 @@ buildscript {
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin")
         //GMS Gradle plugin
         classpath 'com.google.gms:google-services:4.4.2'
+    }
+}
+
+allprojects {
+    repositories {
+        mavenCentral()
+        google()
+        mavenLocal()
     }
 }
 

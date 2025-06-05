@@ -197,9 +197,9 @@ const HomeScreen = ({navigation}: HomeScreenProps) => {
     // mobileMessaging.setJwtProvider(() => 'your JWT');
     mobileMessaging.setLanguage(
       'en',
-      () => console.log('Language set'),
+      (language: any) => console.log('Language set ' + language),
       (error: MobileMessagingError) =>
-        console.log('Error setting language: ' + error),
+        console.log('Error setting language: ' + JSON.stringify(error)),
     );
     mobileMessaging.sendContextualData(
       "{'metadata': 'from react demo'}",
@@ -323,8 +323,7 @@ const HomeScreen = ({navigation}: HomeScreenProps) => {
     const settings = {
       chatStatusBarBackgroundColor: '#673AB7',
       chatStatusBarIconsColorMode: 'dark',
-      attachmentPreviewToolbarSaveMenuItemIcon:
-        resolveAssetSource(downloadIcon).uri,
+      attachmentPreviewToolbarSaveMenuItemIcon: resolveAssetSource(downloadIcon).uri,
       attachmentPreviewToolbarMenuItemsIconTint: '#9E9E9E',
       chatToolbar: {
         titleTextAppearance: 'TextAppearance_AppCompat_Title',
@@ -363,17 +362,17 @@ const HomeScreen = ({navigation}: HomeScreenProps) => {
       chatInputAttachmentIcon: resolveAssetSource(attachmentIcon).uri,
       chatInputAttachmentIconTint: '#9E9E9E',
       chatInputAttachmentBackgroundColor: '#673AB7',
+      chatInputAttachmentBackgroundDrawable: '',
       chatInputSendIcon: resolveAssetSource(sendButtonIcon).uri,
       chatInputSendIconTint: '#9E9E9E',
       chatInputSendBackgroundColor: '#673AB7',
+      chatInputSendBackgroundDrawable: '',
       chatInputSeparatorLineColor: '#BDBDBD',
       chatInputSeparatorLineVisible: true,
       chatInputCursorColor: '#9E9E9E',
       networkErrorTextAppearance: 'TextAppearance_AppCompat_Title',
       chatBackgroundColor: '#673AB7',
       chatInputTextAppearance: 'TextAppearance_AppCompat_Subtitle',
-      chatInputAttachmentBackgroundDrawable: '',
-      chatInputSendBackgroundDrawable: '',
     };
     mobileMessaging.setChatCustomization(settings);
     mobileMessaging.setWidgetTheme('dark');

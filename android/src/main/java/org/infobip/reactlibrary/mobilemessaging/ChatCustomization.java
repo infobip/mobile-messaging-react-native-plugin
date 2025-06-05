@@ -26,6 +26,7 @@ import org.infobip.mobile.messaging.chat.view.styles.InAppChatToolbarStyle;
 import org.infobip.mobile.messaging.interactive.NotificationAction;
 import org.infobip.mobile.messaging.interactive.NotificationCategory;
 import org.infobip.mobile.messaging.storage.SQLiteMessageStore;
+import org.infobip.mobile.messaging.util.StringUtils;
 
 import org.infobip.mobile.messaging.api.support.http.serialization.JsonSerializer;
 import org.json.JSONException;
@@ -44,8 +45,8 @@ public class ChatCustomization {
     // Toolbar
     private ToolbarCustomization chatToolbar;
     private ToolbarCustomization attachmentPreviewToolbar;
-    private String attachmentPreviewSaveMenuItemIcon;
-    private String attachmentPreviewMenuItemsIconTint;
+    private String attachmentPreviewToolbarSaveMenuItemIcon;
+    private String attachmentPreviewToolbarMenuItemsIconTint;
 
     // NetworkError
     private String networkErrorText;
@@ -191,7 +192,7 @@ public class ChatCustomization {
 
     public InAppChatTheme createTheme(Context context) {
 
-        InAppChatToolbarStyle toolbarStyle = new InAppChatToolbarStyle.Builder()
+        InAppChatToolbarStyle chatToolbarStyle = new InAppChatToolbarStyle.Builder()
                 .setStatusBarBackgroundColor(parseColor(chatStatusBarBackgroundColor))
                 .setLightStatusBarIcons(chatStatusBarIconsColorMode == "light")
                 .setToolbarBackgroundColor(parseColor(chatToolbar.backgroundColor))
@@ -207,14 +208,14 @@ public class ChatCustomization {
                 .setIsSubtitleCentered(chatToolbar.subtitleCentered)
                 .build();
 
-        InAppChatToolbarStyle attachmentToolbarStyle = new InAppChatToolbarStyle.Builder()
+        InAppChatToolbarStyle attachmentPreviewToolbarStyle = new InAppChatToolbarStyle.Builder()
                 .setStatusBarBackgroundColor(parseColor(chatStatusBarBackgroundColor))
                 .setLightStatusBarIcons(chatStatusBarIconsColorMode == "light")
                 .setToolbarBackgroundColor(parseColor(attachmentPreviewToolbar.backgroundColor))
                 .setNavigationIcon(loadDrawable(attachmentPreviewToolbar.navigationIcon, context))
                 .setNavigationIconTint(parseColor(attachmentPreviewToolbar.navigationIconTint))
-                .setSaveAttachmentMenuItemIcon(loadDrawable(attachmentPreviewSaveMenuItemIcon, context))
-                .setMenuItemsIconTint(parseColor(attachmentPreviewMenuItemsIconTint))
+                .setSaveAttachmentMenuItemIcon(loadDrawable(attachmentPreviewToolbarSaveMenuItemIcon, context))
+                .setMenuItemsIconTint(parseColor(attachmentPreviewToolbarMenuItemsIconTint))
                 .setTitleTextAppearance(getResId(context.getResources(), attachmentPreviewToolbar.titleTextAppearance, context.getPackageName()))
                 .setTitleTextColor(parseColor(attachmentPreviewToolbar.titleTextColor))
                 .setTitleText(attachmentPreviewToolbar.titleText)
@@ -260,18 +261,18 @@ public class ChatCustomization {
         }
 
         return new InAppChatTheme(
-                toolbarStyle,
-                attachmentToolbarStyle,
+                chatToolbarStyle,
+                attachmentPreviewToolbarStyle,
                 chatStyle,
                 inputViewStyleBuilder.build()
         );
     }
 
     private @Nullable Integer parseColor(@Nullable String color) {
-        @Nullable Integer result = null;
-        if (color == null) {
-            return result;
+        if (StringUtils.isBlank(color)) {
+            return null;
         }
+        @Nullable Integer result = null;
         try {
             result = Integer.valueOf(Color.parseColor(color));
         } catch (IllegalArgumentException e) {
@@ -289,6 +290,9 @@ public class ChatCustomization {
      * @return resource identifier or 0 if not found
      */
     private @Nullable Integer getResId(Resources res, String resPath, String packageName) {
+        if (StringUtils.isBlank(resPath)) {
+            return null;
+        }
         try {
             int resId = res.getIdentifier(resPath, "mipmap", packageName);
             if (resId == 0) {
@@ -307,7 +311,10 @@ public class ChatCustomization {
         }
     }
 
-    private Drawable loadDrawable(String drawableUri, Context context) {
+    private @Nullable Drawable loadDrawable(String drawableUri, Context context) {
+        if (StringUtils.isBlank(drawableUri)) {
+            return null;
+        }
         try (InputStream drawableStream = new URL(drawableUri).openStream()) {
             return new BitmapDrawable(context.getResources(), drawableStream);
         } catch (IOException e) {
@@ -348,6 +355,22 @@ public class ChatCustomization {
 
     public void setChatToolbar(ToolbarCustomization chatToolbar) {
         this.chatToolbar = chatToolbar;
+    }
+
+    public String getAttachmentPreviewToolbarSaveMenuItemIcon() {
+        return attachmentPreviewToolbarSaveMenuItemIcon;
+    }
+
+    public void setAttachmentPreviewToolbarSaveMenuItemIcon(String attachmentPreviewToolbarSaveMenuItemIcon) {
+        this.attachmentPreviewToolbarSaveMenuItemIcon = attachmentPreviewToolbarSaveMenuItemIcon;
+    }
+
+    public String getAttachmentPreviewToolbarMenuItemsIconTint() {
+        return attachmentPreviewToolbarMenuItemsIconTint;
+    }
+
+    public void setAttachmentPreviewToolbarMenuItemsIconTint(String attachmentPreviewToolbarMenuItemsIconTint) {
+        this.attachmentPreviewToolbarMenuItemsIconTint = attachmentPreviewToolbarMenuItemsIconTint;
     }
 
     public String getNetworkErrorText() {
