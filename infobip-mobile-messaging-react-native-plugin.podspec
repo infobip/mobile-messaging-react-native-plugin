@@ -1,7 +1,7 @@
 require "json"
 
 package = JSON.parse(File.read(File.join(__dir__, "package.json")))
-mmVersion = "13.5.0"
+mmVersion = "13.6.1"
 
 Pod::Spec.new do |s|
   s.name         = "infobip-mobile-messaging-react-native-plugin"
