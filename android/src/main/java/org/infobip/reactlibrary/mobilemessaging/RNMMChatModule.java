@@ -32,6 +32,7 @@ import org.infobip.mobile.messaging.chat.core.widget.LivechatWidgetLanguage;
 import org.infobip.mobile.messaging.mobileapi.MobileMessagingError;
 import org.infobip.mobile.messaging.mobileapi.Result;
 import org.infobip.mobile.messaging.util.StringUtils;
+import org.infobip.mobile.messaging.chat.core.JwtProvider;
 import org.infobip.reactlibrary.mobilemessaging.datamappers.ReactNativeJson;
 import org.infobip.mobile.messaging.api.support.http.serialization.JsonSerializer;
 import org.infobip.mobile.messaging.chat.core.MultithreadStrategy;
@@ -50,7 +51,7 @@ public class RNMMChatModule extends ReactContextBaseJavaModule implements Activi
 
     private String jwt = null;
     private boolean isJwtProviderInitialInvocation = true;
-    private final InAppChat.JwtProvider jwtProvider = () -> {
+    private final JwtProvider jwtProvider = () -> {
         if (!isJwtProviderInitialInvocation) {
             //send event to JS to generate new JWT and invoke native setter, then wait 150ms and return generated JWT
             ReactNativeEvent.send(EVENT_INAPPCHAT_JWT_REQUESTED, reactContext);
@@ -137,11 +138,11 @@ public class RNMMChatModule extends ReactContextBaseJavaModule implements Activi
     public void setJwt(String jwt) {
         this.jwt = jwt;
         InAppChat inAppChat = InAppChat.getInstance(reactContext);
-        if (inAppChat.getJwtProvider() == null) {
-            inAppChat.setJwtProvider(jwtProvider);
+        if (inAppChat.getWidgetJwtProvider() == null) {
+            inAppChat.setWidgetJwtProvider(jwtProvider);
             this.isJwtProviderInitialInvocation = true;
-        } else if (inAppChat.getJwtProvider() != null && StringUtils.isBlank(jwt)) {
-            inAppChat.setJwtProvider(null);
+        } else if (inAppChat.getWidgetJwtProvider() != null && StringUtils.isBlank(jwt)) {
+            inAppChat.setWidgetJwtProvider(null);
         }
     }
 
