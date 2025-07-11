@@ -29,6 +29,7 @@ class RNMobileMessagingConfiguration {
         static let inAppChatEnabled = "inAppChatEnabled"
         static let fullFeaturedInAppsEnabled = "fullFeaturedInAppsEnabled"
         static let webViewSettings = "webViewSettings"
+        static let userDataJwt = "userDataJwt"
     }
 
     let appCode: String
@@ -43,6 +44,7 @@ class RNMobileMessagingConfiguration {
     let inAppChatEnabled: Bool
     let fullFeaturedInAppsEnabled: Bool
     let webViewSettings: [String: AnyObject]?
+    let userDataJwt: String?
 
     init?(rawConfig: [String: AnyObject]) {
         guard let appCode = rawConfig[RNMobileMessagingConfiguration.Keys.applicationCode] as? String,
@@ -97,6 +99,8 @@ class RNMobileMessagingConfiguration {
         } else {
             self.webViewSettings = nil
         }
+
+        self.userDataJwt = rawConfig[RNMobileMessagingConfiguration.Keys.userDataJwt] as? String
     }
 
     static func saveConfigToDefaults(rawConfig: [String: AnyObject]) {

@@ -11,7 +11,8 @@ import {
 import Colors from '../constants/Colors';
 import PrimaryButton from '../components/PrimaryButton';
 import {mobileMessaging} from 'infobip-mobile-messaging-react-native-plugin';
-import type {UserIdentity} from 'infobip-mobile-messaging-react-native-plugin';
+import type {UserIdentity, MobileMessagingError} from 'infobip-mobile-messaging-react-native-plugin';
+import {handleJWTError} from '../utils/JWTErrorHandler';
 
 const PersonalizeScreen: React.FC = () => {
   const [firstName, setFirstName] = useState<string>('');
@@ -70,8 +71,8 @@ const PersonalizeScreen: React.FC = () => {
           JSON.stringify(personalizeContext, null, 2),
         );
       },
-      error => {
-        Alert.alert('Error', error.code + ': ' + error.description);
+      (error: MobileMessagingError) => {
+        handleJWTError(error);
       },
     );
   };
@@ -218,6 +219,13 @@ const styles = StyleSheet.create({
   switchLabel: {
     fontSize: 16,
     color: Colors.tintWhite,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    color: Colors.tintWhite,
+    marginVertical: 12,
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
   buttonsContainer: {
     flexDirection: 'row',

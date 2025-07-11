@@ -441,6 +441,10 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
             }
         }
 
+        if (configuration.userDataJwt != null) {
+            builder.withJwtSupplier(() -> configuration.userDataJwt);
+        }
+
         // Checking do we need to migrate data saved with old cryptor,
         // if withCryptorMigration project ext property is set, ECBCryptorImpl class will exist.
         Cryptor cryptor = null;
@@ -688,7 +692,7 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
                     }
                     successCallback.invoke(readableMap);
                 } else {
-                    errorCallback.invoke(Utils.callbackError(result.getError().getMessage(), null));
+                    errorCallback.invoke(Utils.callbackErrorWithStringErrorCode(result.getError().getMessage(), result.getError().getCode()));
                 }
             }
         };
@@ -765,7 +769,7 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
                         }
                         successCallback.invoke(readableMap);
                     } else {
-                        errorCallback.invoke(Utils.callbackError(result.getError().getMessage(), null));
+                        errorCallback.invoke(Utils.callbackErrorWithStringErrorCode(result.getError().getMessage(), result.getError().getCode()));
                     }
                 }
             });
@@ -1083,5 +1087,11 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
     @Override
     public int permissionsNotGrantedDialogMessage() {
         return org.infobip.mobile.messaging.resources.R.string.mm_post_notifications_settings_message;
+    }
+
+    @ReactMethod
+    public void setUserDataJwt(String jwt, final Callback successCallback, final Callback errorCallback) {
+        mobileMessaging().setJwtSupplier(() -> jwt);
+        successCallback.invoke();
     }
 }

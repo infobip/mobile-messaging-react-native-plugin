@@ -107,6 +107,7 @@ class Configuration {
     List<Category> notificationCategories = new ArrayList<Category>();
     WebRTCUI webRTCUI;
     InAppChatCustomization inAppChatCustomization;
+    String userDataJwt;
 
     @NonNull
     static Configuration resolveConfiguration(JSONObject args) throws JSONException {

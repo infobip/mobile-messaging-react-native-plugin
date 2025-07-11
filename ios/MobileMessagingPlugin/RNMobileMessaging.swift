@@ -146,6 +146,11 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
         if let webViewSettings = configuration.webViewSettings {
             mobileMessaging?.webViewSettings.configureWith(rawConfig: webViewSettings)
         }
+
+        if let jwt = configuration.userDataJwt, !jwt.isEmpty {
+          mobileMessaging = mobileMessaging?.withJwtSupplier(VariableJwtSupplier(jwt: jwt))
+        }
+
         mobileMessaging?.start({
             onSuccess(nil)
         })
@@ -442,5 +447,24 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
     @objc(showDialogForError:onSuccess:onError:)
     func showDialogForError(errorCode: Int, onSuccess: RCTResponseSenderBlock, onError: RCTResponseSenderBlock) {
         onError([NSError(type: .NotSupported).reactNativeObject])
+    }
+
+    @objc(setUserDataJwt:onSuccess:onError:)
+    func setUserDataJwt(jwt: String?, onSuccess: @escaping RCTResponseSenderBlock, onError: @escaping RCTResponseSenderBlock) {
+      MobileMessaging.jwtSupplier = VariableJwtSupplier(jwt: jwt)
+      onSuccess(nil)
+    }
+
+    class VariableJwtSupplier: NSObject, MMJwtSupplier {
+      private let jwt: String?
+
+      init(jwt: String?) {
+          self.jwt = jwt
+          super.init()
+      }
+
+      func getJwt() -> String? {
+          return jwt
+      }
     }
 }

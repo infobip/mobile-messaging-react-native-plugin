@@ -80,6 +80,17 @@ public class Utils {
         return errorMap;
     }
 
+    public static WritableMap callbackErrorWithStringErrorCode(String description, @Nullable String errorCode) {
+        WritableMap errorMap = new WritableNativeMap();
+        if (description != null && !description.isEmpty()) {
+            errorMap.putString("description", description);
+        }
+        if (errorCode != null && !errorCode.isEmpty()) {
+            errorMap.putString("code", errorCode);
+        }
+        return errorMap;
+    }
+
     @Nullable
     public static FragmentActivity getFragmentActivity(ReactApplicationContext context) {
         FragmentActivity fragmentActivity = (FragmentActivity) context.getCurrentActivity();

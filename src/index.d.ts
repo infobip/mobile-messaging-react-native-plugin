@@ -72,6 +72,7 @@ declare namespace MobileMessagingReactNative {
                         textInputPlaceholder?: string | undefined
                     }] | undefined
             }] | undefined;
+        userDataJwt?: string | undefined;
     }
 
     export interface UserData {
@@ -711,6 +712,15 @@ declare namespace MobileMessagingReactNative {
          * @name setChatPushBody
          */
         setChatPushBody(body: string): void;
+
+        /**
+         * Set JSON Web Token for user data operations and personalization.
+         * @param jwt JWT token in predefined format
+         * @param onSuccess will be called on success
+         * @param onError will be called on error
+         * @name setUserDataJwt
+         */
+        setUserDataJwt(jwt: string | null, onSuccess: () => void, onError: (error: MobileMessagingError) => void): void;
     }
 }
 

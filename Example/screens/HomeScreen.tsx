@@ -10,6 +10,7 @@ import {
 } from 'infobip-mobile-messaging-react-native-plugin';
 import PrimaryButton from '../components/PrimaryButton';
 import {URL} from 'react-native-url-polyfill';
+import {handleJWTError} from "../utils/JWTErrorHandler.ts";
 
 interface HomeScreenProps {
   navigation: any;
@@ -58,27 +59,8 @@ const HomeScreen = ({navigation}: HomeScreenProps) => {
     });
   };
 
-  const saveUserDataHandler = () => {
-    mobileMessaging.getUser((user: UserData) => {
-      console.log(user);
-      Alert.alert('User Information', JSON.stringify(user, null, 2), [
-        {text: 'Ok', style: 'destructive'},
-      ]);
-      user.externalUserId = 'someExternalUserId';
-      mobileMessaging.saveUser(
-        user,
-        (updatedUser: any) => {
-          console.log(updatedUser);
-          Alert.alert(
-            'User Information',
-            JSON.stringify(updatedUser, null, 2),
-            [{text: 'Ok', style: 'destructive'}],
-          );
-        },
-        (error: MobileMessagingError) =>
-          console.log('Error saving user: ' + error),
-      );
-    });
+  const editUserDataHandler = () => {
+    navigation.navigate('UserDataScreen');
   };
 
   const fetchUserDataHandler = () => {
@@ -90,7 +72,7 @@ const HomeScreen = ({navigation}: HomeScreenProps) => {
         ]);
       },
       (error: MobileMessagingError) =>
-        console.log('Error fetching user: ' + error),
+        handleJWTError(error),
     );
   };
 
@@ -391,8 +373,8 @@ const HomeScreen = ({navigation}: HomeScreenProps) => {
       <PrimaryButton onPress={getInstallationDataHandler}>
         Get Installation Data
       </PrimaryButton>
-      <PrimaryButton onPress={saveUserDataHandler}>
-        Save User Data
+      <PrimaryButton onPress={editUserDataHandler}>
+        Edit User Data
       </PrimaryButton>
       <PrimaryButton onPress={fetchUserDataHandler}>
         Fetch User Data

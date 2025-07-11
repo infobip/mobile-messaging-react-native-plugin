@@ -13,6 +13,7 @@ import Colors from './constants/Colors.ts';
 
 import HomeScreen from './screens/HomeScreen';
 import PersonalizeScreen from './screens/PersonalizeScreen';
+import UserDataScreen from './screens/UserDataScreen';
 import ChatScreen from './screens/ChatScreen';
 import SubviewChatScreen from './screens/SubviewChatScreen';
 import MultiThreadChatScreen from './screens/MultiThreadChatScreen';
@@ -26,6 +27,7 @@ interface AppState {
 type RootStackParamList = {
   HomeScreen: undefined;
   PersonalizeScreen: undefined;
+  UserDataScreen: undefined;
   ChatScreen: undefined;
   SubviewChatScreen: undefined;
   MultiThreadChatScreen: undefined;
@@ -57,6 +59,7 @@ class App extends Component<{}, AppState> {
     messageStorage: myMessageStorage,
     inAppChatEnabled: true,
     fullFeaturedInAppsEnabled: true,
+    // userDataJwt: '',
   };
 
   subscriptions: any[] = [];
@@ -127,6 +130,11 @@ class App extends Component<{}, AppState> {
             name="PersonalizeScreen"
             component={PersonalizeScreen}
             options={{title: 'Personalize'}}
+          />
+          <Stack.Screen
+            name="UserDataScreen"
+            component={UserDataScreen}
+            options={{title: 'Edit User Data'}}
           />
           <Stack.Screen
             name="ChatScreen"

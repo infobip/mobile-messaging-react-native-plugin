@@ -173,7 +173,8 @@ class MobileMessaging {
      *					}
      *				]
      *			}
-     *		]
+     *		],
+     *	   userDataJwt: '<JSON Web Token for user data operations and personalization>'
      *	}
      * @param {Function} onSuccess. Success callback
      * @param {Function} onError. Error callback
@@ -771,6 +772,17 @@ class MobileMessaging {
         }
         RNMMChat.setChatPushBody(body);
     };
+
+    /**
+     * Set JSON Web Token for user data operations and personalization.
+     * @param {String} jwt JWT token in predefined format
+     * @param {Function} onSuccess will be called on success
+     * @param {Function} onError will be called on error
+     * @name setUserDataJwt
+     */
+    setUserDataJwt(jwt, onSuccess = function() {}, onError = function() {}) {
+        ReactNativeMobileMessaging.setUserDataJwt(jwt, onSuccess, onError);
+    }
 }
 
 export {ChatView, RNMMChatView} from './components/RNMMChatViewNativeComponent';

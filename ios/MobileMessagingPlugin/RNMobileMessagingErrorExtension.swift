@@ -64,7 +64,7 @@ extension NSError {
     var reactNativeObject: [String: Any?] {
         return [
             "description": localizedDescription,
-            "code": code,
+            "code": mm_code ?? code,
             "domain": domain
         ]
     }
