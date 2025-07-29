@@ -49,13 +49,33 @@ class CacheManager {
         saveStringsToSet(context, EVENTS_KEY, serialized);
     }
 
-    static Event[] loadEvents(Context context) {
-        Set<String> serialized = getAndRemoveStringSet(context, EVENTS_KEY);
-        List<Event> events = new ArrayList<Event>(serialized.size());
-        for (String s : serialized) {
-            events.add(serializer.deserialize(s, Event.class));
+    static Event[] loadEvents(Context context, String eventType) {
+        Set<String> serialized = getStringSet(context, EVENTS_KEY);
+        if (serialized == null || serialized.isEmpty()) {
+            return new Event[0];
         }
-        return events.toArray(new Event[events.size()]);
+
+        List<Event> matched = new ArrayList<>();
+        Set<String> unmatchedSerialized = new HashSet<>();
+        for (String s : serialized) {
+            Event e = serializer.deserialize(s, Event.class);
+            if (eventType.equals(e.type)) {
+                matched.add(e);
+            } else {
+                unmatchedSerialized.add(s);
+            }
+        }
+
+        updateStringsSet(context, EVENTS_KEY, unmatchedSerialized);
+
+        return matched.toArray(new Event[matched.size()]);
+    }
+
+    private static Set<String> getStringSet(Context context, String key) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        synchronized (cacheLock) {
+            return new HashSet<>(sharedPreferences.getStringSet(key, new HashSet<String>()));
+        }
     }
 
     private static Set<String> getAndRemoveStringSet(Context context, String key) {
@@ -89,6 +109,16 @@ class CacheManager {
                     .putStringSet(key, newSet)
                     .apply();
             return set;
+        }
+    }
+
+    private static void updateStringsSet(Context context, String key, Set<String> newSet) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        synchronized (cacheLock) {
+            sharedPreferences
+                    .edit()
+                    .putStringSet(key, newSet)
+                    .apply();
         }
     }
 }

@@ -99,6 +99,7 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
     private static volatile Boolean broadcastReceiverRegistered = false;
     private static volatile Boolean pluginInitialized = false;
     private PermissionsRequestManager permissionsRequestManager;
+    private static volatile boolean jsHasListeners = false;
 
     public ReactNativeMobileMessagingModule(ReactApplicationContext reactContext) {
         super(reactContext);
@@ -113,9 +114,6 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
     @Override
     public void initialize() {
         super.initialize();
-        for (CacheManager.Event event : CacheManager.loadEvents(reactContext)) {
-            ReactNativeEvent.send(event.type, reactContext, event.jsonObject, event.objects);
-        }
         pluginInitialized = true;
         registerBroadcastReceiver();
     }
@@ -144,12 +142,33 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
 
     @ReactMethod
     public void addListener(String eventName) {
-        // Keep: Required for RN built in Event Emitter Calls.
+        jsHasListeners = true;
+        for (CacheManager.Event ev : CacheManager.loadEvents(reactContext, eventName)) {
+            if (eventName.equals(ev.type)) {
+                ReactNativeEvent.send(ev.type, reactContext, ev.jsonObject, ev.objects);
+            }
+        }
     }
 
     @ReactMethod
     public void removeListeners(Integer count) {
         // Keep: Required for RN built in Event Emitter Calls.
+    }
+
+    private static void emitOrCache(String eventType, ReactContext reactContext, JSONObject message, String actionId, String actionInputText) {
+        if (jsHasListeners) {
+            ReactNativeEvent.send(eventType, reactContext, message, actionId, actionInputText);
+        } else {
+            CacheManager.saveEvent(reactContext, eventType, message, actionId, actionInputText);
+        }
+    }
+
+    private static void emitOrCache(String eventType, ReactContext reactContext, int unreadMessagesCounter) {
+        if (jsHasListeners) {
+            ReactNativeEvent.send(eventType, reactContext, unreadMessagesCounter);
+        } else {
+            CacheManager.saveEvent(reactContext, eventType, unreadMessagesCounter);
+        }
     }
 
     //region BroadcastReceivers
@@ -260,8 +279,7 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
             if (!pluginInitialized) {
                 CacheManager.saveEvent(context, event, message, actionId, actionInputText);
             } else {
-                ReactContext reactContext = getReactContext(context);
-                ReactNativeEvent.send(event, reactContext, message, actionId, actionInputText);
+                emitOrCache(event, getReactContext(context), message, actionId, actionInputText);
             }
         }
 
@@ -270,8 +288,7 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
             if (!pluginInitialized) {
                 CacheManager.saveEvent(context, event, unreadChatMessagesCounter);
             } else {
-                ReactContext reactContext = getReactContext(context);
-                ReactNativeEvent.send(event, reactContext, unreadChatMessagesCounter);
+                emitOrCache(event, getReactContext(context), unreadChatMessagesCounter);
             }
         }
 
