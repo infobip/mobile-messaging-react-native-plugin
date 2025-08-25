@@ -1,13 +1,13 @@
 /*
-    Example of in-app Chat screen as React Component
+ * Example of In-app ChatView as React Component in full screen mode.
  */
 
 import React from 'react';
 import {ChatView} from 'infobip-mobile-messaging-react-native-plugin';
-import Colors from '../constants/Colors';
+import Colors from '../../constants/Colors';
 
-const ChatScreen: React.FC = () => {
+const ChatViewScreen: React.FC = () => {
   return <ChatView style={{flex: 1}} sendButtonColor={Colors.primary600} />;
 };
 
-export default ChatScreen;
+export default ChatViewScreen;

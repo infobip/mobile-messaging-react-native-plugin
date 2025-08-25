@@ -5,8 +5,8 @@
 import React, {useState, useEffect} from 'react';
 import {ChatView} from 'infobip-mobile-messaging-react-native-plugin';
 import {View, Text, KeyboardAvoidingView, SafeAreaView} from 'react-native';
-import Colors from '../constants/Colors';
-import PrimaryButton from '../components/PrimaryButton';
+import Colors from '../../constants/Colors';
+import PrimaryButton from '../../components/PrimaryButton';
 import {mobileMessaging} from 'infobip-mobile-messaging-react-native-plugin';
 import {NavigationContainer, NavigationProp} from '@react-navigation/native';
 
@@ -14,7 +14,7 @@ interface MultiThreadChatScreenProps {
   navigation: NavigationProp<any>;
 }
 
-const MultiThreadChatScreen: React.FC<MultiThreadChatScreenProps> = ({
+const ChatViewMultithreadScreen: React.FC<MultiThreadChatScreenProps> = ({
   navigation,
 }) => {
   const [showButton, setShowButton] = useState(false);
@@ -60,4 +60,4 @@ const MultiThreadChatScreen: React.FC<MultiThreadChatScreenProps> = ({
   );
 };
 
-export default MultiThreadChatScreen;
+export default ChatViewMultithreadScreen;

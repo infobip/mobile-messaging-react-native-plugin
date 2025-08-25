@@ -14,6 +14,7 @@ var isEarlyStartPerformed = false;
 
 @objc(ReactNativeMobileMessaging)
 class ReactNativeMobileMessaging: RCTEventEmitter  {
+    private(set) static weak var shared: ReactNativeMobileMessaging?
     private var messageStorageAdapter: MessageStorageAdapter?
     private var eventsManager: RNMobileMessagingEventsManager?
     private var isStarted: Bool = false
@@ -39,7 +40,8 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
             EventName.inAppChat_unreadMessageCounterUpdated,
             EventName.inAppChat_viewStateChanged,
             EventName.inAppChat_configurationSynced,
-            EventName.inAppChat_registrationIdUpdated
+            EventName.inAppChat_registrationIdUpdated,
+            EventName.inAppChat_jwtRequested
         ]
     }
     
@@ -67,6 +69,7 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
     
     override init() {
         super.init()
+        ReactNativeMobileMessaging.shared = self
         self.eventsManager = RNMobileMessagingEventsManager(eventEmitter: self)
         self.messageStorageAdapter = MessageStorageAdapter(eventEmitter: self)
         performEarlyStartIfPossible()

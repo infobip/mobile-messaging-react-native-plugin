@@ -10,9 +10,13 @@ import MobileMessaging
 
 @objc(RNMMChat)
 class RNMMChat: NSObject  {
+    private var willUseJWT = false
+    private var jwtRequestQueue: [((String?) -> Void)] = []
+    private let jwtQueueLock = NSLock()
 
     @objc(showChat:)
     func showChat(presentingOptions: NSDictionary) {
+        MobileMessaging.inAppChat?.delegate = self
         var presentVCModally = false
         if let presentingOptions = presentingOptions as? [String: Any],
            let iosOptions = presentingOptions["ios"] as? [String: Any],
@@ -186,9 +190,19 @@ class RNMMChat: NSObject  {
          }
     }
 
-    @objc(setJwt:)
-    func setJwt(jwt: String) {
-        MobileMessaging.inAppChat?.jwt = jwt
+    @objc(setChatJwtProvider)
+    func setChatJwtProvider() {
+        willUseJWT = true
+    }
+
+    @objc(setChatJwt:)
+    func setChatJwt(jwt: String?) {
+        jwtQueueLock.lock()
+        if !jwtRequestQueue.isEmpty {
+            let completion = jwtRequestQueue.removeFirst()
+            completion(jwt)
+        }
+        jwtQueueLock.unlock()
     }
 
     @objc(restartConnection)
@@ -199,5 +213,24 @@ class RNMMChat: NSObject  {
     @objc(stopConnection)
     func stopConnection() {
         RNMMChatView.viewController?.stopConnection()
+    }
+}
+
+extension RNMMChat: MMInAppChatDelegate {
+
+    @objc func getJWT() -> String? {
+        guard willUseJWT else { return nil }
+        var jwtResult: String?
+        let semaphore = DispatchSemaphore(value: 0)
+
+        jwtQueueLock.lock()
+        jwtRequestQueue.append { jwt in
+            jwtResult = jwt
+            semaphore.signal()
+        }
+        jwtQueueLock.unlock()
+        ReactNativeMobileMessaging.shared?.sendEvent(withName: EventName.inAppChat_jwtRequested, body: nil)
+        _ = semaphore.wait(timeout: .now() + 45)
+        return jwtResult
     }
 }

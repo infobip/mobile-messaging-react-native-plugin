@@ -41,6 +41,7 @@ class MobileMessaging {
             'inAppChat.livechatRegistrationIdUpdated'
         ];
         this.eventEmitter = new NativeEventEmitter(ReactNativeMobileMessaging);
+
     }
 
     /**
@@ -95,14 +96,13 @@ class MobileMessaging {
      *   - inAppChat.unreadMessageCounterUpdated
      *   - inAppChat.viewStateChanged
      *   - inAppChat.configurationSynced
-     *   - inAppChat.livechatRegistrationIdUpdated'
+     *   - inAppChat.livechatRegistrationIdUpdated
      *
      * @name subscribe
      * @param {String} eventName
      * @param {Function} handler will be called when event occurs
-     * @return {EmitterSubscription} subscription, to unregister from this subscription call `unsubscribe(subscription)`
      */
-    subscribe(eventName, handler) : EmitterSubscription {
+    subscribe(eventName, handler) {
         return this.eventEmitter.addListener(eventName, handler);
     }
 
@@ -685,29 +685,64 @@ class MobileMessaging {
     #jwtSubscription = null;
 
     /**
-     * Provides JSON Web Token (JWT), to give in-app chat ability to authenticate.
+     * Sets the JWT provider used to authenticate in-app chat sessions.
      *
-     * In android app, function can be triggered multiple times during in-app chat lifetime, due to various events like screen orientation change, internet re-connection.
-     * If you can ensure JWT expiration time is longer than in-app chat lifetime, you can return cached token, otherwise it is important to provide fresh new token for each invocation.
+     * The `jwtProvider` is a callback function that returns a JSON Web Token (JWT)
+     * used for chat authentication. It supports both **synchronous** and **asynchronous** approaches:
      *
-     * @name setJwtProvider
-     * @param {Function} jwtProvider callback returning JWT token
+     * ### Synchronous usage:
+     * ```ts
+     * mobileMessaging.setChatJwtProvider(() => {
+     *   return "your_token"; // Return a valid JWT string directly
+     * });
+     * ```
+     *
+     * ### Asynchronous usage:
+     * ```ts
+     * mobileMessaging.setChatJwtProvider(async () => {
+     *   const jwt = await getChatToken(...);
+     *   return jwt; // Return a Promise<string> that resolves to a valid JWT
+     * });
+     * ```
+     *
+     * > ⚠️ This callback may be invoked multiple times during the widget's lifecycle 
+     * (e.g., due to screen orientation changes or network reconnection).
+     * It is important to return a **fresh and valid JWT** each time.
+     *
+     * @param jwtProvider A callback function that returns a JWT string or a Promise that resolves to one.
+     * @param onError Optional error handler for catching exceptions thrown during JWT generation.
      */
-    setJwtProvider(jwtProvider) {
-        const setJwt = () => {
-            RNMMChat.setJwt(jwtProvider());
-        };
-        setJwt();
+    setChatJwtProvider(jwtProvider, onError) {
+        if (this.#jwtSubscription != null) {
+            this.unsubscribe(this.#jwtSubscription);
+            this.#jwtSubscription = null;
+        }
+        if (jwtProvider) {
+            RNMMChat.setChatJwtProvider();
 
-        if (Platform.OS === "android") {
-            if (jwtProvider != null) {
-                if (this.#jwtSubscription != null) {
-                    this.unsubscribe(this.#jwtSubscription);
+            const handleError = (e) => {
+                RNMMChat.setChatJwt(null);
+                if (onError) {
+                    onError(e);
+                } else {
+                    console.error('[RNMobileMessaging] Could not obtain chat JWT:', e);
                 }
-                this.#jwtSubscription = this.subscribe('inAppChat.jwtRequested', () => {
-                    setJwt();
-                });
-            }
+            };
+
+            this.#jwtSubscription = this.subscribe('inAppChat.jwtRequested', () => {
+                try {
+                    const jwtPromise = jwtProvider();
+                    if (jwtPromise && typeof jwtPromise.then === 'function') { // Handle asynchronous JWT provider of type Promise<string>
+                        jwtPromise
+                            .then(jwt => RNMMChat.setChatJwt(jwt))
+                            .catch(handleError);
+                    } else { // Handle synchronous JWT provider of type () => string
+                        RNMMChat.setChatJwt(jwtPromise);
+                    }
+                } catch (e) {
+                    handleError(e);
+                }
+            });
         }
     }
 

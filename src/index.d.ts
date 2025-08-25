@@ -641,7 +641,7 @@ declare namespace MobileMessagingReactNative {
          * @param {Function} onSuccess success callback
          * @param {Function} onError error callback
          */
-        setLanguage(localeString: string, onSuccess: () => void, onError: (error: MobileMessagingError) => void): void;
+        setLanguage(localeString: string, onSuccess: (language: any) => void, onError: (error: MobileMessagingError) => void): void;
 
         /**
          * Returns unread in-app chat push messages counter.
@@ -666,15 +666,34 @@ declare namespace MobileMessagingReactNative {
         showThreadsList(): void;
 
         /**
-         * Provides JSON Web Token (JWT), to give in-app chat ability to authenticate.
+         * Sets the JWT provider used to authenticate in-app chat sessions.
          *
-         * In android app, function can be triggered multiple times during in-app chat lifetime, due to various events like screen orientation change, internet re-connection.
-         * If you can ensure JWT expiration time is longer than in-app chat lifetime, you can return cached token, otherwise it is important to provide fresh new token for each invocation.
+         * The `jwtProvider` is a callback function that returns a JSON Web Token (JWT)
+         * used for chat authentication. It supports both **synchronous** and **asynchronous** approaches:
          *
-         * @name setJwtProvider
-         * @param {Function} jwtProvider callback returning JWT token
+         * ### Synchronous usage:
+         * ```ts
+         * mobileMessaging.setChatJwtProvider(() => {
+         *   return "your_token"; // Return a valid JWT string directly
+         * });
+         * ```
+         *
+         * ### Asynchronous usage:
+         * ```ts
+         * mobileMessaging.setChatJwtProvider(async () => {
+         *   const jwt = await getChatToken(...);
+         *   return jwt; // Return a Promise<string> that resolves to a valid JWT
+         * });
+         * ```
+         *
+         * > ⚠️ On Android, this callback may be invoked multiple times during the widget's lifecycle 
+         * (e.g., due to screen orientation changes or network reconnection).
+         * It is important to return a **fresh and valid JWT** each time.
+         *
+         * @param jwtProvider A callback function that returns a JWT string or a Promise that resolves to one.
+         * @param onError Optional error handler for catching exceptions thrown during JWT generation.
          */
-        setJwtProvider(jwtProvider: () => string): void;
+        setChatJwtProvider(jwtProvider: () => string | Promise<string>, onError?: (error: Error) => void): void;
 
         /**
          * Registering for POST_NOTIFICATIONS permission for Android 13+

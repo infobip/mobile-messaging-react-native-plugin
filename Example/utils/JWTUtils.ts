@@ -1,6 +1,7 @@
 import 'react-native-get-random-values';
-import {v4 as uuidv4} from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
 import CryptoJS from 'crypto-js';
+import { SubjectType } from '../constants/SubjectType';
 
 export interface JWTConfig {
   keyid: string;
@@ -94,4 +95,55 @@ export async function generateSignedJWT(
   externalPersonId: string,
 ): Promise<string> {
   return createJWTManually(keyid, secretKeyHex, applicationCode, externalPersonId);
+}
+
+export async function generateChatJWT(
+  subjectType: SubjectType,
+  subject: string,
+  widgetId: string,
+  secretKeyJson: string,
+): Promise<string> {
+  try {
+    const uuid = uuidv4();
+    const nowSeconds = Math.floor(Date.now() / 1000);
+
+    const keyData = JSON.parse(secretKeyJson);
+    const keyId = keyData.id;
+    const keySecret = keyData.key;
+
+    const header = {
+      alg: 'HS256',
+      typ: 'JWT',
+    };
+
+    //see JWT payload structure table https://www.infobip.com/docs/live-chat/users-and-authentication#generate-the-personalization-token-web-authentication
+    const payload = {
+      jti: uuid, //JWT ID: must be unique for each token. Any string, max 50 characters.
+      sub: subject, //Subject: value of the unique identifier, matching the type in stp.
+      iss: widgetId, //Issuer: your widget's ID.
+      iat: nowSeconds, //Issued at: Unix timestamp in seconds when the token is created.
+      exp: nowSeconds + 60, //Expiration: Unix timestamp when the token expires in seconds.
+      ski: keyId, //Secret key ID: the ID (not the value) of the secret key you're using to sign the token.
+      stp: subjectType, //Subject type: type of identifier in sub.
+      sid: uuid //Session ID: your unique user session identifier, used for Session Invalidation API. Max 50 characters.
+    };
+
+    const encodedHeader = base64URLEncode(JSON.stringify(header));
+    const encodedPayload = base64URLEncode(JSON.stringify(payload));
+
+    const signingInput = `${encodedHeader}.${encodedPayload}`;
+    const secretKey = CryptoJS.enc.Base64.parse(keySecret);
+    const signature = CryptoJS.HmacSHA256(signingInput, secretKey);
+    const signatureBase64 = signature.toString(CryptoJS.enc.Base64);
+    const encodedSignature = signatureBase64
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=/g, '');
+
+    const jwt = `${signingInput}.${encodedSignature}`;
+    return jwt;
+  } catch (error) {
+    console.error('React app: Chat JWT generation failed: ', error);
+    throw error;
+  }
 }

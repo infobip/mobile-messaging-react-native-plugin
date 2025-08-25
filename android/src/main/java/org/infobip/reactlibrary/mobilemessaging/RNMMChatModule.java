@@ -33,11 +33,16 @@ import org.infobip.mobile.messaging.mobileapi.MobileMessagingError;
 import org.infobip.mobile.messaging.mobileapi.Result;
 import org.infobip.mobile.messaging.util.StringUtils;
 import org.infobip.mobile.messaging.chat.core.JwtProvider;
+import org.infobip.mobile.messaging.chat.core.JwtProvider.JwtCallback;
 import org.infobip.reactlibrary.mobilemessaging.datamappers.ReactNativeJson;
 import org.infobip.mobile.messaging.api.support.http.serialization.JsonSerializer;
 import org.infobip.mobile.messaging.chat.core.MultithreadStrategy;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.Queue;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -46,34 +51,8 @@ import java.net.URL;
 public class RNMMChatModule extends ReactContextBaseJavaModule implements ActivityEventListener, LifecycleEventListener {
 
     private static final String EVENT_INAPPCHAT_JWT_REQUESTED = "inAppChat.jwtRequested";
-
     private static ReactApplicationContext reactContext;
-
-    private String jwt = null;
-    private boolean isJwtProviderInitialInvocation = true;
-    private final JwtProvider jwtProvider = () -> {
-        if (!isJwtProviderInitialInvocation) {
-            //send event to JS to generate new JWT and invoke native setter, then wait 150ms and return generated JWT
-            ReactNativeEvent.send(EVENT_INAPPCHAT_JWT_REQUESTED, reactContext);
-            try {
-                Thread waitThread = new Thread(() -> {
-                    try {
-                        Thread.sleep(150);
-                    } catch (InterruptedException e) {
-                        Thread.currentThread().interrupt();
-                        Log.e(Utils.TAG, "Thread Interrupted");
-                    }
-                });
-                waitThread.start();
-                waitThread.join();
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                Log.e(Utils.TAG, "Thread Interrupted");
-            }
-        }
-        isJwtProviderInitialInvocation = false;
-        return this.jwt;
-    };
+    private final ChatJwtCallbackHolder chatJwtCallbackHolder = new ChatJwtCallbackHolder();
 
     RNMMChatModule(ReactApplicationContext context) {
         super(context);
@@ -116,7 +95,8 @@ public class RNMMChatModule extends ReactContextBaseJavaModule implements Activi
             public void onResult(Result<LivechatWidgetLanguage, MobileMessagingError> result) {
                 if (result.isSuccess()) {
                     onSuccess.invoke(result.getData().toString());
-                } else {
+                }
+                else {
                     onError.invoke(Utils.callbackError(result.getError().getMessage(), null));
                 }
             }
@@ -134,15 +114,110 @@ public class RNMMChatModule extends ReactContextBaseJavaModule implements Activi
         }
     }
 
+    /**
+     * ChatJwtCallbackHolder is a helper class responsible for managing JWT requests
+     * from the Java native to the JavaScript side. It supports asynchronous
+     * JWT acquisition and delivers results (token or error) back to queued callbacks.
+     */
+    private static class ChatJwtCallbackHolder {
+
+        private ReactApplicationContext reactContext;
+        private final Queue<JwtCallback> queue = new ConcurrentLinkedQueue<>();
+        private final AtomicBoolean awaitingJwtFromJs = new AtomicBoolean(false);
+
+        private void sendRequestEvent() {
+            if (reactContext != null) {
+                ReactNativeEvent.send(EVENT_INAPPCHAT_JWT_REQUESTED, reactContext);
+            } else {
+                Log.e(Utils.TAG, "React context is null, cannot send request for JWT.");
+            }
+        }
+
+        public void requestJwt(JwtCallback callback) {
+            queue.add(callback);
+            if (awaitingJwtFromJs.compareAndSet(false, true)) {
+                sendRequestEvent();
+            }
+        }
+
+        public void resumeWithJwt(String newJwt) {
+            try {
+                Runnable runnable = () -> {
+                    JwtCallback callback = queue.poll();
+                    if (callback != null) {
+                        callback.onJwtReady(newJwt);
+                    }
+                    updateAwaitingState();
+                };
+                if (reactContext != null) {
+                    reactContext.runOnUiQueueThread(runnable);
+                } else {
+                    Log.w(Utils.TAG, "React context is null, cannot resume with JWT value on UI thread.");
+                    runnable.run();
+                }
+            } catch (Exception e) {
+                Log.w(Utils.TAG, "Could not resume with JWT value " + newJwt, e);
+            }
+        }
+
+        public void resumeWithError(Throwable throwable) {
+            try {
+                Runnable runnable = () -> {
+                    JwtCallback callback = queue.poll();
+                    if (callback != null) {
+                        callback.onJwtError(throwable);
+                    }
+                    updateAwaitingState();
+                };
+                if (reactContext != null) {
+                    reactContext.runOnUiQueueThread(runnable);
+                } else {
+                    Log.w(Utils.TAG, "React context is null, cannot resume with JWT error on UI thread.");
+                    runnable.run();
+                }
+            } catch (Exception e) {
+                Log.w(Utils.TAG, "Could not resume with JWT error " + throwable.getMessage(), e);
+            }
+        }
+
+        private void updateAwaitingState() {
+            if (queue.isEmpty()) {
+                awaitingJwtFromJs.set(false);
+            }
+            else {
+                awaitingJwtFromJs.set(true);
+                sendRequestEvent();
+            }
+        }
+
+        public ReactApplicationContext getReactContext() {
+            return reactContext;
+        }
+
+        public void setReactContext(ReactApplicationContext reactContext) {
+            this.reactContext = reactContext;
+        }
+
+    }
+
     @ReactMethod
-    public void setJwt(String jwt) {
-        this.jwt = jwt;
-        InAppChat inAppChat = InAppChat.getInstance(reactContext);
-        if (inAppChat.getWidgetJwtProvider() == null) {
-            inAppChat.setWidgetJwtProvider(jwtProvider);
-            this.isJwtProviderInitialInvocation = true;
-        } else if (inAppChat.getWidgetJwtProvider() != null && StringUtils.isBlank(jwt)) {
-            inAppChat.setWidgetJwtProvider(null);
+    public void setChatJwtProvider() {
+        if (chatJwtCallbackHolder.getReactContext() == null) {
+            chatJwtCallbackHolder.setReactContext(reactContext);
+        }
+
+        JwtProvider jwtProvider = callback -> {
+            chatJwtCallbackHolder.requestJwt(callback);
+        };
+        InAppChat.getInstance(reactContext).setWidgetJwtProvider(jwtProvider);
+    }
+
+    @ReactMethod
+    public void setChatJwt(String jwt) {
+        if (jwt != null && !jwt.isEmpty()) {
+            chatJwtCallbackHolder.resumeWithJwt(jwt);
+        } else {
+            chatJwtCallbackHolder.resumeWithError(new IllegalArgumentException("Provided chat JWT is null or empty."));
         }
     }
 

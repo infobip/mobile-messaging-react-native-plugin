@@ -20,6 +20,7 @@ const HomeScreen = ({navigation}: HomeScreenProps) => {
   useEffect(() => {
     registerForDeeplinkEvents();
     handleInitialDeeplinkUrl();
+
     return () => {
       unregisterFromDeeplinkEvents();
     };
@@ -174,56 +175,8 @@ const HomeScreen = ({navigation}: HomeScreenProps) => {
     });
   };
 
-  const showChatHandler = () => {
-    // Call mobileMessaging.personalize() first, then setJwtProvider if needed
-    // mobileMessaging.setJwtProvider(() => 'your JWT');
-    mobileMessaging.setLanguage(
-      'en',
-      (language: any) => console.log('Language set ' + language),
-      (error: MobileMessagingError) =>
-        console.log('Error setting language: ' + JSON.stringify(error)),
-    );
-    mobileMessaging.sendContextualData(
-      "{'metadata': 'from react demo'}",
-      'ALL',
-      () => console.log('MobileMessaging metadata sent'),
-      (error: MobileMessagingError) =>
-        console.log('MobileMessaging metadata error: ' + error),
-    );
-    mobileMessaging.showChat();
-  };
-
-  const showChatReactComponentHandler = () => {
-    navigation.navigate('ChatScreen');
-  };
-
-  const showChatSubviewHandler = () => {
-    navigation.navigate('SubviewChatScreen');
-  };
-
-  const showMTChatSubviewHandler = () => {
-    navigation.navigate('MultiThreadChatScreen');
-  };
-
-  const enableWebRTC = () => {
-    webRTCUI.enableChatCalls(
-      () => console.log('WebRTCUI enabled chat calls'),
-      (error: MobileMessagingError) =>
-        console.log(
-          'WebRTCUI could not enable chat calls, error: ' +
-            JSON.stringify(error),
-        ),
-    );
-  };
-
-  const disableWebRTC = () => {
-    webRTCUI.disableCalls(
-      () => console.log('WebRTCUI disabled calls'),
-      (error: MobileMessagingError) =>
-        console.log(
-          'WebRTCUI could not disable calls, error: ' + JSON.stringify(error),
-        ),
-    );
+  const showChatOptionsScreen = () => {
+    navigation.navigate('ChatOptionsScreen');
   };
 
   // Subscriptions
@@ -296,110 +249,21 @@ const HomeScreen = ({navigation}: HomeScreenProps) => {
     }
   }
 
-  const customize = () => {
-    const sendButtonIcon = require('../assets/ic_send.png');
-    const attachmentIcon = require('../assets/ic_add_circle.png');
-    const navigationIcon = require('../assets/ic_back.png');
-    const downloadIcon = require('../assets/ic_download.png');
-    const resolveAssetSource = require('react-native/Libraries/Image/resolveAssetSource');
-    const settings = {
-      chatStatusBarBackgroundColor: '#673AB7',
-      chatStatusBarIconsColorMode: 'dark',
-      attachmentPreviewToolbarSaveMenuItemIcon: resolveAssetSource(downloadIcon).uri,
-      attachmentPreviewToolbarMenuItemsIconTint: '#9E9E9E',
-      chatToolbar: {
-        titleTextAppearance: 'TextAppearance_AppCompat_Title',
-        titleTextColor: '#FFFFFF',
-        titleText: 'Some new title',
-        titleCentered: true,
-        backgroundColor: '#673AB7',
-        navigationIcon: resolveAssetSource(navigationIcon).uri,
-        navigationIconTint: '#FFFFFF',
-        subtitleTextAppearance: 'TextAppearance_AppCompat_Subtitle',
-        subtitleTextColor: '#FFFFFF',
-        subtitleText: '#1',
-        subtitleCentered: true,
-      },
-      attachmentPreviewToolbar: {
-        titleTextAppearance: 'TextAppearance_AppCompat_Title',
-        titleTextColor: '#212121',
-        titleText: 'Attachment preview',
-        titleCentered: true,
-        backgroundColor: '#673AB7',
-        navigationIcon: resolveAssetSource(navigationIcon).uri,
-        navigationIconTint: '#FFFFFF',
-        subtitleTextAppearance: 'TextAppearance_AppCompat_Subtitle',
-        subtitleTextColor: '#FFFFFF',
-        subtitleText: 'Attachment preview subtitle',
-        subtitleCentered: false,
-      },
-      networkErrorText: 'Network error',
-      networkErrorTextColor: '#FFFFFF',
-      networkErrorLabelBackgroundColor: '#212121',
-      chatProgressBarColor: '#9E9E9E',
-      chatInputTextColor: '#212121',
-      chatInputBackgroundColor: '#D1C4E9',
-      chatInputHintText: 'Input Message',
-      chatInputHintTextColor: '#212121',
-      chatInputAttachmentIcon: resolveAssetSource(attachmentIcon).uri,
-      chatInputAttachmentIconTint: '#9E9E9E',
-      chatInputAttachmentBackgroundColor: '#673AB7',
-      chatInputAttachmentBackgroundDrawable: '',
-      chatInputSendIcon: resolveAssetSource(sendButtonIcon).uri,
-      chatInputSendIconTint: '#9E9E9E',
-      chatInputSendBackgroundColor: '#673AB7',
-      chatInputSendBackgroundDrawable: '',
-      chatInputSeparatorLineColor: '#BDBDBD',
-      chatInputSeparatorLineVisible: true,
-      chatInputCursorColor: '#9E9E9E',
-      networkErrorTextAppearance: 'TextAppearance_AppCompat_Title',
-      chatBackgroundColor: '#673AB7',
-      chatInputTextAppearance: 'TextAppearance_AppCompat_Subtitle',
-    };
-    mobileMessaging.setChatCustomization(settings);
-    mobileMessaging.setWidgetTheme('dark');
-    console.log('Style applied');
-  };
-
   // Render
   return (
     // eslint-disable-next-line react-native/no-inline-styles
     <ScrollView style={{marginTop: 10}}>
       <View>{button}</View>
       <PrimaryButton onPress={personalizeHandler}>Personalize</PrimaryButton>
-      <PrimaryButton onPress={depersonalizeHandler}>
-        Depersonalize
-      </PrimaryButton>
-      <PrimaryButton onPress={getInstallationDataHandler}>
-        Get Installation Data
-      </PrimaryButton>
-      <PrimaryButton onPress={editUserDataHandler}>
-        Edit User Data
-      </PrimaryButton>
-      <PrimaryButton onPress={fetchUserDataHandler}>
-        Fetch User Data
-      </PrimaryButton>
+      <PrimaryButton onPress={depersonalizeHandler}>Depersonalize</PrimaryButton>
+      <PrimaryButton onPress={getInstallationDataHandler}>Get Installation Data</PrimaryButton>
+      <PrimaryButton onPress={editUserDataHandler}>Edit User Data</PrimaryButton>
+      <PrimaryButton onPress={fetchUserDataHandler}>Fetch User Data</PrimaryButton>
       <PrimaryButton onPress={getUserDataHandler}>Get User Data</PrimaryButton>
-      <PrimaryButton onPress={setInstallationAsPrimaryHandler}>
-        Set This Installation as Primary
-      </PrimaryButton>
-      <PrimaryButton onPress={showChatHandler}>
-        Show Chat (Native VC/Activity)
-      </PrimaryButton>
-      <PrimaryButton onPress={showChatReactComponentHandler}>
-        Show Chat (React Component)
-      </PrimaryButton>
-      <PrimaryButton onPress={showChatSubviewHandler}>
-        Show Chat (React Component as Subview)
-      </PrimaryButton>
-      <PrimaryButton onPress={showMTChatSubviewHandler}>
-        Show Chat (React Component with Multi-thread handling)
-      </PrimaryButton>
-      <PrimaryButton onPress={enableWebRTC}>Enable Calls</PrimaryButton>
-      <PrimaryButton onPress={disableWebRTC}>Disable Calls</PrimaryButton>
-      <PrimaryButton onPress={customize}>Runtime Customization</PrimaryButton>
+      <PrimaryButton onPress={setInstallationAsPrimaryHandler}>Set This Installation as Primary</PrimaryButton>
       <PrimaryButton onPress={fetchInbox}>Fetch Inbox</PrimaryButton>
       <PrimaryButton onPress={setInboxSeen}>Set Inbox Seen</PrimaryButton>
+      <PrimaryButton onPress={showChatOptionsScreen}>Chat options</PrimaryButton>
     </ScrollView>
   );
 };

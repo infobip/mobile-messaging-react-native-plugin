@@ -14,9 +14,10 @@ import Colors from './constants/Colors.ts';
 import HomeScreen from './screens/HomeScreen';
 import PersonalizeScreen from './screens/PersonalizeScreen';
 import UserDataScreen from './screens/UserDataScreen';
-import ChatScreen from './screens/ChatScreen';
-import SubviewChatScreen from './screens/SubviewChatScreen';
-import MultiThreadChatScreen from './screens/MultiThreadChatScreen';
+import ChatOptionsScreen from './screens/chat/ChatOptionsScreen';
+import ChatViewScreen from './screens/chat/ChatViewScreen';
+import ChatViewCustomLayoutScreen from './screens/chat/ChatViewCustomLayoutScreen';
+import ChatViewMultithreadScreen from './screens/chat/ChatViewMultithreadScreen';
 import TestDeeplinkingScreen from './screens/TestDeeplinkingScreen';
 import TestDeeplinkingScreen2 from './screens/TestDeeplinkingScreen2';
 
@@ -28,9 +29,10 @@ type RootStackParamList = {
   HomeScreen: undefined;
   PersonalizeScreen: undefined;
   UserDataScreen: undefined;
-  ChatScreen: undefined;
-  SubviewChatScreen: undefined;
-  MultiThreadChatScreen: undefined;
+  ChatOptionsScreen: undefined;
+  ChatViewScreen: undefined;
+  ChatViewCustomLayoutScreen: undefined;
+  ChatViewMultithreadScreen: undefined;
   TestDeeplinkingScreen: undefined;
   TestDeeplinkingScreen2: undefined;
 };
@@ -137,10 +139,10 @@ class App extends Component<{}, AppState> {
             options={{title: 'Edit User Data'}}
           />
           <Stack.Screen
-            name="ChatScreen"
-            component={ChatScreen}
+            name="ChatOptionsScreen"
+            component={ChatOptionsScreen}
             options={{
-              title: 'My Chat Title',
+              title: 'Chat options',
               headerStyle: {
                 backgroundColor: Colors.primary500,
               },
@@ -151,10 +153,13 @@ class App extends Component<{}, AppState> {
             }}
           />
           <Stack.Screen
-            name="SubviewChatScreen"
-            component={SubviewChatScreen}
+            name="ChatViewScreen"
+            component={ChatViewScreen}
             options={{
-              title: 'Subview Chat',
+              title: 'ChatView React component fullscreen',
+              headerStyle: {
+                backgroundColor: Colors.primary500,
+              },
               headerTintColor: Colors.tintWhite,
               headerTitleStyle: {
                 fontWeight: 'bold',
@@ -162,10 +167,21 @@ class App extends Component<{}, AppState> {
             }}
           />
           <Stack.Screen
-            name="MultiThreadChatScreen"
-            component={MultiThreadChatScreen}
+            name="ChatViewCustomLayoutScreen"
+            component={ChatViewCustomLayoutScreen}
             options={{
-              title: 'Multi-Thread Chat',
+              title: 'ChatView React component in custom layout',
+              headerTintColor: Colors.tintWhite,
+              headerTitleStyle: {
+                fontWeight: 'bold',
+              },
+            }}
+          />
+          <Stack.Screen
+            name="ChatViewMultithreadScreen"
+            component={ChatViewMultithreadScreen}
+            options={{
+              title: 'Multithread ChatView React component',
               headerTintColor: Colors.tintWhite,
               headerTitleStyle: {
                 fontWeight: 'bold',

@@ -1,13 +1,13 @@
 /*
- Example of subview in-app chat screen as React Component
+ * Example of In-app ChatView as React Component presented with custom UI components.
  */
 
 import React from 'react';
 import {ChatView} from 'infobip-mobile-messaging-react-native-plugin';
 import {View, Text, KeyboardAvoidingView, Platform} from 'react-native';
-import Colors from '../constants/Colors';
+import Colors from '../../constants/Colors';
 
-const SubviewChatScreen: React.FC = () => {
+const ChatViewCustomLayoutScreen: React.FC = () => {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -25,4 +25,4 @@ const SubviewChatScreen: React.FC = () => {
   );
 };
 
-export default SubviewChatScreen;
+export default ChatViewCustomLayoutScreen;
