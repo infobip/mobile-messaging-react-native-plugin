@@ -588,38 +588,10 @@ declare namespace MobileMessagingReactNative {
         setChatCustomization(customization: ChatCustomization): void;
 
         /**
-         * Set custom style of In-app chat
-         * @deprecated use setChatCustomization above
-         * @param configuration various colors in hex format, texts, margins etc.
-         * example:
-         * {
-         *   toolbarTitle: "Chat",
-         *   toolbarTitleColor: "#FFFFFF",
-         *   toolbarTintColor: "#FFFFFF",
-         *   ...
-         * }
-         */
-        setupChatSettings(configuration: ChatCustomizationConfiguration): void;
-
-        /**
          * Set widget theme for In-app chat messages
          * @param widgetTheme the name of the existing widget theme to be applied to customize the chat messages.
          */
         setWidgetTheme(widgetTheme: string): void;
-
-        /**
-         * @deprecated use sendContextualData with chatMultiThreadStrategy string param instead of allMultiThreadStrategy bool.
-         * Set contextual data of the Livechat Widget.
-         * If the function is called when the chat is loaded, data will be sent immediately, otherwise they will be sent to the chat once it is loaded.
-         * Every function invocation will overwrite the previous contextual data.
-         *
-         * @name sendContextualData
-         * @param data contextual data in the form of JSON string
-         * @param allMultiThreadStrategy multi-thread strategy flag, true -> ALL, false -> ACTIVE
-         * @param {Function} onSuccess success callback
-         * @param {Function} onError error callback
-         */
-        sendContextualData(data: string, allMultiThreadStrategy: boolean, onSuccess: () => void, onError: (error: MobileMessagingError) => void): void;
 
         /**
          * Set contextual data of the Livechat Widget.

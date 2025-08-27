@@ -579,22 +579,6 @@ class MobileMessaging {
      };
 
     /**
-     * Set custom style of In-app chat
-     * @deprecated use setChatCustomization instead
-     * @param configuration various colors in hex format, texts, margins etc.
-     * example:
-     * {
-     *   toolbarTitle: "Chat",
-     *   toolbarTitleColor: "#FFFFFF",
-     *   toolbarTintColor: "#FFFFFF",
-     *   ...
-     * }
-     */
-    setupChatSettings(configuration) {
-        RNMMChat.setupChatSettings(configuration)
-    };
-
-    /**
     * Set widget theme for In-app chat messages
     * @param widgetTheme the name of the existing widget theme to be applied to customize the chat messages.
     */
@@ -613,26 +597,6 @@ class MobileMessaging {
      */
     setLanguage(localeString, onSuccess = function() {}, onError = function() {}) {
         RNMMChat.setLanguage(localeString, onSuccess, onError);
-    };
-
-    /**
-     * @deprecated use sendContextualData with chatMultiThreadStrategy string param instead of allMultiThreadStrategy bool.
-     * Set contextual data of the Livechat Widget.
-     * If the function is called when the chat is loaded, data will be sent immediately, otherwise they will be sent to the chat once it is loaded.
-     * Every function invocation will overwrite the previous contextual data.
-     *
-     * @name sendContextualData
-     * @param data - contextual data in the form of JSON string
-     * @param allMultiThreadStrategy - multi-thread strategy flag, true -> ALL, false -> ACTIVE
-     * @param {Function} onSuccess success callback
-     * @param {Function} onError error callback
-     */
-    sendContextualData(data, allMultiThreadStrategy = false, onSuccess = function() {}, onError = function() {}) {
-        if (allMultiThreadStrategy) {
-            sendContextualData(data, 'ALL', onSuccess, onError)
-        } else { 
-            sendContextualData(data, 'ACTIVE', onSuccess, onError)            
-        }
     };
 
     /**
