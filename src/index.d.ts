@@ -49,6 +49,9 @@ declare namespace MobileMessagingReactNative {
                 storageBucket?: string;
                 projectId: string;
             };
+            notificationChannelId?: string;
+            notificationChannelName?: string;
+            notificationSound?: string;
         } | undefined;
         privacySettings?: {
             applicationCodePersistingDisabled?: boolean | undefined;
@@ -218,12 +221,12 @@ declare namespace MobileMessagingReactNative {
     }
 
     export interface ToolbarCustomization {
-        titleTextAppearance: string; 
-        titleTextColor: string; 
-        titleText: string; 
-        titleCentered: boolean; 
-        backgroundColor: string; 
-        navigationIcon: string; 
+        titleTextAppearance: string;
+        titleTextColor: string;
+        titleText: string;
+        titleCentered: boolean;
+        backgroundColor: string;
+        navigationIcon: string;
         navigationIconTint: string;
         subtitleTextAppearance: string; // android only
         subtitleTextColor: string; // android only
@@ -236,8 +239,8 @@ declare namespace MobileMessagingReactNative {
         chatStatusBarIconsColorMode: string;
         chatToolbar: ToolbarCustomization;
         attachmentPreviewToolbar: ToolbarCustomization;
-        attachmentPreviewToolbarSaveMenuItemIcon: string; 
-        attachmentPreviewToolbarMenuItemsIconTint: string; 
+        attachmentPreviewToolbarSaveMenuItemIcon: string;
+        attachmentPreviewToolbarMenuItemsIconTint: string;
 	    networkErrorText: string;
 	    networkErrorTextColor: string;
 	    networkErrorTextAppearance: string;

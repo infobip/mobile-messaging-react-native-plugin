@@ -456,6 +456,13 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
             if (configuration.android.firebaseOptions != null) {
                 builder.withFirebaseOptions(configuration.android.firebaseOptions);
             }
+
+            String notificationChannelId = configuration.android.notificationChannelId;
+            String notificationChannelName = configuration.android.notificationChannelName;
+            String notificationSound = configuration.android.notificationSound;
+            if (notificationChannelId != null && notificationChannelName != null && notificationSound != null) {
+                builder.withCustomNotificationChannel(notificationChannelId, notificationChannelName, notificationSound);
+            }
         }
 
         if (configuration.userDataJwt != null) {

@@ -1,8 +1,8 @@
-import {    
+import {
     EmitterSubscription,
     NativeEventEmitter,
     NativeModules,
-    Platform,    
+    Platform,
 } from 'react-native';
 
 
@@ -147,8 +147,11 @@ class MobileMessaging {
      *	    android: {
      *			notificationIcon: <String>,
      *			multipleNotifications: <Boolean>,
-     *			notificationAccentColor: <String>
-     *			firebaseOptions: <Object>
+     *			notificationAccentColor: <String>,
+     *			firebaseOptions: <Object>,
+     *          notificationChannelId: <String>,
+ *              notificationChannelName: <String>,
+ *              notificationSound: <String>
      *	    }
      *		privacySettings: {
      *			applicationCodePersistingDisabled: <Boolean>,
@@ -669,7 +672,7 @@ class MobileMessaging {
      * });
      * ```
      *
-     * > ⚠️ This callback may be invoked multiple times during the widget's lifecycle 
+     * > ⚠️ This callback may be invoked multiple times during the widget's lifecycle
      * (e.g., due to screen orientation changes or network reconnection).
      * It is important to return a **fresh and valid JWT** each time.
      *
@@ -791,7 +794,7 @@ export const mobileMessaging = new MobileMessaging();
 class WebRTCUI {
     /**
      * Manually enable WebRTCUI calls, provided a valid configuration Id exists in the webRTCUI configuration. This function is used to control when to start
-     * calls, for example if you want to enabled it only after a successful user authentication. Note: Device settings, such as "Do not disturb" modes, will 
+     * calls, for example if you want to enabled it only after a successful user authentication. Note: Device settings, such as "Do not disturb" modes, will
      * ignore this method until the operating system allows calls.
      * @name enableCalls
      * @param identity String value to use as identity in the registration for WebRTC calls. If empty string is set, push registration Id will be used
@@ -804,7 +807,7 @@ class WebRTCUI {
 
     /**
      * Manually enable WebRTCUI calls, provided a valid configuration Id exists in the webRTCUI configuration. This function is used to control when to start
-     * calls, for example if you want to enabled it only after a successful user authentication. Note: Device settings, such as "Do not disturb" modes, will 
+     * calls, for example if you want to enabled it only after a successful user authentication. Note: Device settings, such as "Do not disturb" modes, will
      * ignore this method until the operating system allows calls.
      * @name enableChatCalls
      * @param {Function} onSuccess success callback
