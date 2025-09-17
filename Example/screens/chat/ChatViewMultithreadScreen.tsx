@@ -2,9 +2,9 @@
     Example of subview multithread in-app chat screen as React Component
  */
 
-import React, {useState, useEffect} from 'react';
-import {ChatView} from 'infobip-mobile-messaging-react-native-plugin';
-import {View, Text, KeyboardAvoidingView, SafeAreaView} from 'react-native';
+import React, {useRef, useState, useEffect} from 'react';
+import {ChatView, ChatException} from 'infobip-mobile-messaging-react-native-plugin';
+import {View, Text, KeyboardAvoidingView, SafeAreaView, Platform} from 'react-native';
 import Colors from '../../constants/Colors';
 import PrimaryButton from '../../components/PrimaryButton';
 import {mobileMessaging} from 'infobip-mobile-messaging-react-native-plugin';
@@ -18,12 +18,22 @@ const ChatViewMultithreadScreen: React.FC<MultiThreadChatScreenProps> = ({
   navigation,
 }) => {
   const [showButton, setShowButton] = useState(false);
+  const chatViewRef = useRef(null);
+
+  const setExceptionHandler = () => {
+    chatViewRef.current?.setExceptionHandler(
+      (exception: ChatException) => console.log('ChatView exception received: ' + JSON.stringify(exception)),
+      (error: Error) => console.log('ChatView exception handler error: ' + error)
+    );
+  }
 
   useEffect(() => {
     const subscription = mobileMessaging.subscribe(
       'inAppChat.viewStateChanged',
       handleViewStateChangeEvent,
     );
+    // Uncomment to use custom exception handler
+    // setExceptionHandler();
 
     return () => {
       mobileMessaging.unsubscribe(subscription);
@@ -47,7 +57,7 @@ const ChatViewMultithreadScreen: React.FC<MultiThreadChatScreenProps> = ({
   };
 
   const goBackToList = () => {
-    mobileMessaging.showThreadsList();
+      chatViewRef.current?.showThreadsList();
   };
 
   return (
@@ -55,7 +65,7 @@ const ChatViewMultithreadScreen: React.FC<MultiThreadChatScreenProps> = ({
       {showButton && (
         <PrimaryButton onPress={goBackToList}>Show Chat List</PrimaryButton>
       )}
-      <ChatView style={{flex: 1}} sendButtonColor={'#FF0000'} />
+      <ChatView ref={chatViewRef} style={{flex: 1}} sendButtonColor={'#FF0000'} />
     </SafeAreaView>
   );
 };

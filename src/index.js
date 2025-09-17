@@ -639,15 +639,19 @@ class MobileMessaging {
 
 
     /**
+     * This method is iOS only and it has no effect in Android.
      * Navigates to THREAD_LIST view in multithread widget if in-app chat is shown as React Component.
      * @name showThreadsList
      */
     showThreadsList() {
+        if (Platform.OS === "android") {
+            return;
+        }
         RNMMChat.showThreadsList();
     };
 
     /**
-     * Private global variable holding reference to android jwt update events subscription.
+     * Private global variable holding reference to jwt update events subscription.
      */
     #jwtSubscription = null;
 
@@ -696,7 +700,7 @@ class MobileMessaging {
                 }
             };
 
-            this.#jwtSubscription = this.subscribe('inAppChat.jwtRequested', () => {
+            this.#jwtSubscription = this.subscribe('inAppChat.internal.jwtRequested', () => {
                 try {
                     const jwtPromise = jwtProvider();
                     if (jwtPromise && typeof jwtPromise.then === 'function') { // Handle asynchronous JWT provider of type Promise<string>
@@ -711,6 +715,53 @@ class MobileMessaging {
                 }
             });
         }
+    }
+
+    /**
+     * Private global variable holding reference to chat exceptions subscription.
+     */
+    #chatExceptionHandlerSubscription = null;
+
+    /**
+     * Sets the chat exception handler in case you want to intercept and
+     * display the errors coming from the chat on your own (instead of relying on the prebuild error banners).
+     * 
+     * The `exceptionHandler` is a function that receives the exception. Passing `null` will remove the previously set handler.
+     * 
+     * ```ts
+     * mobileMessaging.setChatExceptionHandler((exception) => {
+     *   console.log("Chat exception occurred:", exception);
+     * });
+     * ```
+     * 
+     * @param exceptionHandler A function that receives an ChatException when it happens. Passing `null` will remove the previously set handler.
+     * @param onError Optional error handler for catching exceptions thrown when listening for exceptions.
+     */
+    setChatExceptionHandler(exceptionHandler, onError) {
+        if (this.#chatExceptionHandlerSubscription != null) {
+            this.unsubscribe(this.#chatExceptionHandlerSubscription);
+            this.#chatExceptionHandlerSubscription = null;
+        }
+
+        let isHandlerPresent = typeof exceptionHandler === 'function';
+        if (isHandlerPresent) {
+            const handleError = (e) => {
+                if (onError) {
+                    onError(e);
+                } else {
+                    console.error('[RNMobileMessaging] Could not handle chat exception:', e);
+                }
+            };
+
+            this.#chatExceptionHandlerSubscription = this.subscribe('inAppChat.internal.exceptionReceived', (chatException) => {
+                try {
+                    exceptionHandler(chatException);    
+                } catch (e) {
+                    handleError(e);
+                }
+            });
+        }
+        RNMMChat.setChatExceptionHandler(isHandlerPresent);
     }
 
     /**

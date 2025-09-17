@@ -15,6 +15,8 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 class RNMMChatViewManager extends ViewGroupManager<ReactChatView> {
     public static final String COMMAND_ADD = "add";
     public static final String COMMAND_REMOVE = "remove";
+    public static final String COMMAND_SHOW_THREADS_LIST = "showThreadsList";
+    public static final String COMMAND_SET_EXCEPTION_HANDLER = "setExceptionHandler";
 
     public static final String VIEW_GROUP_MANAGER_NAME = "RNMMChatView";
     private ReactApplicationContext context;
@@ -42,19 +44,18 @@ class RNMMChatViewManager extends ViewGroupManager<ReactChatView> {
     @Override
     public void receiveCommand(@NonNull ReactChatView root, String commandId, @Nullable ReadableArray args) {
         super.receiveCommand(root, commandId, args);
-
-        if (args == null) {
-            Log.e(Utils.TAG, "RNMMChatViewManager received command without argumnents, Id: " + commandId);
-            return;
-        }
-        int reactNativeViewId = args.getInt(0);
-
         switch (commandId) {
             case COMMAND_ADD:
-                addChatFragment(root, reactNativeViewId);
+                addChatFragment(root);
                 break;
             case COMMAND_REMOVE:
                 removeChatFragment(root);
+                break;
+            case COMMAND_SHOW_THREADS_LIST:
+                showThreadsList(root);
+                break;
+            case COMMAND_SET_EXCEPTION_HANDLER:
+                setExceptionHandler(root, args.getBoolean(0));
                 break;
             default: {
                 Log.w(Utils.TAG, "RNMMChatViewManager received unsupported command with Id: " + commandId);
@@ -72,15 +73,27 @@ class RNMMChatViewManager extends ViewGroupManager<ReactChatView> {
         view.setSendButtonColor(hexSendButtonColor, Utils.getFragmentActivity(this.context));
     }
 
-    private void addChatFragment(FrameLayout parentLayout, int reactNativeViewId) {
+    private void addChatFragment(ReactChatView chatView) {
         if (chatView != null) {
-            chatView.addChatFragment(parentLayout, reactNativeViewId, Utils.getFragmentActivity(this.context));
+            chatView.addChatFragment(this.context, Utils.getFragmentActivity(this.context));
         }
     }
 
-    private void removeChatFragment(FrameLayout parentLayout) {
+    private void removeChatFragment(ReactChatView chatView) {
         if (chatView != null) {
-            chatView.removeChatFragment(parentLayout, Utils.getFragmentActivity(this.context));
+            chatView.removeChatFragment(Utils.getFragmentActivity(this.context));
+        }
+    }
+
+    private void showThreadsList(ReactChatView chatView) {
+        if (chatView != null) {
+            chatView.showThreadsList(Utils.getFragmentActivity(this.context));
+        }
+    }
+
+    private void setExceptionHandler(ReactChatView chatView, boolean isHandlerPresent) {
+        if (chatView != null) {
+            chatView.setExceptionHandler(isHandlerPresent, this.context, Utils.getFragmentActivity(this.context));
         }
     }
 }

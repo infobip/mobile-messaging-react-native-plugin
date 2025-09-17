@@ -107,7 +107,8 @@ struct EventName {
     static let inAppChat_viewStateChanged = "inAppChat.viewStateChanged"
     static let inAppChat_configurationSynced = "inAppChat.configurationSynced"
     static let inAppChat_registrationIdUpdated = "inAppChat.livechatRegistrationIdUpdated"
-    static let inAppChat_jwtRequested = "inAppChat.jwtRequested"
+    static let inAppChat_jwtRequested = "inAppChat.internal.jwtRequested"
+    static let inAppChat_exceptionReceived = "inAppChat.internal.exceptionReceived"
 }
 
 extension UIApplication {

@@ -265,6 +265,14 @@ declare namespace MobileMessagingReactNative {
         chatInputCursorColor: string;
     }
 
+    export interface ChatException {
+        code?: number;
+        name?: string;
+        message?: string; 
+        origin?: string;
+        platform?: string;
+    }
+
     // To be deprecated in favour of ChatCustomization above
     export interface ChatCustomizationConfiguration {
         toolbarTitle: string;
@@ -635,6 +643,7 @@ declare namespace MobileMessagingReactNative {
         resetMessageCounter(): void;
 
         /**
+         * This method is iOS only and it has no effect in Android.
          * Navigates to THREAD_LIST view in multithread widget if in-app chat is shown as React Component.
          * @name showThreadsList
          */
@@ -669,6 +678,23 @@ declare namespace MobileMessagingReactNative {
          * @param onError Optional error handler for catching exceptions thrown during JWT generation.
          */
         setChatJwtProvider(jwtProvider: () => string | Promise<string>, onError?: (error: Error) => void): void;
+
+        /**
+         * Sets the chat exception handler in case you want to intercept and
+         * display the errors coming from the chat on your own (instead of relying on the prebuild error banners).
+         * 
+         * The `exceptionHandler` is a function that receives the exception. Passing `null` will remove the previously set handler.
+         * 
+         * ```ts
+         * mobileMessaging.setChatExceptionHandler((exception) => {
+         *   console.log("Chat exception occurred:", exception);
+         * });
+         * ```
+         * 
+         * @param exceptionHandler A function that receives an ChatException when it happens. Passing `null` will remove the previously set handler.
+         * @param onError Optional error handler for catching exceptions thrown when listening for exceptions.
+         */
+        setChatExceptionHandler(exceptionHandler?: (exception?: ChatException) => void, onError?: (error: Error) => void): void;
 
         /**
          * Registering for POST_NOTIFICATIONS permission for Android 13+

@@ -28,6 +28,8 @@ import org.infobip.mobile.messaging.chat.view.styles.InAppChatInputViewStyle;
 import org.infobip.mobile.messaging.chat.view.styles.InAppChatStyle;
 import org.infobip.mobile.messaging.chat.view.styles.InAppChatTheme;
 import org.infobip.mobile.messaging.chat.view.styles.InAppChatToolbarStyle;
+import org.infobip.mobile.messaging.chat.core.InAppChatException;
+import org.infobip.mobile.messaging.chat.view.InAppChatErrorsHandler;
 import org.infobip.mobile.messaging.chat.core.widget.LivechatWidgetLanguage;
 import org.infobip.mobile.messaging.mobileapi.MobileMessagingError;
 import org.infobip.mobile.messaging.mobileapi.Result;
@@ -50,7 +52,9 @@ import java.net.URL;
 
 public class RNMMChatModule extends ReactContextBaseJavaModule implements ActivityEventListener, LifecycleEventListener {
 
-    private static final String EVENT_INAPPCHAT_JWT_REQUESTED = "inAppChat.jwtRequested";
+    private static final String EVENT_INAPPCHAT_JWT_REQUESTED = "inAppChat.internal.jwtRequested";
+    private static final String EVENT_INAPPCHAT_EXCEPTION_RECEIVED = "inAppChat.internal.exceptionReceived";
+
     private static ReactApplicationContext reactContext;
     private final ChatJwtCallbackHolder chatJwtCallbackHolder = new ChatJwtCallbackHolder();
 
@@ -70,11 +74,6 @@ public class RNMMChatModule extends ReactContextBaseJavaModule implements Activi
     @ReactMethod
     public void showChat(ReadableMap args) {
         InAppChat.getInstance(reactContext).inAppChatScreen().show();
-    }
-
-    @ReactMethod
-    public void showThreadsList() {
-        InAppChat.getInstance(reactContext).showThreadsList();
     }
 
     @ReactMethod
@@ -219,6 +218,44 @@ public class RNMMChatModule extends ReactContextBaseJavaModule implements Activi
         } else {
             chatJwtCallbackHolder.resumeWithError(new IllegalArgumentException("Provided chat JWT is null or empty."));
         }
+    }
+
+    @ReactMethod
+    public void setChatExceptionHandler(boolean isHandlerPresent) {
+        if (isHandlerPresent) {
+            InAppChat.getInstance(reactContext).inAppChatScreen().setErrorHandler(createErrorsHandler());
+        } else {
+            InAppChat.getInstance(reactContext).inAppChatScreen().setErrorHandler(null);
+        }
+    }
+
+    private InAppChatErrorsHandler createErrorsHandler() {
+        return new InAppChatErrorsHandler() {
+            @Override
+            public void handlerError(@NonNull String error) {
+                // Deprecated method
+            }
+
+            @Override
+            public void handlerWidgetError(@NonNull String error) {
+                // Deprecated method
+            }
+
+            @Override
+            public void handlerNoInternetConnectionError(boolean hasConnection) {
+                // Deprecated method
+            }
+
+            @Override
+            public boolean handleError(@NonNull InAppChatException exception) {
+                if (reactContext != null) {
+                    ReactNativeEvent.send(EVENT_INAPPCHAT_EXCEPTION_RECEIVED, reactContext, exception.toJSON());
+                } else {
+                    Log.e(Utils.TAG, "React context is null, cannot propagate chat exception.");
+                }
+                return true;
+            }
+        };
     }
 
     @ReactMethod

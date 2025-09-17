@@ -11,6 +11,7 @@ import MobileMessaging
 @objc(RNMMChat)
 class RNMMChat: NSObject  {
     private var willUseJWT = false
+    private var willUseChatExceptionHandler = false
     private var jwtRequestQueue: [((String?) -> Void)] = []
     private let jwtQueueLock = NSLock()
 
@@ -143,6 +144,12 @@ class RNMMChat: NSObject  {
         willUseJWT = true
     }
 
+    @objc(setChatExceptionHandler:)
+    func setChatExceptionHandler(isHandlerPresent: NSNumber) {
+        // NSNumber due to how RN bridge wraps JavaScript booleans
+        willUseChatExceptionHandler = isHandlerPresent.boolValue
+    }
+    
     @objc(setChatJwt:)
     func setChatJwt(jwt: String?) {
         jwtQueueLock.lock()
@@ -180,5 +187,23 @@ extension RNMMChat: MMInAppChatDelegate {
         ReactNativeMobileMessaging.shared?.sendEvent(withName: EventName.inAppChat_jwtRequested, body: nil)
         _ = semaphore.wait(timeout: .now() + 45)
         return jwtResult
+    }
+    
+    @objc public func didReceiveException(_ exception: MMChatException) -> MMChatExceptionDisplayMode {
+        guard willUseChatExceptionHandler else { return .displayDefaultAlert }
+        
+        var payload: [String: Any] = [:]
+        if let message = exception.message {
+            payload["message"] = message
+        }
+        if let name = exception.name {
+            payload["name"] = name
+        }
+        payload["code"] = exception.code
+        payload["origin"] = "LiveChat"
+        payload["platform"] = "Flutter"
+        
+        ReactNativeMobileMessaging.shared?.sendEvent(withName: EventName.inAppChat_exceptionReceived, body: payload)
+        return .noDisplay
     }
 }

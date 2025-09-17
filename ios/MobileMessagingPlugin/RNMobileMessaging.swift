@@ -41,7 +41,8 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
             EventName.inAppChat_viewStateChanged,
             EventName.inAppChat_configurationSynced,
             EventName.inAppChat_registrationIdUpdated,
-            EventName.inAppChat_jwtRequested
+            EventName.inAppChat_jwtRequested,
+            EventName.inAppChat_exceptionReceived
         ]
     }
     

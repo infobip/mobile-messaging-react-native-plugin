@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Text, TextInput, View, Switch, ScrollView, StyleSheet, Alert } from 'react-native';
-import { mobileMessaging, webRTCUI, UserIdentity, MobileMessagingError } from 'infobip-mobile-messaging-react-native-plugin';
+import { mobileMessaging, webRTCUI, UserIdentity, MobileMessagingError, ChatException } from 'infobip-mobile-messaging-react-native-plugin';
 import Colors from '../../constants/Colors';
 import PrimaryButton from '../../components/PrimaryButton';
 import { NavigationContainer, NavigationProp } from '@react-navigation/native';
@@ -179,6 +179,11 @@ const ChatOptionsScreen: React.FC<ChatScreenProps> = ({
       (error: MobileMessagingError) =>
         console.log('Error setting language: ' + JSON.stringify(error)),
     );
+    // Uncomment to use custom exception handler
+    // mobileMessaging.setChatExceptionHandler(
+    //   (exception: ChatException) => console.log('Chat exception received: ' + JSON.stringify(exception)),
+    //   (error: Error) => console.log('Chat exception handler error: ' + error)
+    // );
     mobileMessaging.showChat();
   };
 
