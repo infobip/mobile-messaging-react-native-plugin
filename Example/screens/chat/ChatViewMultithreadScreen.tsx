@@ -3,8 +3,17 @@
  */
 
 import React, {useRef, useState, useEffect} from 'react';
-import {ChatView, ChatException} from 'infobip-mobile-messaging-react-native-plugin';
-import {View, Text, KeyboardAvoidingView, SafeAreaView, Platform} from 'react-native';
+import {
+  ChatView,
+  ChatException,
+} from 'infobip-mobile-messaging-react-native-plugin';
+import {
+  View,
+  Text,
+  KeyboardAvoidingView,
+  SafeAreaView,
+  Platform,
+} from 'react-native';
 import Colors from '../../constants/Colors';
 import PrimaryButton from '../../components/PrimaryButton';
 import {mobileMessaging} from 'infobip-mobile-messaging-react-native-plugin';
@@ -22,10 +31,14 @@ const ChatViewMultithreadScreen: React.FC<MultiThreadChatScreenProps> = ({
 
   const setExceptionHandler = () => {
     chatViewRef.current?.setExceptionHandler(
-      (exception: ChatException) => console.log('ChatView exception received: ' + JSON.stringify(exception)),
-      (error: Error) => console.log('ChatView exception handler error: ' + error)
+      (exception: ChatException) =>
+        console.log(
+          'ChatView exception received: ' + JSON.stringify(exception),
+        ),
+      (error: Error) =>
+        console.log('ChatView exception handler error: ' + error),
     );
-  }
+  };
 
   useEffect(() => {
     const subscription = mobileMessaging.subscribe(
@@ -57,7 +70,7 @@ const ChatViewMultithreadScreen: React.FC<MultiThreadChatScreenProps> = ({
   };
 
   const goBackToList = () => {
-      chatViewRef.current?.showThreadsList();
+    chatViewRef.current?.showThreadsList();
   };
 
   return (
@@ -65,7 +78,11 @@ const ChatViewMultithreadScreen: React.FC<MultiThreadChatScreenProps> = ({
       {showButton && (
         <PrimaryButton onPress={goBackToList}>Show Chat List</PrimaryButton>
       )}
-      <ChatView ref={chatViewRef} style={{flex: 1}} sendButtonColor={'#FF0000'} />
+      <ChatView
+        ref={chatViewRef}
+        style={{flex: 1}}
+        sendButtonColor={'#FF0000'}
+      />
     </SafeAreaView>
   );
 };

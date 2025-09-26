@@ -1,13 +1,27 @@
-import React, { useState } from 'react';
-import { Text, TextInput, View, Switch, ScrollView, StyleSheet, Alert } from 'react-native';
-import { mobileMessaging, webRTCUI, UserIdentity, MobileMessagingError, ChatException } from 'infobip-mobile-messaging-react-native-plugin';
+import React, {useState} from 'react';
+import {
+  Text,
+  TextInput,
+  View,
+  Switch,
+  ScrollView,
+  StyleSheet,
+  Alert,
+} from 'react-native';
+import {
+  mobileMessaging,
+  webRTCUI,
+  UserIdentity,
+  MobileMessagingError,
+  ChatException,
+} from 'infobip-mobile-messaging-react-native-plugin';
 import Colors from '../../constants/Colors';
 import PrimaryButton from '../../components/PrimaryButton';
-import { NavigationContainer, NavigationProp } from '@react-navigation/native';
-import { Picker } from '@react-native-picker/picker';
-import { handleJWTError } from '../../utils/JWTErrorHandler';
-import { SubjectType } from '../../constants/SubjectType';
-import { generateChatJWT } from '../../utils/JWTUtils';
+import {NavigationContainer, NavigationProp} from '@react-navigation/native';
+import {Picker} from '@react-native-picker/picker';
+import {handleJWTError} from '../../utils/JWTErrorHandler';
+import {SubjectType} from '../../constants/SubjectType';
+import {generateChatJWT} from '../../utils/JWTUtils';
 
 interface PersonalizationData {
   userIdentity: UserIdentity;
@@ -36,12 +50,12 @@ const LIVECHAT_WIDGET_ID = 'YOUR_LIVECHAT_WIDGET_ID';
  */
 const LIVECHAT_SECRET_KEY_JSON = 'YOUR_LIVECHAT_SECRET_KEY_JSON';
 
-const ChatOptionsScreen: React.FC<ChatScreenProps> = ({
-  navigation,
-}) => {
+const ChatOptionsScreen: React.FC<ChatScreenProps> = ({navigation}) => {
   const [firstName, setFirstName] = useState<string>('');
   const [lastName, setLastName] = useState<string>('');
-  const [subjectType, setSubjectType] = useState<SubjectType>(SubjectType.ExternalPersonId);
+  const [subjectType, setSubjectType] = useState<SubjectType>(
+    SubjectType.ExternalPersonId,
+  );
   const [subject, setSubject] = useState<string>('');
   const [forceDepersonalize, setForceDepersonalize] = useState<boolean>(true);
   const [keepAsLead, setKeepAsLead] = useState<boolean>(false);
@@ -57,7 +71,10 @@ const ChatOptionsScreen: React.FC<ChatScreenProps> = ({
     }
 
     if (!trimmedFirstName && !trimmedLastName) {
-      Alert.alert('Validation Error', 'Please enter at least a first or last name.');
+      Alert.alert(
+        'Validation Error',
+        'Please enter at least a first or last name.',
+      );
       return null;
     }
 
@@ -100,7 +117,7 @@ const ChatOptionsScreen: React.FC<ChatScreenProps> = ({
   const personalize = (
     personalizationData: PersonalizationData | null,
     successCallback?: (context: any) => void,
-    errorCallback?: (error: MobileMessagingError) => void
+    errorCallback?: (error: MobileMessagingError) => void,
   ) => {
     if (!personalizationData) return;
     mobileMessaging.personalize(
@@ -136,9 +153,7 @@ const ChatOptionsScreen: React.FC<ChatScreenProps> = ({
     authenticate(personalizationData);
   };
 
-  const authenticate = (
-    personalizationData: PersonalizationData | null
-  ) => {
+  const authenticate = (personalizationData: PersonalizationData | null) => {
     if (!personalizationData) return;
 
     personalize(
@@ -151,14 +166,14 @@ const ChatOptionsScreen: React.FC<ChatScreenProps> = ({
               personalizationData.subjectType,
               personalizationData.subject,
               LIVECHAT_WIDGET_ID,
-              LIVECHAT_SECRET_KEY_JSON
+              LIVECHAT_SECRET_KEY_JSON,
             );
             console.log('React app: Providing new JWT: ', jwt);
             return jwt;
           },
           (error: Error) => {
             console.log('React app: Error from chat JWT provider:', error);
-          }
+          },
         );
         Alert.alert(
           'Authenticated',
@@ -168,7 +183,7 @@ const ChatOptionsScreen: React.FC<ChatScreenProps> = ({
       (error: MobileMessagingError) => {
         console.log('React app: Personalization error:', error);
         handleJWTError(error); //It is MM SDK JWT error handler not chat JWT
-      }
+      },
     );
   };
 
@@ -205,7 +220,7 @@ const ChatOptionsScreen: React.FC<ChatScreenProps> = ({
       (error: MobileMessagingError) =>
         console.log(
           'WebRTCUI could not enable chat calls, error: ' +
-          JSON.stringify(error),
+            JSON.stringify(error),
         ),
     );
   };
@@ -229,7 +244,8 @@ const ChatOptionsScreen: React.FC<ChatScreenProps> = ({
     const settings = {
       chatStatusBarBackgroundColor: '#673AB7',
       chatStatusBarIconsColorMode: 'dark',
-      attachmentPreviewToolbarSaveMenuItemIcon: resolveAssetSource(downloadIcon).uri,
+      attachmentPreviewToolbarSaveMenuItemIcon:
+        resolveAssetSource(downloadIcon).uri,
       attachmentPreviewToolbarMenuItemsIconTint: '#9E9E9E',
       chatToolbar: {
         titleTextAppearance: 'TextAppearance_AppCompat_Title',
@@ -295,82 +311,104 @@ const ChatOptionsScreen: React.FC<ChatScreenProps> = ({
     );
   };
 
-  return <ScrollView style={{ marginTop: 10 }}>
-    <View style={styles.inputContainer}>
-      <Text style={styles.instructionText}>Please enter your personalization data:</Text>
+  return (
+    <ScrollView style={{marginTop: 10}}>
+      <View style={styles.inputContainer}>
+        <Text style={styles.instructionText}>
+          Please enter your personalization data:
+        </Text>
 
-      {/* First Name */}
-      <Text style={styles.label}>First Name:</Text>
-      <TextInput
-        style={styles.textInput}
-        value={firstName}
-        onChangeText={setFirstName}
-      />
-
-      {/* Last Name */}
-      <Text style={styles.label}>Last Name:</Text>
-      <TextInput
-        style={styles.textInput}
-        value={lastName}
-        onChangeText={setLastName}
-      />
-
-      {/* Subject Type */}
-      <Text style={styles.label}>Subject type:</Text>
-      <View style={styles.pickerWrapper}>
-        <Picker
-          selectedValue={subjectType}
-          style={styles.picker}
-          onValueChange={(itemValue: SubjectType) => setSubjectType(itemValue)}
-        >
-          <Picker.Item label="External person ID" value={SubjectType.ExternalPersonId} />
-          <Picker.Item label="Phone number" value={SubjectType.PhoneNumber} />
-          <Picker.Item label="E-mail" value={SubjectType.Email} />
-        </Picker>
-      </View>
-
-      {/* Subject */}
-      <Text style={styles.label}>Subject:</Text>
-      <TextInput
-        style={styles.textInput}
-        value={subject}
-        onChangeText={setSubject}
-      />
-
-      {/* Force Depersonalize */}
-      <View style={styles.switchContainer}>
-        <Text style={styles.switchLabel}>Force Depersonalize</Text>
-        <Switch
-          value={forceDepersonalize}
-          onValueChange={setForceDepersonalize}
+        {/* First Name */}
+        <Text style={styles.label}>First Name:</Text>
+        <TextInput
+          style={styles.textInput}
+          value={firstName}
+          onChangeText={setFirstName}
         />
-      </View>
 
-      {/* Keep As Lead */}
-      <View style={styles.switchContainer}>
-        <Text style={styles.switchLabel}>Keep As Lead</Text>
-        <Switch value={keepAsLead} onValueChange={setKeepAsLead} />
-      </View>
+        {/* Last Name */}
+        <Text style={styles.label}>Last Name:</Text>
+        <TextInput
+          style={styles.textInput}
+          value={lastName}
+          onChangeText={setLastName}
+        />
 
-      {/* Buttons */}
-      <View style={styles.buttonsContainer}>
-        <View style={styles.buttonContainer}>
-          <PrimaryButton onPress={triggerAuthentication}>Authenticate</PrimaryButton>
+        {/* Subject Type */}
+        <Text style={styles.label}>Subject type:</Text>
+        <View style={styles.pickerWrapper}>
+          <Picker
+            selectedValue={subjectType}
+            style={styles.picker}
+            onValueChange={(itemValue: SubjectType) =>
+              setSubjectType(itemValue)
+            }>
+            <Picker.Item
+              label="External person ID"
+              value={SubjectType.ExternalPersonId}
+            />
+            <Picker.Item label="Phone number" value={SubjectType.PhoneNumber} />
+            <Picker.Item label="E-mail" value={SubjectType.Email} />
+          </Picker>
         </View>
-        <View style={styles.buttonContainer}>
-          <PrimaryButton onPress={triggerPersonalization}>Personalize</PrimaryButton>
+
+        {/* Subject */}
+        <Text style={styles.label}>Subject:</Text>
+        <TextInput
+          style={styles.textInput}
+          value={subject}
+          onChangeText={setSubject}
+        />
+
+        {/* Force Depersonalize */}
+        <View style={styles.switchContainer}>
+          <Text style={styles.switchLabel}>Force Depersonalize</Text>
+          <Switch
+            value={forceDepersonalize}
+            onValueChange={setForceDepersonalize}
+          />
+        </View>
+
+        {/* Keep As Lead */}
+        <View style={styles.switchContainer}>
+          <Text style={styles.switchLabel}>Keep As Lead</Text>
+          <Switch value={keepAsLead} onValueChange={setKeepAsLead} />
+        </View>
+
+        {/* Buttons */}
+        <View style={styles.buttonsContainer}>
+          <View style={styles.buttonContainer}>
+            <PrimaryButton onPress={triggerAuthentication}>
+              Authenticate
+            </PrimaryButton>
+          </View>
+          <View style={styles.buttonContainer}>
+            <PrimaryButton onPress={triggerPersonalization}>
+              Personalize
+            </PrimaryButton>
+          </View>
         </View>
       </View>
-    </View>
-    <PrimaryButton onPress={showChat}>Show Native Chat</PrimaryButton>
-    <PrimaryButton onPress={showChatViewScreen}>Show React Component ChatView</PrimaryButton>
-    <PrimaryButton onPress={showChatViewCustomLayoutScreen}>Show React Component ChatView in custom layout</PrimaryButton>
-    <PrimaryButton onPress={showChatViewMultithreadScreen}>Show React Component ChatView multithread</PrimaryButton>
-    <PrimaryButton onPress={enableWebRTC}>Enable Calls</PrimaryButton>
-    <PrimaryButton onPress={disableWebRTC}>Disable Calls</PrimaryButton>
-    <PrimaryButton onPress={customize}>Apply Runtime Customization</PrimaryButton>
-    <PrimaryButton onPress={sendContextualData}>Send Contextual Data</PrimaryButton>
-  </ScrollView>;
+      <PrimaryButton onPress={showChat}>Show Native Chat</PrimaryButton>
+      <PrimaryButton onPress={showChatViewScreen}>
+        Show React Component ChatView
+      </PrimaryButton>
+      <PrimaryButton onPress={showChatViewCustomLayoutScreen}>
+        Show React Component ChatView in custom layout
+      </PrimaryButton>
+      <PrimaryButton onPress={showChatViewMultithreadScreen}>
+        Show React Component ChatView multithread
+      </PrimaryButton>
+      <PrimaryButton onPress={enableWebRTC}>Enable Calls</PrimaryButton>
+      <PrimaryButton onPress={disableWebRTC}>Disable Calls</PrimaryButton>
+      <PrimaryButton onPress={customize}>
+        Apply Runtime Customization
+      </PrimaryButton>
+      <PrimaryButton onPress={sendContextualData}>
+        Send Contextual Data
+      </PrimaryButton>
+    </ScrollView>
+  );
 };
 
 const styles = StyleSheet.create({
@@ -387,7 +425,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     elevation: 4,
     shadowColor: Colors.primaryGray,
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowRadius: 6,
     shadowOpacity: 0.25,
   },
@@ -460,5 +498,3 @@ const styles = StyleSheet.create({
 });
 
 export default ChatOptionsScreen;
-
-

@@ -104,8 +104,19 @@ class RNMobileMessagingConfiguration {
     }
 
     static func saveConfigToDefaults(rawConfig: [String: AnyObject]) {
-        let data: Data = NSKeyedArchiver.archivedData(withRootObject: rawConfig)
-        UserDefaults.standard.set(data, forKey: userDefaultsConfigKey)
+        let serializableConfig = rawConfig.compactMapValues { value -> AnyObject? in
+            if value is NSString || value is NSNumber || value is NSArray || value is NSDictionary || value is NSDate || value is NSData {
+                return value
+            }
+            return nil
+        }
+
+        do {
+            let data: Data = try NSKeyedArchiver.archivedData(withRootObject: serializableConfig, requiringSecureCoding: false)
+            UserDefaults.standard.set(data, forKey: userDefaultsConfigKey)
+        } catch {
+            MMLogError("[MobileMessaging] Failed to archive config to UserDefaults: \(error)")
+        }
     }
 
     static func getRawConfigFromDefaults() -> [String: AnyObject]? {
@@ -113,6 +124,12 @@ class RNMobileMessagingConfiguration {
         guard let data = data else {
             return nil
         }
-        return NSKeyedUnarchiver.unarchiveObject(with: data) as? [String : AnyObject]
+
+        do {
+            return try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(data) as? [String: AnyObject]
+        } catch {
+            MMLogError("[MobileMessaging] Failed to unarchive config from UserDefaults: \(error)")
+            return nil
+        }
     }
 }

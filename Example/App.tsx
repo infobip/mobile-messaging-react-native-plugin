@@ -49,7 +49,7 @@ class App extends Component<{}, AppState> {
     },
     ios: {
       notificationTypes: ['alert', 'badge', 'sound'],
-        logging: true,
+      logging: true,
     },
     android: {
       // firebaseOptions: {
