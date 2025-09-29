@@ -66,6 +66,10 @@ class ReactNativeEvent {
         if (eventName == null || map == null) {
             return;
         }
+        if (reactContext == null) {
+            Log.e(Utils.TAG, "reactContext is null, can't send event " + eventName);
+            return;
+        }
 
         reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(eventName, map);
     }
@@ -74,12 +78,20 @@ class ReactNativeEvent {
         if (eventName == null || array == null) {
             return;
         }
+        if (reactContext == null) {
+            Log.e(Utils.TAG, "reactContext is null, can't send event " + eventName);
+            return;
+        }
 
         reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(eventName, array);
     }
 
     static void send(String eventName, ReactContext reactContext) {
         if (eventName == null) {
+            return;
+        }
+        if (reactContext == null) {
+            Log.e(Utils.TAG, "reactContext is null, can't send event " + eventName);
             return;
         }
         reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(eventName, null);

@@ -155,22 +155,6 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
         // Keep: Required for RN built in Event Emitter Calls.
     }
 
-    private static void emitOrCache(String eventType, ReactContext reactContext, JSONObject message, String actionId, String actionInputText) {
-        if (jsHasListeners) {
-            ReactNativeEvent.send(eventType, reactContext, message, actionId, actionInputText);
-        } else {
-            CacheManager.saveEvent(reactContext, eventType, message, actionId, actionInputText);
-        }
-    }
-
-    private static void emitOrCache(String eventType, ReactContext reactContext, int unreadMessagesCounter) {
-        if (jsHasListeners) {
-            ReactNativeEvent.send(eventType, reactContext, unreadMessagesCounter);
-        } else {
-            CacheManager.saveEvent(reactContext, eventType, unreadMessagesCounter);
-        }
-    }
-
     //region BroadcastReceivers
     //region Events
     private static final String EVENT_TOKEN_RECEIVED = "tokenReceived";
@@ -190,7 +174,6 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
     private static final String EVENT_INAPPCHAT_LIVECHAT_REGISTRATION_ID_UPDATED = "inAppChat.livechatRegistrationIdUpdated";
     private static final String EVENT_INAPPCHAT_AVAILABILITY_UPDATED = "inAppChat.availabilityUpdated";
     //endregion
-
 
     //region MessageStorageBroadcastReceiver
     private static final Map<String, String> messageStorageEventMap = new HashMap<String, String>() {{
@@ -237,7 +220,6 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
     //endregion
 
     //region MessageBroadcastReceiver
-
     /**
      * For event caching, if plugin not yet initialized
      */
@@ -295,8 +277,25 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
         @Nullable
         private ReactContext getReactContext(Context context) {
             ReactApplication reactApplication = (ReactApplication) context.getApplicationContext();
-            if (reactApplication == null) return null;
+            if (reactApplication == null)
+                return null;
             return reactApplication.getReactNativeHost().getReactInstanceManager().getCurrentReactContext();
+        }
+
+        private void emitOrCache(String eventType, ReactContext reactContext, JSONObject message, String actionId, String actionInputText) {
+            if (jsHasListeners && reactContext != null) {
+                ReactNativeEvent.send(eventType, reactContext, message, actionId, actionInputText);
+            } else {
+                CacheManager.saveEvent(reactContext, eventType, message, actionId, actionInputText);
+            }
+        }
+
+        private void emitOrCache(String eventType, ReactContext reactContext, int unreadMessagesCounter) {
+            if (jsHasListeners && reactContext != null) {
+                ReactNativeEvent.send(eventType, reactContext, unreadMessagesCounter);
+            } else {
+                CacheManager.saveEvent(reactContext, eventType, unreadMessagesCounter);
+            }
         }
     }
     //endregion
