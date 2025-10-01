@@ -87,7 +87,7 @@ repositories {
 }
 
 dependencies {
-    def mmVersion = '14.6.0'
+    def mmVersion = '14.6.2'
     //react and mm dependencies clash
     if (!overrideKotlinVersion.empty) {
         constraints {

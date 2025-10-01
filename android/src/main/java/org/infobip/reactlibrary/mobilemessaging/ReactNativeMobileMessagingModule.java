@@ -261,7 +261,7 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
             if (!pluginInitialized) {
                 CacheManager.saveEvent(context, event, message, actionId, actionInputText);
             } else {
-                emitOrCache(event, getReactContext(context), message, actionId, actionInputText);
+                emitOrCache(event, context, message, actionId, actionInputText);
             }
         }
 
@@ -270,7 +270,7 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
             if (!pluginInitialized) {
                 CacheManager.saveEvent(context, event, unreadChatMessagesCounter);
             } else {
-                emitOrCache(event, getReactContext(context), unreadChatMessagesCounter);
+                emitOrCache(event, context, unreadChatMessagesCounter);
             }
         }
 
@@ -282,19 +282,29 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
             return reactApplication.getReactNativeHost().getReactInstanceManager().getCurrentReactContext();
         }
 
-        private void emitOrCache(String eventType, ReactContext reactContext, JSONObject message, String actionId, String actionInputText) {
+        private void emitOrCache(String eventType, Context context, JSONObject message, String actionId, String actionInputText) {
+            ReactContext reactContext = getReactContext(context);
             if (jsHasListeners && reactContext != null) {
                 ReactNativeEvent.send(eventType, reactContext, message, actionId, actionInputText);
-            } else {
+            } else if (reactContext != null) {
                 CacheManager.saveEvent(reactContext, eventType, message, actionId, actionInputText);
+            } else if (context != null) {
+                CacheManager.saveEvent(context, eventType, message, actionId, actionInputText);
+            } else {
+                Log.e(Utils.TAG, "Both reactContext and androidContext are null, can't emit or cache event " + eventType);
             }
         }
 
-        private void emitOrCache(String eventType, ReactContext reactContext, int unreadMessagesCounter) {
+        private void emitOrCache(String eventType, Context context, int unreadMessagesCounter) {
+            ReactContext reactContext = getReactContext(context);
             if (jsHasListeners && reactContext != null) {
                 ReactNativeEvent.send(eventType, reactContext, unreadMessagesCounter);
-            } else {
+            } else if (reactContext != null) {
                 CacheManager.saveEvent(reactContext, eventType, unreadMessagesCounter);
+            } else if (context != null) {
+                CacheManager.saveEvent(context, eventType, unreadMessagesCounter);
+            } else {
+                Log.e(Utils.TAG, "Both reactContext and androidContext are null, can't emit or cache event " + eventType);
             }
         }
     }

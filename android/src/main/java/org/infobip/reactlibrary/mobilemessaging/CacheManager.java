@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import android.util.Log;
+
 import org.infobip.mobile.messaging.api.support.http.serialization.JsonSerializer;
 import org.infobip.mobile.messaging.dal.json.JSONArrayAdapter;
 import org.infobip.mobile.messaging.dal.json.JSONObjectAdapter;
@@ -39,17 +41,29 @@ class CacheManager {
     }
 
     static void saveEvent(Context context, String event, JSONObject object, String actionId, String actionInputText) {
+        if (context == null) {
+            Log.e(Utils.TAG, "context is null, can't cache event " + event);
+            return;
+        }
         String serialized = serializer.serialize(new Event(event, object, actionId, actionInputText));
         saveStringsToSet(context, EVENTS_KEY, serialized);
     }
 
     static void saveEvent(Context context, String event, int unreadMessagesCounter) {
+        if (context == null) {
+            Log.e(Utils.TAG, "context is null, can't cache event " + event);
+            return;
+        }
         //int `unreadMessagesCounter` isn't a JSONObject, so it'll go as a second argument
         String serialized = serializer.serialize(new Event(event, null, unreadMessagesCounter));
         saveStringsToSet(context, EVENTS_KEY, serialized);
     }
 
     static Event[] loadEvents(Context context, String eventType) {
+        if (context == null) {
+            Log.e(Utils.TAG, "context is null, can't load cached events " + eventType);
+            return new Event[0];
+        }
         Set<String> serialized = getStringSet(context, EVENTS_KEY);
         if (serialized == null || serialized.isEmpty()) {
             return new Event[0];
