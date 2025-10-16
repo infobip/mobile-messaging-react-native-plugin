@@ -7,6 +7,7 @@ import {
   ScrollView,
   StyleSheet,
   Alert,
+  Platform,
 } from 'react-native';
 import {
   mobileMessaging,
@@ -110,7 +111,7 @@ const ChatOptionsScreen: React.FC<ChatScreenProps> = ({navigation}) => {
 
   const triggerPersonalization = () => {
     const personalizationData = preparePersonalizationData();
-    console.log('Personalize with data:', personalizationData);
+    console.log('React app: Personalize with data:', personalizationData);
     personalize(personalizationData);
   };
 
@@ -149,7 +150,7 @@ const ChatOptionsScreen: React.FC<ChatScreenProps> = ({navigation}) => {
 
   const triggerAuthentication = () => {
     const personalizationData = preparePersonalizationData();
-    console.log('Authenticate with data:', personalizationData);
+    console.log('React app: Authenticate with data:', personalizationData);
     authenticate(personalizationData);
   };
 
@@ -190,14 +191,14 @@ const ChatOptionsScreen: React.FC<ChatScreenProps> = ({navigation}) => {
   const showChat = () => {
     mobileMessaging.setLanguage(
       'en',
-      (language: any) => console.log('Language set ' + language),
+      (language: any) => console.log('React app: Language set ' + language),
       (error: MobileMessagingError) =>
-        console.log('Error setting language: ' + JSON.stringify(error)),
+        console.log('React app: Error setting language: ' + JSON.stringify(error)),
     );
     // Uncomment to use custom exception handler
     // mobileMessaging.setChatExceptionHandler(
-    //   (exception: ChatException) => console.log('Chat exception received: ' + JSON.stringify(exception)),
-    //   (error: Error) => console.log('Chat exception handler error: ' + error)
+    //   (exception: ChatException) => console.log('React app: Chat exception received: ' + JSON.stringify(exception)),
+    //   (error: Error) => console.log('React app: Chat exception handler error: ' + error)
     // );
     mobileMessaging.showChat();
   };
@@ -216,10 +217,10 @@ const ChatOptionsScreen: React.FC<ChatScreenProps> = ({navigation}) => {
 
   const enableWebRTC = () => {
     webRTCUI.enableChatCalls(
-      () => console.log('WebRTCUI enabled chat calls'),
+      () => console.log('React app: WebRTCUI enabled chat calls'),
       (error: MobileMessagingError) =>
         console.log(
-          'WebRTCUI could not enable chat calls, error: ' +
+          'React app: WebRTCUI could not enable chat calls, error: ' +
             JSON.stringify(error),
         ),
     );
@@ -227,10 +228,10 @@ const ChatOptionsScreen: React.FC<ChatScreenProps> = ({navigation}) => {
 
   const disableWebRTC = () => {
     webRTCUI.disableCalls(
-      () => console.log('WebRTCUI disabled calls'),
+      () => console.log('React app: WebRTCUI disabled calls'),
       (error: MobileMessagingError) =>
         console.log(
-          'WebRTCUI could not disable calls, error: ' + JSON.stringify(error),
+          'React app: WebRTCUI could not disable calls, error: ' + JSON.stringify(error),
         ),
     );
   };
@@ -240,12 +241,11 @@ const ChatOptionsScreen: React.FC<ChatScreenProps> = ({navigation}) => {
     const attachmentIcon = require('../../assets/ic_add_circle.png');
     const navigationIcon = require('../../assets/ic_back.png');
     const downloadIcon = require('../../assets/ic_download.png');
-    const resolveAssetSource = require('react-native/Libraries/Image/resolveAssetSource');
+    const resolveAssetSource = require('react-native/Libraries/Image/resolveAssetSource').default;
     const settings = {
       chatStatusBarBackgroundColor: '#673AB7',
       chatStatusBarIconsColorMode: 'dark',
-      attachmentPreviewToolbarSaveMenuItemIcon:
-        resolveAssetSource(downloadIcon).uri,
+      attachmentPreviewToolbarSaveMenuItemIcon: resolveAssetSource(downloadIcon).uri,
       attachmentPreviewToolbarMenuItemsIconTint: '#9E9E9E',
       chatToolbar: {
         titleTextAppearance: 'TextAppearance_AppCompat_Title',
@@ -298,16 +298,16 @@ const ChatOptionsScreen: React.FC<ChatScreenProps> = ({navigation}) => {
     };
     mobileMessaging.setChatCustomization(settings);
     mobileMessaging.setWidgetTheme('dark');
-    console.log('Style applied');
+    console.log('React app: Style applied');
   };
 
   const sendContextualData = () => {
     mobileMessaging.sendContextualData(
       "{'metadata': 'from react demo'}",
       'ALL',
-      () => console.log('MobileMessaging metadata sent'),
+      () => console.log('React app: MobileMessaging metadata sent'),
       (error: MobileMessagingError) =>
-        console.log('MobileMessaging metadata error: ' + error),
+        console.log('React app: MobileMessaging metadata error: ' + error),
     );
   };
 
@@ -340,13 +340,11 @@ const ChatOptionsScreen: React.FC<ChatScreenProps> = ({navigation}) => {
           <Picker
             selectedValue={subjectType}
             style={styles.picker}
+            {...(Platform.OS === 'ios' ? { itemStyle: styles.pickerItem } : {})}
             onValueChange={(itemValue: SubjectType) =>
               setSubjectType(itemValue)
             }>
-            <Picker.Item
-              label="External person ID"
-              value={SubjectType.ExternalPersonId}
-            />
+            <Picker.Item label="External person ID" value={SubjectType.ExternalPersonId} />
             <Picker.Item label="Phone number" value={SubjectType.PhoneNumber} />
             <Picker.Item label="E-mail" value={SubjectType.Email} />
           </Picker>
@@ -453,21 +451,28 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.tintWhite,
   },
   pickerWrapper: {
-    height: 40,
+    height: Platform.OS === 'android' ? 60 : '20%',
     width: '100%',
+    margin: 0,
     borderColor: Colors.tintWhite,
     borderWidth: 1,
     borderRadius: 4,
-    color: Colors.primaryGray,
     marginBottom: 12,
-    paddingHorizontal: 10,
-    backgroundColor: Colors.tintWhite,
     justifyContent: 'center',
     overflow: 'hidden',
+    backgroundColor: 'white',
   },
   picker: {
-    height: 40,
+    flex: 1,
     width: '100%',
+    color: 'black',
+    backgroundColor: 'white',
+    padding: 0,
+    margin: 0,
+  },
+  pickerItem: {
+    color: 'black',
+    fontSize: 16,
   },
   switchContainer: {
     flexDirection: 'row',

@@ -8,43 +8,41 @@ import MobileMessaging
 class AppDelegate: UIResponder, UIApplicationDelegate {
   var window: UIWindow?
 
-  var reactNativeDelegate: ReactNativeDelegate?
-  var reactNativeFactory: RCTReactNativeFactory?
 
   func application(
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
   ) -> Bool {
     MobileMessagingPluginApplicationDelegate.install();
-    let delegate = ReactNativeDelegate()
-    let factory = RCTReactNativeFactory(delegate: delegate)
-    delegate.dependencyProvider = RCTAppDependencyProvider()
 
-    reactNativeDelegate = delegate
-    reactNativeFactory = factory
-
-    window = UIWindow(frame: UIScreen.main.bounds)
-
-    factory.startReactNative(
-      withModuleName: "Example",
-      in: window,
-      launchOptions: launchOptions
-    )
+    // Set the message handling delegate to display notifications in foreground
+    MobileMessaging.messageHandlingDelegate = MyMessageHandlingDelegate()
 
     return true
   }
-}
+  
+  // MARK: UISceneSession Lifecycle
 
-class ReactNativeDelegate: RCTDefaultReactNativeFactoryDelegate {
-  override func sourceURL(for bridge: RCTBridge) -> URL? {
-    self.bundleURL()
+  func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession, options: UIScene.ConnectionOptions) -> UISceneConfiguration {
+      // Called when a new scene session is being created.
+      // Use this method to select a configuration to create the new scene with.
+      return UISceneConfiguration(name: "Default Configuration", sessionRole: connectingSceneSession.role)
   }
 
-  override func bundleURL() -> URL? {
-#if DEBUG
-    RCTBundleURLProvider.sharedSettings().jsBundleURL(forBundleRoot: "index")
-#else
-    Bundle.main.url(forResource: "main", withExtension: "jsbundle")
-#endif
+  func application(_ application: UIApplication, didDiscardSceneSessions sceneSessions: Set<UISceneSession>) {
+      // Called when the user discards a scene session.
+      // If any sessions were discarded while the application was not running, this will be called shortly after application:didFinishLaunchingWithOptions.
+      // Use this method to release any resources that were specific to the discarded scenes, as they will not return.
   }
 }
+
+class MyMessageHandlingDelegate: NSObject, MMMessageHandlingDelegate {
+    func willPresentInForeground(message: MM_MTMessage?, notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        if #available(iOS 14.0, *) {
+            completionHandler([.banner, .sound, .badge])
+        } else {
+            completionHandler([.alert, .sound, .badge])
+        }
+    }
+}
+

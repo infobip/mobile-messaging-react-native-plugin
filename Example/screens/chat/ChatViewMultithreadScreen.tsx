@@ -3,21 +3,11 @@
  */
 
 import React, {useRef, useState, useEffect} from 'react';
-import {
-  ChatView,
-  ChatException,
-} from 'infobip-mobile-messaging-react-native-plugin';
-import {
-  View,
-  Text,
-  KeyboardAvoidingView,
-  SafeAreaView,
-  Platform,
-} from 'react-native';
+import { SafeAreaView } from 'react-native';
 import Colors from '../../constants/Colors';
 import PrimaryButton from '../../components/PrimaryButton';
-import {mobileMessaging} from 'infobip-mobile-messaging-react-native-plugin';
-import {NavigationContainer, NavigationProp} from '@react-navigation/native';
+import { mobileMessaging, ChatView, ChatViewHandle, ChatException } from 'infobip-mobile-messaging-react-native-plugin';
+import { NavigationProp } from '@react-navigation/native';
 
 interface MultiThreadChatScreenProps {
   navigation: NavigationProp<any>;
@@ -27,16 +17,16 @@ const ChatViewMultithreadScreen: React.FC<MultiThreadChatScreenProps> = ({
   navigation,
 }) => {
   const [showButton, setShowButton] = useState(false);
-  const chatViewRef = useRef(null);
+  const chatViewRef = useRef<ChatViewHandle>(null);
 
   const setExceptionHandler = () => {
     chatViewRef.current?.setExceptionHandler(
       (exception: ChatException) =>
         console.log(
-          'ChatView exception received: ' + JSON.stringify(exception),
+          'React app: ChatView exception received: ' + JSON.stringify(exception),
         ),
       (error: Error) =>
-        console.log('ChatView exception handler error: ' + error),
+        console.log('React app: ChatView exception handler error: ' + error),
     );
   };
 
@@ -56,7 +46,7 @@ const ChatViewMultithreadScreen: React.FC<MultiThreadChatScreenProps> = ({
   const handleViewStateChangeEvent = (value: any) => {
     if (typeof value !== 'undefined' && value != null) {
       const view = String(value).split(',').pop()?.trim();
-      console.log('Chat view changed to: ' + view);
+      console.log('React app: Chat view changed to: ' + view);
       /*
         Possible views: LOADING, THREAD_LIST, LOADING_THREAD, THREAD, CLOSED_THREAD, SINGLE_MODE_THREAD, UNKNOWN
       */

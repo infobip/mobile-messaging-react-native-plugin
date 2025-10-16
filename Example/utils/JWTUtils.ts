@@ -18,6 +18,16 @@ export const testConfig: JWTConfig = {
   externalPersonId: '',
 };
 
+let currentUserJwt: string | null = null;
+
+export function setCurrentUserJwt(token: string | null | undefined): void {
+  currentUserJwt = token ?? null;
+}
+
+export function getCurrentUserJwt(): string | null {
+  return currentUserJwt;
+}
+
 /**
  * Generate a signed JWT token for MobileMessaging authentication
  *
@@ -125,7 +135,7 @@ export async function generateChatJWT(
       exp: nowSeconds + 60, //Expiration: Unix timestamp when the token expires in seconds.
       ski: keyId, //Secret key ID: the ID (not the value) of the secret key you're using to sign the token.
       stp: subjectType, //Subject type: type of identifier in sub.
-      sid: uuid //Session ID: your unique user session identifier, used for Session Invalidation API. Max 50 characters.
+      sid: uuid, //Session ID: your unique user session identifier, used for Session Invalidation API. Max 50 characters.
     };
 
     const encodedHeader = base64URLEncode(JSON.stringify(header));

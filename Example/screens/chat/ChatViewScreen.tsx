@@ -3,7 +3,7 @@
  */
 
 import React from 'react';
-import {ChatView} from 'infobip-mobile-messaging-react-native-plugin';
+import { ChatView } from 'infobip-mobile-messaging-react-native-plugin';
 import Colors from '../../constants/Colors';
 
 const ChatViewScreen: React.FC = () => {

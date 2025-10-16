@@ -11,18 +11,18 @@ The document describes library integration steps for your React Native project.
 
 ## Requirements
 - node (v20.16.0 or higher)
-- ruby (2.7.8 or higher)
-- React Native (v0.75.4)
+- ruby (2.7.8 or higher; the Example app uses 3.3.5)
+- React Native (v0.79.0)
 
 For iOS project:
-- Xcode and Command Line Tools (16.x)
-- CocoaPods (v1.15.2)
-- Minimum deployment target 13.0
+- Xcode and Command Line Tools (16.x or newer, tested with 26.0.1)
+- CocoaPods (v1.16.x)
+- Minimum deployment target 15.1
 
 For Android project:
-- Android Studio (Ladybug | 2024.2.1)
-- Gradle (v8.8)
-- Supported API Levels: 21 (Android 5.0 - [Lollipop](https://developer.android.com/about/versions/lollipop)) - 35 ([Android 15.0](https://developer.android.com/about/versions/15))
+- Android Studio (Narwhal | 2025.1.3)
+- Gradle (v8.13)
+- Supported API Levels: 24 (Android 7.0 - [Nougat](https://developer.android.com/about/versions/nougat)) - 35 ([Android 15.0](https://developer.android.com/about/versions/15))
 
 ## Quick start guide
 
@@ -75,8 +75,8 @@ This guide is designed to get you up and running with Mobile Messaging SDK plugi
             ...
             dependencies {
                 ...
-               //GMS Gradle plugin
-               classpath 'com.google.gms:google-services:4.3.10'
+               // GMS Gradle plugin
+               classpath 'com.google.gms:google-services:4.4.2'
             }
          }
          ```
@@ -151,4 +151,3 @@ someMethod(): void {
 
 | If you have any questions or suggestions, feel free to send an email to support@infobip.com or create an <a href="https://github.com/infobip/mobile-messaging-react-native-plugin/issues" target="_blank">issue</a>. |
 |---|
-

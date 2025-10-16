@@ -201,7 +201,7 @@ extension RNMMChat: MMInAppChatDelegate {
         }
         payload["code"] = exception.code
         payload["origin"] = "LiveChat"
-        payload["platform"] = "Flutter"
+        payload["platform"] = "React Native"
         
         ReactNativeMobileMessaging.shared?.sendEvent(withName: EventName.inAppChat_exceptionReceived, body: payload)
         return .noDisplay

@@ -35,9 +35,11 @@ class MainApplication : Application(), ReactApplication {
 
   override fun onCreate() {
     super.onCreate()
+    android.util.Log.i("MAIN_APP", "MainApplication onCreate - NEW_ARCH: ${BuildConfig.IS_NEW_ARCHITECTURE_ENABLED}")
     SoLoader.init(this, OpenSourceMergedSoMapping)
     if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
       // If you opted-in for the New Architecture, we load the native entry point for this app.
+      android.util.Log.i("MAIN_APP", "Loading New Architecture entry point")
       load()
     }
   }

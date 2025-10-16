@@ -747,30 +747,40 @@ declare namespace MobileMessagingReactNative {
 declare var mobileMessaging: MobileMessagingReactNative.Api;
 
 declare namespace WebRTCUI {
-    import MobileMessagingError = MobileMessagingReactNative.MobileMessagingError;
-    /**
-     * Manually enable WebRTCUI calls.
-     * @name enableCalls
-     * @param identity String to be used as identity for the WebRTC registration. If left empty, push registration Id will be used instead
-     * @param {Function} onSuccess success callback
-     * @param {Function} onError error callback
-     */
-    function enableCalls(identity:string, onSuccess:() => void, onError:(error: MobileMessagingError) => void):void;
+  import MobileMessagingError = MobileMessagingReactNative.MobileMessagingError;
+  /**
+   * Manually enable WebRTCUI calls.
+   * @name enableCalls
+   * @param identity String to be used as identity for the WebRTC registration. If left empty, push registration Id will be used instead
+   * @param {Function} onSuccess success callback
+   * @param {Function} onError error callback
+   */
+  function enableCalls(
+    identity: string,
+    onSuccess: () => void,
+    onError: (error: MobileMessagingError) => void
+  ): void;
 
-    /**
-     * Manually enable WebRTCUI LiveChat calls.
-     * @name enableChatCalls
-     * @param {Function} onSuccess success callback
-     * @param {Function} onError error callback
-     */
-    function enableChatCalls(onSuccess:() => void, onError:(error: MobileMessagingError) => void):void;
+  /**
+   * Manually enable WebRTCUI LiveChat calls.
+   * @name enableChatCalls
+   * @param {Function} onSuccess success callback
+   * @param {Function} onError error callback
+   */
+  function enableChatCalls(
+    onSuccess: () => void,
+    onError: (error: MobileMessagingError) => void
+  ): void;
 
-    /**
-     * Manually disable WebRTCUI calls if they were previously enabled. Note: This action may need up to half a minute to be completed,
-     * and calls may still be received in the meantime.
-     * @name disableCalls
-     * @param {Function} onSuccess success callback
-     * @param {Function} onError error callback
-     */
-    function disableCalls(onSuccess:() => void, onError:(error: MobileMessagingError) => void):void;
+  /**
+   * Manually disable WebRTCUI calls if they were previously enabled. Note: This action may need up to half a minute to be completed,
+   * and calls may still be received in the meantime.
+   * @name disableCalls
+   * @param {Function} onSuccess success callback
+   * @param {Function} onError error callback
+   */
+  function disableCalls(
+    onSuccess: () => void,
+    onError: (error: MobileMessagingError) => void
+  ): void;
 }

@@ -13,8 +13,6 @@
 -keep class org.infobip.reactlibrary.mobilemessaging.Configuration* { *; }
 -keep class org.infobip.reactlibrary.mobilemessaging.Configuration$* { *; }
 -keep class org.infobip.reactlibrary.mobilemessaging.CacheManager* { *; }
--keep class org.infobip.reactlibrary.mobilemessaging.ChatCustomization* { *; }
--keep class org.infobip.reactlibrary.mobilemessaging.ChatCustomization$* { *; }
 
 # InfobipRtcUi classes that are accessed via reflection
 -keep class com.infobip.webrtc.ui.InfobipRtcUi$Builder { *; }
@@ -22,6 +20,20 @@
 -keep class com.infobip.webrtc.ui.ErrorListener { *; }
 -keep class com.infobip.webrtc.ui.InfobipRtcUi { *; }
 
+# Keep all classes that extend android.content.BroadcastReceiver
+-keep public class * extends android.content.BroadcastReceiver {
+    public <init>(...);
+    public void onReceive(android.content.Context, android.content.Intent);
+}
+
+# Keep any inner classes inside BroadcastReceivers
+-keepclassmembers class * extends android.content.BroadcastReceiver {
+    <fields>;
+    <methods>;
+}
+
+# Prevent warnings for missing manifest entries (optional)
+-dontwarn android.content.BroadcastReceiver
 
 # Application classes that are used by native MM SDK
 

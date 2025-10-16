@@ -176,8 +176,9 @@ export default UserDataScreen;
 const styles = StyleSheet.create({
   scrollContainer: {
     flexGrow: 1,
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     paddingVertical: 20,
+    paddingBottom: 40,
   },
   inputContainer: {
     marginHorizontal: 24,

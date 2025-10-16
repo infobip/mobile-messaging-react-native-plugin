@@ -1,7 +1,7 @@
 import {Alert} from 'react-native';
 import {mobileMessaging} from 'infobip-mobile-messaging-react-native-plugin';
 import type {MobileMessagingError} from 'infobip-mobile-messaging-react-native-plugin';
-import {generateSignedJWT, testConfig} from './JWTUtils';
+import {generateSignedJWT, setCurrentUserJwt, testConfig} from './JWTUtils';
 
 /**
  * Generates a new JWT token and sets it in MobileMessaging
@@ -20,9 +20,11 @@ export const generateAndSetJWT = async (): Promise<void> => {
     mobileMessaging.setUserDataJwt(
       newJWT,
       () => {
+        setCurrentUserJwt(newJWT);
         Alert.alert('Success', 'New JWT token has been set successfully!');
       },
       (jwtError: MobileMessagingError) => {
+        setCurrentUserJwt(null);
         Alert.alert('JWT Set Error', `Failed to set JWT: ${jwtError.description}`);
       }
     );
@@ -39,6 +41,23 @@ export const generateAndSetJWT = async (): Promise<void> => {
 export const handleJWTError = (error: MobileMessagingError): void => {
   console.log('Handling JWT error:', error);
   switch (error.code) {
+    case 'ACCESS_TOKEN_MISSING':
+      Alert.alert(
+        'JWT Token Required',
+        'Access token is not provided. Would you like to generate a new JWT token now?',
+        [
+          {
+            text: 'Cancel',
+            style: 'cancel' as const,
+          },
+          {
+            text: 'Generate New JWT',
+            onPress: () => generateAndSetJWT(),
+          },
+        ],
+      );
+      break;
+
     case 'JWT_TOKEN_EXPIRED':
       Alert.alert(
         'JWT Token Expired',

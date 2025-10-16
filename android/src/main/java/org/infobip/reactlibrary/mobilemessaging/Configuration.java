@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-class Configuration {
+public class Configuration {
 
     class AndroidConfiguration {
         String notificationIcon;

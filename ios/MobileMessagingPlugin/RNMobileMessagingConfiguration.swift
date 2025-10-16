@@ -104,11 +104,16 @@ class RNMobileMessagingConfiguration {
     }
 
     static func saveConfigToDefaults(rawConfig: [String: AnyObject]) {
-        let serializableConfig = rawConfig.compactMapValues { value -> AnyObject? in
+        var serializableConfig = rawConfig.compactMapValues { value -> AnyObject? in
             if value is NSString || value is NSNumber || value is NSArray || value is NSDictionary || value is NSDate || value is NSData {
                 return value
             }
             return nil
+        }
+        if serializableConfig[RNMobileMessagingConfiguration.Keys.messageStorage] != nil {
+            // Temporal fix so the archiving doesn't fail (messageStorage doesn't contain codable objects).
+            // Below we overwrite it with a dummy value so messageStorageEnabled keeps working.
+            serializableConfig[RNMobileMessagingConfiguration.Keys.messageStorage] = NSString(string: "message_storage")
         }
 
         do {

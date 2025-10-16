@@ -54,12 +54,18 @@
         <receiver android:name="org.infobip.mobile.messaging.interactive.notification.NotificationActionTapReceiver"
             android:exported="false"/>
 
-        <receiver android:name="org.infobip.reactlibrary.mobilemessaging.ReactNativeMobileMessagingModule$MessageEventReceiver"
-                  android:exported="false">
+        <receiver android:name="org.infobip.reactlibrary.mobilemessaging.MessageEventReceiver"
+            android:exported="false">
             <intent-filter>
                 <action android:name="org.infobip.mobile.messaging.MESSAGE_RECEIVED" />
                 <action android:name="org.infobip.mobile.messaging.NOTIFICATION_TAPPED" />
                 <action android:name="org.infobip.mobile.messaging.interactive.NOTIFICATION_ACTION_TAPPED" />
+            </intent-filter>
+        </receiver>
+
+        <receiver android:name="org.infobip.reactlibrary.mobilemessaging.RNMMChatEventReceiver"
+            android:exported="false">
+            <intent-filter>
                 <action android:name="org.infobip.mobile.messaging.chat.UNREAD_MESSAGES_COUNTER_UPDATED"/>
             </intent-filter>
         </receiver>

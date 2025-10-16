@@ -1,14 +1,14 @@
 import {
     EmitterSubscription,
     NativeEventEmitter,
-    NativeModules,
     Platform,
 } from 'react-native';
 
+const ReactNativeMobileMessaging = require('./specs/NativeMobileMessaging').default;
+const RNMMChat = require('./specs/NativeRNMMChat').default
+const RNMMWebRTCUI = require('./specs/NativeRNMMWebRTCUI').default;
 
-const { ReactNativeMobileMessaging, RNMMChat, RNMMWebRTCUI } = NativeModules;
-
-export default ReactNativeMobileMessaging;
+export ChatView, { ChatViewHandle, ChatViewProps } from './components/ChatView';
 
 /**
  * Constructor
@@ -41,7 +41,6 @@ class MobileMessaging {
             'inAppChat.livechatRegistrationIdUpdated'
         ];
         this.eventEmitter = new NativeEventEmitter(ReactNativeMobileMessaging);
-
     }
 
     /**
@@ -725,15 +724,15 @@ class MobileMessaging {
     /**
      * Sets the chat exception handler in case you want to intercept and
      * display the errors coming from the chat on your own (instead of relying on the prebuild error banners).
-     * 
+     *
      * The `exceptionHandler` is a function that receives the exception. Passing `null` will remove the previously set handler.
-     * 
+     *
      * ```ts
      * mobileMessaging.setChatExceptionHandler((exception) => {
      *   console.log("Chat exception occurred:", exception);
      * });
      * ```
-     * 
+     *
      * @param exceptionHandler A function that receives an ChatException when it happens. Passing `null` will remove the previously set handler.
      * @param onError Optional error handler for catching exceptions thrown when listening for exceptions.
      */
@@ -755,7 +754,7 @@ class MobileMessaging {
 
             this.#chatExceptionHandlerSubscription = this.subscribe('inAppChat.internal.exceptionReceived', (chatException) => {
                 try {
-                    exceptionHandler(chatException);    
+                    exceptionHandler(chatException);
                 } catch (e) {
                     handleError(e);
                 }
@@ -837,8 +836,6 @@ class MobileMessaging {
         ReactNativeMobileMessaging.setUserDataJwt(jwt, onSuccess, onError);
     }
 }
-
-export {ChatView, RNMMChatView} from './components/RNMMChatViewNativeComponent';
 
 export const mobileMessaging = new MobileMessaging();
 

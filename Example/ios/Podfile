@@ -1,3 +1,4 @@
+ENV['RCT_NEW_ARCH_ENABLED'] = '1'
 # Resolve react_native_pods.rb with node to allow for hoisting
 require Pod::Executable.execute_command('node', ['-p',
   'require.resolve(
@@ -16,24 +17,37 @@ end
 
 target 'Example' do
   config = use_native_modules!
+  $WebRTCUIEnabled = true
 
   use_react_native!(
     :path => config[:reactNativePath],
     # An absolute path to your application root.
-    :app_path => "#{Pod::Config.instance.installation_root}/.."
+    :app_path => "#{Pod::Config.instance.installation_root}/..",
+    :new_arch_enabled => true,
+    :hermes_enabled => true
   )
 
-    target 'ExampleTests' do
-      inherit! :complete
-      # Pods for testing
-    end
+  target 'ExampleTests' do
+    inherit! :complete
+    # Pods for testing
+  end
 
-    target 'MobileMessagingNotificationExtension' do
-        inherit! :search_paths
-    end
+  target 'MobileMessagingNotificationExtension' do
+      inherit! :search_paths
+  end
 
   post_install do |installer|
-    #ž https://github.com/facebook/react-native/blob/main/packages/react-native/scripts/react_native_pods.rb#L197-L202
+
+    installer.pods_project.targets.each do |target|
+ 	if (target.name&.eql?('infobip-mobile-messaging-react-native-plugin'))
+          target.build_configurations.each do |config|
+            config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] = '$(inherited) COCOAPODS=1 WEBRTCUI_ENABLED=1'
+            config.build_settings['OTHER_SWIFT_FLAGS'] = '$(inherited) -D WEBRTCUI_ENABLED'
+          end
+        end
+    end
+
+    # https://github.com/facebook/react-native/blob/main/packages/react-native/scripts/react_native_pods.rb#L197-L202
     react_native_post_install(
       installer,
       config[:reactNativePath],

@@ -14,12 +14,16 @@ import Colors from './constants/Colors.ts';
 import HomeScreen from './screens/HomeScreen';
 import PersonalizeScreen from './screens/PersonalizeScreen';
 import UserDataScreen from './screens/UserDataScreen';
+import MessagesScreen from './screens/MessagesScreen';
+import InboxScreen from './screens/InboxScreen';
 import ChatOptionsScreen from './screens/chat/ChatOptionsScreen';
+import EventLogScreen from './screens/EventLogScreen';
 import ChatViewScreen from './screens/chat/ChatViewScreen';
 import ChatViewCustomLayoutScreen from './screens/chat/ChatViewCustomLayoutScreen';
 import ChatViewMultithreadScreen from './screens/chat/ChatViewMultithreadScreen';
 import TestDeeplinkingScreen from './screens/TestDeeplinkingScreen';
 import TestDeeplinkingScreen2 from './screens/TestDeeplinkingScreen2';
+import EventLogStore from './constants/EventLogStore.ts';
 
 interface AppState {
   logInfo: string;
@@ -29,6 +33,9 @@ type RootStackParamList = {
   HomeScreen: undefined;
   PersonalizeScreen: undefined;
   UserDataScreen: undefined;
+  MessagesScreen: undefined;
+  InboxScreen: undefined;
+  EventLogScreen: undefined;
   ChatOptionsScreen: undefined;
   ChatViewScreen: undefined;
   ChatViewCustomLayoutScreen: undefined;
@@ -40,6 +47,14 @@ type RootStackParamList = {
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const myMessageStorage = MyMessageStorage;
+
+async function persistEventLog(eventName: string, value: any): Promise<void> {
+  try {
+    await EventLogStore.add(eventName, value);
+  } catch (error) {
+    console.warn('Failed to persist event log entry', error);
+  }
+}
 
 class App extends Component<{}, AppState> {
   configuration: Configuration = {
@@ -58,6 +73,7 @@ class App extends Component<{}, AppState> {
       //   projectId: '',
       // },
     },
+    // defaultMessageStorage: true,
     messageStorage: myMessageStorage,
     inAppChatEnabled: true,
     fullFeaturedInAppsEnabled: true,
@@ -97,6 +113,7 @@ class App extends Component<{}, AppState> {
   handleMobileMessagingEvent = (eventName: string, value: any) => {
     const eventInfo = `Event: ${eventName}, Data: ${JSON.stringify(value)}`;
     this.updateLogInfo(eventInfo);
+    void persistEventLog(eventName, value);
   };
 
   initMobileMessaging() {
@@ -127,7 +144,26 @@ class App extends Component<{}, AppState> {
             headerTintColor: 'white',
             headerStyle: {backgroundColor: Colors.primary500},
           }}>
-          <Stack.Screen name="HomeScreen" component={HomeScreen} />
+          <Stack.Screen
+            name="HomeScreen"
+            component={HomeScreen}
+            options={{title: 'Infobip Push & Live Chat Example App'}}
+          />
+          <Stack.Screen
+            name="MessagesScreen"
+            component={MessagesScreen}
+            options={{title: 'Messages'}}
+          />
+          <Stack.Screen
+            name="InboxScreen"
+            component={InboxScreen}
+            options={{title: 'Inbox'}}
+          />
+          <Stack.Screen
+            name="EventLogScreen"
+            component={EventLogScreen}
+            options={{title: 'Event Log'}}
+          />
           <Stack.Screen
             name="PersonalizeScreen"
             component={PersonalizeScreen}

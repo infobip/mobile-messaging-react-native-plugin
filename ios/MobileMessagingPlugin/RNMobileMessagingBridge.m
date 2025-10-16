@@ -16,7 +16,7 @@
 @end
 
 @implementation ReactNativeMobileMessaging(RCTExternModule)
-RCT_EXPORT_MODULE_NO_LOAD(ReactNativeMobileMessaging, ReactNativeMobileMessaging)
+RCT_EXPORT_MODULE_NO_LOAD(MobileMessaging, ReactNativeMobileMessaging)
 
 RCT_EXTERN_METHOD(init:(NSDictionary *)config onSuccess:(RCTResponseSenderBlock)successCallback onError:(RCTResponseSenderBlock)errorCallback)
 

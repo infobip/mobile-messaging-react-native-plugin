@@ -1,7 +1,7 @@
 {
   "name": "infobip-mobile-messaging-react-native-plugin",
   "title": "Infobip Mobile Messaging React Native Plugin",
-  "version": "13.11.2",
+  "version": "13.12.0-SNAPSHOT",
   "description": "Infobip Mobile Messaging React Native Plugin",
   "main": "./src/index.js",
   "scripts": {
@@ -32,12 +32,21 @@
     "url": "https://github.com/infobip/mobile-messaging-react-native-plugin/issues"
   },
   "peerDependencies": {
-    "react": "^19.0.0",
+    "react": ">=18.2.0 <20.0.0",
     "react-native": ">=0.68.0 <1.0.x"
   },
   "devDependencies": {
+    "@react-native/codegen": "^0.79.0",
     "metro-react-native-babel-preset": "^0.77.0",
     "react": "^19.0.0",
     "react-native": "^0.79.0"
+  },
+  "codegenConfig": {
+    "name": "MobileMessaging",
+    "type": "modules",
+    "jsSrcsDir": "./src/specs",
+    "android": {
+      "javaPackageName": "org.infobip.reactlibrary.mobilemessaging"
+    }
   }
 }

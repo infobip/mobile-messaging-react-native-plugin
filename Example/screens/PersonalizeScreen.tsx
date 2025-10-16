@@ -88,7 +88,9 @@ const PersonalizeScreen: React.FC = () => {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.scrollContainer}>
+    <ScrollView
+      contentContainerStyle={styles.scrollContainer}
+      keyboardShouldPersistTaps="handled">
       <View style={styles.inputContainer}>
         <Text style={styles.instructionText}>Please enter your details:</Text>
 
@@ -172,8 +174,9 @@ export default PersonalizeScreen;
 const styles = StyleSheet.create({
   scrollContainer: {
     flexGrow: 1,
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     paddingVertical: 20,
+    paddingBottom: 40,
   },
   inputContainer: {
     marginHorizontal: 24,

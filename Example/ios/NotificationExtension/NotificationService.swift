@@ -14,17 +14,16 @@ class NotificationService: UNNotificationServiceExtension {
 		self.originalContent = request.content
 
 		// Check if notification is from Infobip
-        if MM_MTMessage.isCorrectPayload(request.content.userInfo) {
-            MobileMessagingNotificationServiceExtension.startWithApplicationCode("Your application code")
-            MobileMessagingNotificationServiceExtension.didReceive(request, withContentHandler: contentHandler)
-        } else {
-            // Pass through non-Infobip notifications
-            contentHandler(request.content)
-        }
+    if MM_MTMessage.isCorrectPayload(request.content.userInfo) {
+        MobileMessagingNotificationServiceExtension.didReceive(request, withContentHandler: contentHandler)
+    } else {
+        // Pass through non-Infobip notifications
+        contentHandler(request.content)
+    }
 	}
 
 	override func serviceExtensionTimeWillExpire() {
-		MobileMessagingNotificationServiceExtension.serviceExtensionTimeWillExpire()
+    MobileMessagingNotificationServiceExtension.serviceExtensionTimeWillExpire()
 		if let originalContent = originalContent {
 			contentHandler?(originalContent)
 		}

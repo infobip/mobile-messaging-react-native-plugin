@@ -53,8 +53,16 @@ const MyMessageStorage: CustomMessageStorage = {
         console.log('[CustomStorage] All Values: ', stores);
         const messages: Message[] = stores
           .map(([_, value]) => {
-            if (value) {
-              return JSON.parse(value) as Message;
+            if (!value) {
+              return null;
+            }
+            try {
+              const parsed = JSON.parse(value) as Partial<Message>;
+              if (parsed && typeof parsed.messageId === 'string') {
+                return parsed as Message;
+              }
+            } catch (error) {
+              console.log('[CustomStorage] Failed to parse message: ', error);
             }
             return null;
           })

@@ -1,22 +1,35 @@
-import React, {useEffect} from 'react';
-import {Alert, Linking, Platform, ScrollView, View} from 'react-native';
+import React, {useEffect, useState, useRef} from 'react';
 import {
-  Message,
+  Alert,
+  Linking,
+  Platform,
+  ScrollView,
+  View,
+  RefreshControl,
+  StyleSheet,
+  Text,
+} from 'react-native';
+import {
   UserData,
   MobileMessagingError,
   mobileMessaging,
-  webRTCUI,
-  ChatMultithreadStrategy,
 } from 'infobip-mobile-messaging-react-native-plugin';
 import PrimaryButton from '../components/PrimaryButton';
+import SDKStatusCard, {
+  SDKStatusCardRef,
+} from '../components/SDKStatusCard';
 import {URL} from 'react-native-url-polyfill';
-import {handleJWTError} from "../utils/JWTErrorHandler.ts";
+import {handleJWTError} from '../utils/JWTErrorHandler.ts';
+import Colors from '../constants/Colors';
 
 interface HomeScreenProps {
   navigation: any;
 }
 
 const HomeScreen = ({navigation}: HomeScreenProps) => {
+  const [refreshing, setRefreshing] = useState(false);
+  const statusCardRef = useRef<SDKStatusCardRef>(null);
+
   useEffect(() => {
     registerForDeeplinkEvents();
     handleInitialDeeplinkUrl();
@@ -26,6 +39,13 @@ const HomeScreen = ({navigation}: HomeScreenProps) => {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Pull-to-refresh handler
+  const onRefresh = () => {
+    setRefreshing(true);
+    statusCardRef.current?.refresh();
+    setTimeout(() => setRefreshing(false), 1000);
+  };
 
   // Handler Functions
 
@@ -60,6 +80,26 @@ const HomeScreen = ({navigation}: HomeScreenProps) => {
     });
   };
 
+  const fetchInstallationDataHandler = () => {
+    mobileMessaging.fetchInstallation(
+      (installation: any) => {
+        console.log('Fetched installation from server', installation);
+        Alert.alert(
+          'Fetched Installation',
+          JSON.stringify(installation, null, 2),
+          [{text: 'Ok', style: 'destructive'}],
+        );
+      },
+      (error: MobileMessagingError) => {
+        Alert.alert(
+          'Fetch installation failed',
+          `${error.code}: ${error.description}`,
+        );
+        console.log('Error fetching installation:', error);
+      },
+    );
+  };
+
   const editUserDataHandler = () => {
     navigation.navigate('UserDataScreen');
   };
@@ -86,70 +126,8 @@ const HomeScreen = ({navigation}: HomeScreenProps) => {
     });
   };
 
-  const fetchInbox = () => {
-    mobileMessaging.getUser((user: any) => {
-      const filterOptions = {
-        fromDateTime: formatInboxFilterDate(new Date(2024, 3, 13, 0, 0, 0)),
-        toDateTime: formatInboxFilterDate(new Date(2025, 3, 15, 0, 0, 0)),
-        topic: 'test',
-        limit: 10,
-      };
-      mobileMessaging.fetchInboxMessagesWithoutToken(
-        user.externalUserId,
-        filterOptions,
-        (inbox: any) => {
-          console.log('filterOptions' + filterOptions.fromDateTime);
-          console.log('Successfully fetched inbox messages');
-          console.log(inbox);
-          Alert.alert('Inbox Messages', JSON.stringify(inbox, null, 2), [
-            {text: 'Ok', style: 'destructive'},
-          ]);
-        },
-        (error: MobileMessagingError) =>
-          console.log('Error fetching inbox messages: ' + error.description),
-      );
-    });
-  };
-
-  const setInboxSeen = () => {
-    mobileMessaging.getUser((user: UserData) => {
-      const setSeenMessages: Message[] = [];
-      mobileMessaging.setInboxMessagesSeen(
-        user.externalUserId,
-        setSeenMessages,
-        (messages: any) => {
-          console.log('Successfully set messages as seen');
-          console.log(messages);
-          Alert.alert('Inbox Messages', JSON.stringify(messages), [
-            {text: 'Ok', style: 'destructive'},
-          ]);
-        },
-        (error: MobileMessagingError) =>
-          console.log('Error setting messages as seen: ' + error.description),
-      );
-    });
-  };
-
-  const formatInboxFilterDate = (date: Date) => {
-    const pad = (num: number) => (num < 10 ? '0' + num : num.toString());
-    const yyyy = date.getUTCFullYear();
-    const MM = pad(date.getUTCMonth() + 1); // Months are zero-based
-    const dd = pad(date.getUTCDate());
-    const HH = pad(date.getUTCHours());
-    const mm = pad(date.getUTCMinutes());
-    const ss = pad(date.getUTCSeconds());
-
-    // Timezone offset
-    const timezoneOffsetMinutes = date.getTimezoneOffset();
-    const offsetHours = Math.abs(Math.floor(timezoneOffsetMinutes / 60));
-    const offsetMinutes = Math.abs(timezoneOffsetMinutes % 60);
-    const timezoneOffset =
-      (timezoneOffsetMinutes > 0 ? '-' : '+') +
-      pad(offsetHours) +
-      ':' +
-      pad(offsetMinutes);
-
-    return `${yyyy}-${MM}-${dd}T${HH}:${mm}:${ss}${timezoneOffset}`;
+  const showInboxScreen = () => {
+    navigation.navigate('InboxScreen');
   };
 
   const registerForAndroidNotificationsHandler = () => {
@@ -175,8 +153,40 @@ const HomeScreen = ({navigation}: HomeScreenProps) => {
     });
   };
 
+  const togglePushRegistrationHandler = () => {
+    mobileMessaging.getInstallation((installation: any) => {
+      const currentState = installation.isPushRegistrationEnabled ?? true;
+      const newState = !currentState;
+      installation.isPushRegistrationEnabled = newState;
+
+      mobileMessaging.saveInstallation(
+        installation,
+        (updatedInstallation: any) => {
+          const status = newState ? 'enabled' : 'disabled';
+          Alert.alert(
+            `Push Registration ${status}`,
+            JSON.stringify(updatedInstallation, null, 2),
+          );
+          statusCardRef.current?.refresh();
+        },
+        (error: MobileMessagingError) => {
+          Alert.alert('Error', `${error.code}: ${error.description}`);
+          console.log('Error toggling push registration:', error);
+        },
+      );
+    });
+  };
+
   const showChatOptionsScreen = () => {
     navigation.navigate('ChatOptionsScreen');
+  };
+
+  const showMessagesScreen = () => {
+    navigation.navigate('MessagesScreen');
+  };
+
+  const showEventLogScreen = () => {
+    navigation.navigate('EventLogScreen');
   };
 
   // Subscriptions
@@ -184,17 +194,13 @@ const HomeScreen = ({navigation}: HomeScreenProps) => {
   let subscriptionNotificationTapped: any;
 
   // Button for Android 13 Notification Registration
-  let button = <View />;
-  if (
+  const androidRegistrationButton =
     Platform.OS === 'android' &&
-    parseInt(Platform.constants.Release, 10) >= 13
-  ) {
-    button = (
+    parseInt(Platform.constants.Release, 10) >= 13 ? (
       <PrimaryButton onPress={registerForAndroidNotificationsHandler}>
         Register for Android 13+ Notifications
       </PrimaryButton>
-    );
-  }
+    ) : null;
 
   // Deeplink Event Handlers
   function registerForDeeplinkEvents() {
@@ -251,21 +257,97 @@ const HomeScreen = ({navigation}: HomeScreenProps) => {
 
   // Render
   return (
-    // eslint-disable-next-line react-native/no-inline-styles
-    <ScrollView style={{marginTop: 10}}>
-      <View>{button}</View>
-      <PrimaryButton onPress={personalizeHandler}>Personalize</PrimaryButton>
-      <PrimaryButton onPress={depersonalizeHandler}>Depersonalize</PrimaryButton>
-      <PrimaryButton onPress={getInstallationDataHandler}>Get Installation Data</PrimaryButton>
-      <PrimaryButton onPress={editUserDataHandler}>Edit User Data</PrimaryButton>
-      <PrimaryButton onPress={fetchUserDataHandler}>Fetch User Data</PrimaryButton>
-      <PrimaryButton onPress={getUserDataHandler}>Get User Data</PrimaryButton>
-      <PrimaryButton onPress={setInstallationAsPrimaryHandler}>Set This Installation as Primary</PrimaryButton>
-      <PrimaryButton onPress={fetchInbox}>Fetch Inbox</PrimaryButton>
-      <PrimaryButton onPress={setInboxSeen}>Set Inbox Seen</PrimaryButton>
-      <PrimaryButton onPress={showChatOptionsScreen}>Chat options</PrimaryButton>
+    <ScrollView
+      style={styles.scroll}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }>
+      <SDKStatusCard ref={statusCardRef} />
+
+      {androidRegistrationButton ? (
+        <View style={styles.sectionCard}>
+          <Text style={styles.sectionTitle}>Android Setup</Text>
+          {androidRegistrationButton}
+        </View>
+      ) : null}
+
+      <View style={styles.sectionCard}>
+        <Text style={styles.sectionTitle}>Installation</Text>
+        <PrimaryButton onPress={getInstallationDataHandler}>
+          Get Installation Data
+        </PrimaryButton>
+        <PrimaryButton onPress={fetchInstallationDataHandler}>
+          Fetch Installation
+        </PrimaryButton>
+        <PrimaryButton onPress={setInstallationAsPrimaryHandler}>
+          Set This Installation as Primary
+        </PrimaryButton>
+        <PrimaryButton onPress={togglePushRegistrationHandler}>
+          Enable/Disable Push Registration
+        </PrimaryButton>
+      </View>
+
+      <View style={styles.sectionCard}>
+        <Text style={styles.sectionTitle}>Personalization</Text>
+        <PrimaryButton onPress={personalizeHandler}>Personalize</PrimaryButton>
+        <PrimaryButton onPress={depersonalizeHandler}>
+          Depersonalize
+        </PrimaryButton>
+      </View>
+
+      <View style={styles.sectionCard}>
+        <Text style={styles.sectionTitle}>User Data</Text>
+        <PrimaryButton onPress={getUserDataHandler}>Get User Data</PrimaryButton>
+        <PrimaryButton onPress={fetchUserDataHandler}>
+          Fetch User Data
+        </PrimaryButton>
+        <PrimaryButton onPress={editUserDataHandler}>Edit User Data</PrimaryButton>
+      </View>
+
+      <View style={styles.sectionCard}>
+        <Text style={styles.sectionTitle}>Messaging</Text>
+        <PrimaryButton onPress={showMessagesScreen}>Messages</PrimaryButton>
+        <PrimaryButton onPress={showInboxScreen}>Inbox</PrimaryButton>
+      </View>
+
+      <View style={styles.sectionCard}>
+        <Text style={styles.sectionTitle}>Chat</Text>
+        <PrimaryButton onPress={showChatOptionsScreen}>Chat Options</PrimaryButton>
+      </View>
+
+      <View style={styles.sectionCard}>
+        <Text style={styles.sectionTitle}>More Tools</Text>
+        <PrimaryButton onPress={showEventLogScreen}>Event Log</PrimaryButton>
+      </View>
     </ScrollView>
   );
 };
+
+const styles = StyleSheet.create({
+  scroll: {
+    marginTop: 10,
+    paddingHorizontal: 5,
+  },
+  sectionCard: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    paddingVertical: 8,
+    paddingHorizontal: 4,
+    marginTop: 16,
+    marginBottom: 4,
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 1},
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 1,
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: Colors.primaryGray,
+    marginHorizontal: 8,
+    marginBottom: 4,
+  },
+});
 
 export default HomeScreen;

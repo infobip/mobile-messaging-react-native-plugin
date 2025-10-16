@@ -1,111 +1,85 @@
-def defaultCompileSDKVersion = 35
-def defaultBuildToolsVersion = '35.0.0'
-def defaultMinSDKVersion = 21
-def defaultTargetSDKVersion = 35
-
-def getRootProjectProperty(property, fallback) {
-    rootProject.ext.has(property) ? rootProject.ext.get(property) : fallback
-}
-
-def overrideGmsVersion = getRootProjectProperty('overrideGmsVersion', '')
-def overrideFirebaseVersion = getRootProjectProperty('overrideFirebaseVersion', '')
-def overrideKotlinVersion = getRootProjectProperty('overrideKotlinVersion', '')
-def withCryptorMigration = getRootProjectProperty('withCryptorMigration', false)
-def withWebRTCUI = getRootProjectProperty('withWebRTCUI', false)
 
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
 apply plugin: 'maven-publish'
 
-buildscript {
-    // The Android Gradle plugin is only required when opening the android folder stand-alone.
-    // This avoids unnecessary downloads and potential conflicts when the library is included as a
-    // module dependency in an application project.
-    // ref: https://docs.gradle.org/current/userguide/tutorial_using_tasks.html#sec:build_script_external_dependencies
-    if (project == rootProject) {
-        repositories {
-            google()
-            mavenLocal()
-            mavenCentral {
-                // We don't want to fetch react-native from Maven Central as there are
-                // older versions over there.
-                content {
-                    excludeGroup "com.facebook.react"
-                }
-            }
-        }
-        dependencies {
-            classpath 'com.android.tools.build:gradle:8.5.2'
-        }
+def isNewArchitectureEnabled() {
+    return rootProject.hasProperty("newArchEnabled") && rootProject.getProperty("newArchEnabled") == "true"
+}
+
+if (isNewArchitectureEnabled()) {
+    apply plugin: 'com.facebook.react'
+    react {
+        jsRootDir = file("../src/specs")
+        libraryName = "MobileMessaging"
+        codegenJavaPackageName = "org.infobip.reactlibrary.mobilemessaging"
     }
 }
 
-apply plugin: 'com.android.library'
-apply plugin: 'maven-publish'
+buildscript {
+    ext {
+        kotlin_version = '2.1.20'
+    }
+    repositories {
+        google()
+        mavenLocal()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.11.1'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.25"
+    }
+}
+
+def overrideGmsVersion = rootProject.findProperty('overrideGmsVersion') ?: ''
+def overrideFirebaseVersion = rootProject.findProperty('overrideFirebaseVersion') ?: ''
+def withWebRTCUI = rootProject.findProperty('withWebRTCUI') ?: false
 
 android {
     namespace "org.infobip.reactlibrary.mobilemessaging"
-    compileSdkVersion getRootProjectProperty('compileSdkVersion', defaultCompileSDKVersion)
-    buildToolsVersion getRootProjectProperty('buildToolsVersion', defaultBuildToolsVersion)
+    compileSdk 35
+
     defaultConfig {
-        minSdkVersion getRootProjectProperty('minSdkVersion', defaultMinSDKVersion)
-        targetSdkVersion getRootProjectProperty('targetSdkVersion', defaultTargetSDKVersion)
-        versionCode 1
-        versionName "1.0"
+        minSdk 21
+        targetSdk 35
+        buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
+        consumerProguardFiles 'infobip-mm-proguard-rules.pro'
     }
 
-    buildTypes {
-        release {
-            // Applying ProGuard rules for application classes that will be serialized/deserialized over Gson
-            consumerProguardFiles 'infobip-mm-proguard-rules.pro'
+    sourceSets {
+        main {
+            if (isNewArchitectureEnabled()) {
+                java.srcDirs += ["src/newarchitecture"]
+            } else {
+                java.srcDirs += ["src/oldarchitecture"]
+            }
         }
-    }
-
-    lintOptions {
-        abortOnError false
     }
 }
 
 repositories {
-    // ref: https://www.baeldung.com/maven-local-repository
-    maven {
-        // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
-        url "$rootDir/../node_modules/react-native/android"
-    }
-    maven {
-        // Android JSC is installed from npm
-        url "$rootDir/../node_modules/jsc-android/dist"
-    }
-    mavenCentral {
-        // We don't want to fetch react-native from Maven Central as there are
-        // older versions over there.
-        content {
-            excludeGroup "com.facebook.react"
-        }
-    }
+    maven { url "$rootDir/../node_modules/react-native/android" }
+    maven { url "$rootDir/../node_modules/jsc-android/dist" }
     google()
+    mavenCentral()
     mavenLocal()
 }
 
 dependencies {
     def mmVersion = '14.6.2'
-    //react and mm dependencies clash
-    if (!overrideKotlinVersion.empty) {
-        constraints {
-            implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$overrideKotlinVersion")
-        }
-    }
-    implementation 'com.facebook.react:react-native:+'
-    implementation "androidx.annotation:annotation:1.1.0"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:2.1.20"
+    compileOnly "com.facebook.react:react-android"
+    implementation "androidx.annotation:annotation:1.9.1"
 
     implementation 'com.google.android.material:material:1.12.0'
-    implementation 'androidx.exifinterface:exifinterface:1.3.6'
-    implementation 'androidx.databinding:viewbinding:8.0.2'
-    implementation 'com.google.android.gms:play-services-base:18.2.0'
+    implementation 'androidx.exifinterface:exifinterface:1.4.1'
+    implementation 'androidx.databinding:viewbinding:8.13.0'
+    implementation 'com.google.android.gms:play-services-base:18.7.2'
 
     implementation "com.infobip:infobip-mobile-messaging-android-resources:$mmVersion@aar"
     implementation "com.infobip:infobip-mobile-messaging-android-chat-sdk:$mmVersion@aar"
     implementation "com.infobip:infobip-mobile-messaging-android-inbox-sdk:$mmVersion@aar"
-    implementation ("com.infobip:infobip-mobile-messaging-android-sdk:$mmVersion@aar") {
+    implementation("com.infobip:infobip-mobile-messaging-android-sdk:$mmVersion@aar") {
         transitive = true;
 
         if (!overrideGmsVersion.empty) {
@@ -126,9 +100,4 @@ dependencies {
     if (!overrideFirebaseVersion.empty) {
         implementation "com.google.firebase:firebase-messaging:$overrideFirebaseVersion"
     }
-
-    if (withCryptorMigration.toBoolean()) {
-        implementation "com.infobip:infobip-mobile-messaging-android-cryptor-migration:$mmVersion@aar"
-    }
-
 }
