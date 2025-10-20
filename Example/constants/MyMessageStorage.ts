@@ -1,3 +1,11 @@
+//
+//  MyMessageStorage.ts
+//  MobileMessagingReactNative
+//
+//  Copyright (c) 2016-2025 Infobip Limited
+//  Licensed under the Apache License, Version 2.0
+//
+
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type {Message, CustomMessageStorage} from 'infobip-mobile-messaging-react-native-plugin';
 

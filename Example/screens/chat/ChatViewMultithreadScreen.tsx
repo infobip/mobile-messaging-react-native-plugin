@@ -1,3 +1,11 @@
+//
+//  ChatViewMultithreadScreen.tsx
+//  MobileMessagingReactNative
+//
+//  Copyright (c) 2016-2025 Infobip Limited
+//  Licensed under the Apache License, Version 2.0
+//
+
 /*
     Example of subview multithread in-app chat screen as React Component
  */

@@ -1,8 +1,9 @@
 //
-//  RNMMChatBridge.m
-//  infobip-mobile-messaging-react-native-plugin
+//  RNMMWebRTCUIBridge.m
+//  MobileMessagingReactNative
 //
-//  Created by Olga Koroleva on 26.05.2020.
+//  Copyright (c) 2016-2025 Infobip Limited
+//  Licensed under the Apache License, Version 2.0
 //
 
 #import <React/RCTBridgeModule.h>

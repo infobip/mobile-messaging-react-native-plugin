@@ -1,8 +1,9 @@
 //
 //  RNMMChatCustomization.swift
-//  infobip-mobile-messaging-react-native-plugin
+//  MobileMessagingReactNative
 //
-//  Created by Maksym Svitlovskyi on 10.08.2023.
+//  Copyright (c) 2016-2025 Infobip Limited
+//  Licensed under the Apache License, Version 2.0
 //
 
 import Foundation

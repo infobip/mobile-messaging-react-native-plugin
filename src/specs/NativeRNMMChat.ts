@@ -1,3 +1,11 @@
+//
+//  NativeRNMMChat.ts
+//  MobileMessagingReactNative
+//
+//  Copyright (c) 2016-2025 Infobip Limited
+//  Licensed under the Apache License, Version 2.0
+//
+
 import {type TurboModule, TurboModuleRegistry} from 'react-native';
 
 export interface Spec extends TurboModule {

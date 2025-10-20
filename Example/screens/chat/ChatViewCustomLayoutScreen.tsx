@@ -1,3 +1,11 @@
+//
+//  ChatViewCustomLayoutScreen.tsx
+//  MobileMessagingReactNative
+//
+//  Copyright (c) 2016-2025 Infobip Limited
+//  Licensed under the Apache License, Version 2.0
+//
+
 /*
  * Example of In-app ChatView as React Component presented with custom UI components.
  */

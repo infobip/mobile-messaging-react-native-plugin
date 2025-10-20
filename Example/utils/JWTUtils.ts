@@ -1,3 +1,11 @@
+//
+//  JWTUtils.ts
+//  MobileMessagingReactNative
+//
+//  Copyright (c) 2016-2025 Infobip Limited
+//  Licensed under the Apache License, Version 2.0
+//
+
 import 'react-native-get-random-values';
 import { v4 as uuidv4 } from 'uuid';
 import CryptoJS from 'crypto-js';
