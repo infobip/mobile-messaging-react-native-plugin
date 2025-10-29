@@ -46,11 +46,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 class MyMessageHandlingDelegate: NSObject, MMMessageHandlingDelegate {
     func willPresentInForeground(message: MM_MTMessage?, notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-        if #available(iOS 14.0, *) {
             completionHandler([.banner, .sound, .badge])
-        } else {
-            completionHandler([.alert, .sound, .badge])
-        }
     }
 }
 

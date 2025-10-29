@@ -9,7 +9,6 @@
 import UserNotifications
 import MobileMessaging
 
-@available(iOS 10.0, *)
 class NotificationService: UNNotificationServiceExtension {
 
 	var contentHandler: ((UNNotificationContent) -> Void)?
