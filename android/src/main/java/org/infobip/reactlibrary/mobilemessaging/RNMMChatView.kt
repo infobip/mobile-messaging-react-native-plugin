@@ -123,18 +123,6 @@ class RNMMChatView @JvmOverloads constructor(
 
     private fun createErrorsHandler(reactContext: ReactApplicationContext): InAppChatFragment.ErrorsHandler {
         return object : InAppChatFragment.ErrorsHandler {
-            override fun handlerError(error: String) {
-                // Deprecated method
-            }
-
-            override fun handlerWidgetError(error: String) {
-                // Deprecated method
-            }
-
-            override fun handlerNoInternetConnectionError(hasConnection: Boolean) {
-                // Deprecated method
-            }
-
             override fun handleError(exception: InAppChatException): Boolean {
                 ReactNativeEvent.send(EVENT_INAPPCHAT_EXCEPTION_RECEIVED, reactContext, exception.toJSON())
                 return true

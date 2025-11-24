@@ -315,18 +315,6 @@ class RNMMChatService(
 
     private fun createErrorsHandler(): InAppChatErrorsHandler {
         return object : InAppChatErrorsHandler {
-            override fun handlerError(@NonNull error: String) {
-                // Deprecated method
-            }
-
-            override fun handlerWidgetError(@NonNull error: String) {
-                // Deprecated method
-            }
-
-            override fun handlerNoInternetConnectionError(hasConnection: Boolean) {
-                // Deprecated method
-            }
-
             override fun handleError(@NonNull exception: InAppChatException): Boolean {
                 reactContext
                     ?.let { ReactNativeEvent.send(EVENT_INAPPCHAT_EXCEPTION_RECEIVED, it, exception.toJSON())}
