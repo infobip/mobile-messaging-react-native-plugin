@@ -1,7 +1,7 @@
 require "json"
 
 package = JSON.parse(File.read(File.join(__dir__, "package.json")))
-mmVersion = "14.0.1"
+mmVersion = "14.1.1"
 
 Pod::Spec.new do |s|
   s.name         = "infobip-mobile-messaging-react-native-plugin"
@@ -15,7 +15,7 @@ Pod::Spec.new do |s|
   s.authors      = { "Infobip" => "Push.Support@infobip.com" }
   s.platforms    = { :ios => "15.0" }
   s.source       = { :git => 'https://github.com/infobip/mobile-messaging-react-native-plugin.git', :tag => s.version}
-  s.swift_version = '5'
+  s.swift_version = '5.5'
   s.source_files = "ios/**/*.{h,m,swift}"
   s.requires_arc = true
 
