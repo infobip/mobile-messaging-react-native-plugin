@@ -152,6 +152,7 @@ declare namespace MobileMessagingReactNative {
         silent?: string | undefined;
         customPayload?: Record<string, string> | undefined;
         internalData?: string | undefined;
+        sentTimestamp?: number | undefined;
         receivedTimestamp?: number | undefined;
         seenDate?: number | undefined;
         contentUrl?: string | undefined;
@@ -313,7 +314,7 @@ declare namespace MobileMessagingReactNative {
         utilityButtonBottomMargin: double;
         initialHeight: double;
         mainFont: string;
-        charCountFont: string;
+        charCounterFont: string;
         //android only properties
         //status bar properties
         statusBarColorLight: boolean;
