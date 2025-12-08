@@ -114,7 +114,7 @@ class ReactNativeMobileMessagingService(
         @JvmStatic
         @Volatile
         var jsHasListeners = false
-        
+
         @JvmStatic
         @Volatile
         var pluginInitialized = false
@@ -635,9 +635,10 @@ class ReactNativeMobileMessagingService(
         }
     }
 
-    override fun onNewIntent(intent: Intent?) {
-        // Empty implementation
+    override fun onNewIntent(intent: Intent) {
+        TODO("Not yet implemented")
     }
+
 
     private fun installationResultListener(successCallback: Callback, errorCallback: Callback): MobileMessaging.ResultListener<Installation> {
         return object : MobileMessaging.ResultListener<Installation>() {
@@ -1074,7 +1075,7 @@ class MessageEventReceiver : ReactNativeBroadcastReceiver() {
         var actionInputText: String? = null
 
         if (InteractiveEvent.NOTIFICATION_ACTION_TAPPED.key == intent?.action) {
-            val notificationAction = NotificationAction.createFrom(intent.extras)
+            val notificationAction = NotificationAction.createFrom(intent?.extras)
             actionId = notificationAction.id
             actionInputText = notificationAction.inputText
         }

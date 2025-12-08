@@ -8,6 +8,7 @@
 
 package org.infobip.reactlibrary.mobilemessaging
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -131,13 +132,13 @@ class RNMMChatService(
     fun getMessageCounter(onSuccess: Callback) {
         runCatchingExceptions("getMessageCounter()") {
             onSuccess.invoke(inAppChat.messageCounter)
-        } 
+        }
     }
 
     fun resetMessageCounter() {
         runCatchingExceptions("resetMessageCounter()") {
             inAppChat.resetMessageCounter()
-        } 
+        }
     }
 
     fun setLanguage(localeString: String, onSuccess: Callback, onError: Callback) {
@@ -156,7 +157,7 @@ class RNMMChatService(
                     }
                 })
             },
-            errorHandler = { t -> 
+            errorHandler = { t ->
                 onError.invoke(Utils.callbackError(t.message, null))
             }
         )
@@ -170,10 +171,10 @@ class RNMMChatService(
                 inAppChat.sendContextualData(data, MultithreadStrategy.valueOf(multithreadStrategyFlag))
                 onSuccess.invoke()
             },
-            errorHandler = { t -> 
-                onError.invoke(Utils.callbackError(t.message, null)) 
+            errorHandler = { t ->
+                onError.invoke(Utils.callbackError(t.message, null))
             }
-         ) 
+        )
     }
 
     fun setWidgetTheme(widgetTheme: String?) {
@@ -183,6 +184,7 @@ class RNMMChatService(
     }
 
     private val reactNativeDrawableLoader = object : PluginChatCustomization.DrawableLoader {
+        @SuppressLint("LongLogTag")
         override fun loadDrawable(context: Context, drawableSrc: String?): Drawable? {
             if (drawableSrc.isNullOrBlank()) return null
             return try {
@@ -326,7 +328,12 @@ class RNMMChatService(
     //endregion
 
     //region ActivityEventListener
-    override fun onActivityResult(activity: Activity?, requestCode: Int, resultCode: Int, data: Intent?) {
+    override fun onActivityResult(
+        activity: Activity,
+        requestCode: Int,
+        resultCode: Int,
+        data: Intent?
+    ) {
         val fragmentActivity = Utils.getFragmentActivity(reactContext) ?: return
         val fragment = fragmentActivity.supportFragmentManager.findFragmentByTag(Utils.RN_IN_APP_CHAT_FRAGMENT_TAG)
         if (fragment == null) {
@@ -336,9 +343,6 @@ class RNMMChatService(
         fragment.onActivityResult(requestCode and 0xffff, resultCode, data)
     }
 
-    override fun onNewIntent(intent: Intent?) {
-        // Activity `onNewIntent` - no-op
-    }
     //endregion
 
     //region LifecycleEventListener
@@ -367,6 +371,10 @@ class RNMMChatService(
             errorHandler?.invoke(throwable) ?: Log.e(TAG, "$functionName error: ${throwable.message}", throwable)
         }
     }
+
+    override fun onNewIntent(intent: Intent) {
+        TODO("Not yet implemented")
+    }
     //endregion
 }
 
@@ -381,8 +389,10 @@ class RNMMChatEventReceiver : ReactNativeBroadcastReceiver() {
             Log.w(TAG, "Cannot process event for broadcast: ${intent?.action}")
             return
         }
-        val unreadChatMessagesCounter = intent.getIntExtra(BroadcastParameter.EXTRA_UNREAD_CHAT_MESSAGES_COUNT, 0)
-        emitOrCache(context, RNMMChatService.EVENT_INAPPCHAT_UNREAD_MESSAGES_COUNT_UPDATED, unreadChatMessagesCounter)
+        val unreadChatMessagesCounter = intent?.getIntExtra(BroadcastParameter.EXTRA_UNREAD_CHAT_MESSAGES_COUNT, 0)
+        if (unreadChatMessagesCounter != null) {
+            emitOrCache(context, RNMMChatService.EVENT_INAPPCHAT_UNREAD_MESSAGES_COUNT_UPDATED, unreadChatMessagesCounter)
+        }
     }
 
     private fun emitOrCache(context: Context?, eventType: String, unreadMessagesCounter: Int) {
