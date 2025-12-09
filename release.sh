@@ -30,4 +30,4 @@ encoded_password=$(echo ${GIT_PASSWORD} | jq -Rr @uri)
 git remote set-url origin https://${encoded_username}:${encoded_password}@git.ib-ci.com/scm/mml/infobip-mobile-messaging-react-native-plugin.git
 
 # Push changes
-git push origin master --tags
+git push origin ${BRANCH_NAME_TO_BUILD} --tags
