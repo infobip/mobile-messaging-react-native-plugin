@@ -636,7 +636,8 @@ class ReactNativeMobileMessagingService(
     }
 
     override fun onNewIntent(intent: Intent) {
-        TODO("Not yet implemented")
+        Log.d(TAG, "onNewIntent()")
+        // Handle new intents if needed in the future
     }
 
 
