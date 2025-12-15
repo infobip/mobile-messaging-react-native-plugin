@@ -272,6 +272,9 @@ declare namespace MobileMessagingReactNative {
         chatInputSeparatorLineColor: string;
         chatInputSeparatorLineVisible: boolean;
         chatInputCursorColor: string;
+        chatInputCharCounterTextAppearance: string;
+        chatInputCharCounterDefaultColor: string;
+        chatInputCharCounterAlertColor: string;
     }
 
     export interface ChatException {

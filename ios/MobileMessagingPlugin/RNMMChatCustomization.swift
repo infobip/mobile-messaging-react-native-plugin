@@ -64,6 +64,9 @@ enum ChatCustomizationKeys: String {
     case chatInputSeparatorLineColor = "chatInputSeparatorLineColor"
     case chatInputSeparatorLineVisible = " chatInputSeparatorLineVisible"
     case chatInputCursorColor = "chatInputCursorColor"
+    case chatInputCharCounterTextAppearance = "chatInputCharCounterTextAppearance"
+    case chatInputCharCounterDefaultColor = "chatInputCharCounterDefaultColor"
+    case chatInputCharCounterAlertColor = "chatInputCharCounterAlertColor"
 
     func getDict(from settings: [String: AnyObject]) -> [String: AnyObject]? {
         return settings[self.rawValue] as? [String: AnyObject]

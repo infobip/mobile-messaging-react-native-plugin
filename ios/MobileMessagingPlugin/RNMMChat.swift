@@ -85,6 +85,8 @@ class RNMMChat: NSObject  {
             self?.setNotNil(&chatsettings.errorLabelTextColor, ChatCustomizationKeys.networkErrorTextColor.getColor(from: settings))
             self?.setNotNil(&chatsettings.errorLabelBackgroundColor, ChatCustomizationKeys.networkErrorLabelBackgroundColor.getColor(from: settings))
             self?.setNotNil(&chatsettings.advancedSettings.mainPlaceholderTextColor, ChatCustomizationKeys.chatInputHintTextColor.getColor(from: settings))
+            self?.setNotNil(&chatsettings.advancedSettings.charCounterDefaultColor, ChatCustomizationKeys.chatInputCharCounterDefaultColor.getColor(from: settings))
+            self?.setNotNil(&chatsettings.advancedSettings.charCounterAlertColor, ChatCustomizationKeys.chatInputCharCounterAlertColor.getColor(from: settings))
         }
     }
     
