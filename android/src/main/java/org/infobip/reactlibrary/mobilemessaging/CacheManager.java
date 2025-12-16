@@ -50,7 +50,7 @@ class CacheManager {
 
     static void saveEvent(Context context, String event, JSONObject object, String actionId, String actionInputText) {
         if (context == null) {
-            Log.e(Utils.TAG, "context is null, can't cache event " + event);
+            RNMMLogger.e(Utils.TAG, "context is null, can't cache event " + event);
             return;
         }
         String serialized = serializer.serialize(new Event(event, object, actionId, actionInputText));
@@ -59,7 +59,7 @@ class CacheManager {
 
     static void saveEvent(Context context, String event, int unreadMessagesCounter) {
         if (context == null) {
-            Log.e(Utils.TAG, "context is null, can't cache event " + event);
+            RNMMLogger.e(Utils.TAG, "context is null, can't cache event " + event);
             return;
         }
         //int `unreadMessagesCounter` isn't a JSONObject, so it'll go as a second argument
@@ -69,7 +69,7 @@ class CacheManager {
 
     static Event[] loadEvents(Context context, String eventType) {
         if (context == null) {
-            Log.e(Utils.TAG, "context is null, can't load cached events " + eventType);
+            RNMMLogger.e(Utils.TAG, "context is null, can't load cached events " + eventType);
             return new Event[0];
         }
         Set<String> serialized = getStringSet(context, EVENTS_KEY);

@@ -134,6 +134,11 @@ class MobileMessaging {
     }
 
     /**
+     * Private global variable holding reference to platform native logs subscription.
+     */
+    #platformNativeLogsSubscription = null;
+
+    /**
      * Starts a new Mobile Messaging session.
      *
      * @name init
@@ -147,9 +152,9 @@ class MobileMessaging {
      *		messageStorage: '<Message storage save callback>',
      *		defaultMessageStorage: true,
      *	    fullFeaturedInAppsEnabled: true,
+     *		logging: <Boolean>,
      *		ios: {
-     *			notificationTypes: ['alert', 'sound', 'badge'],
-     *			logging: <Boolean>
+     *			notificationTypes: ['alert', 'sound', 'badge']
      *		},
      *	    android: {
      *			notificationIcon: <String>,
@@ -254,8 +259,24 @@ class MobileMessaging {
         }
 
         config.reactNativePluginVersion = require('../package').version;
-
+        
         ReactNativeMobileMessaging.init(config, onSuccess, onError);
+        
+        if (config.logging === true) {
+            if (this.#platformNativeLogsSubscription != null) {
+                this.unsubscribe(this.#platformNativeLogsSubscription);
+                this.#platformNativeLogsSubscription = null;
+            }
+             this.#platformNativeLogsSubscription = this.subscribe('internal.platformNativeLogSent', (debugPayload) => {
+                if (debugPayload.message.includes("RNMMERROR")) {
+                    console.error(debugPayload.message.replace("RNMMERROR", ""));
+                } else if (debugPayload.message.includes("RNMMWARN")) {
+                    console.warn(debugPayload.message.replace("RNMMWARN", ""));
+                } else {
+                    console.log(debugPayload.message);
+                }
+            });
+        }
     };
 
     /**

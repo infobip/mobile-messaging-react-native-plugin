@@ -29,17 +29,17 @@ class RNMMWebRTCUIModule(
     override fun getName(): String = NAME
 
     override fun enableChatCalls(onSuccess: Callback, onError: Callback) {
-        Log.i(TAG, "enableChatCalls()")
+        RNMMLogger.i(TAG, "enableChatCalls()")
         service.enableChatCalls(onSuccess, onError)
     }
 
     override fun enableCalls(identity: String, onSuccess: Callback, onError: Callback) {
-        Log.i(TAG, "enableCalls()")
+        RNMMLogger.i(TAG, "enableCalls()")
         service.enableCalls(identity, onSuccess, onError)
     }
 
     override fun disableCalls(onSuccess: Callback, onError: Callback) {
-        Log.i(TAG, "disableCalls()")
+        RNMMLogger.i(TAG, "disableCalls()")
         service.disableCalls(onSuccess, onError)
     }
 }

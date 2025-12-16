@@ -37,6 +37,7 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
             EventName.messageStorage_save,
             EventName.messageStorage_find,
             EventName.messageStorage_findAll,
+            EventName.debugLoggerMessageReceived,
             EventName.inAppChat_availabilityUpdated,
             EventName.inAppChat_unreadMessageCounterUpdated,
             EventName.inAppChat_viewStateChanged,
@@ -120,7 +121,6 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
     }
     
     private func start(configuration: RNMobileMessagingConfiguration, onSuccess: @escaping RCTResponseSenderBlock) {
-        MobileMessaging.privacySettings.applicationCodePersistingDisabled = configuration.privacySettings[RNMobileMessagingConfiguration.Keys.applicationCodePersistingDisabled].unwrap(orDefault: false)
         MobileMessaging.privacySettings.systemInfoSendingDisabled = configuration.privacySettings[RNMobileMessagingConfiguration.Keys.systemInfoSendingDisabled].unwrap(orDefault: false)
         MobileMessaging.privacySettings.carrierInfoSendingDisabled = configuration.privacySettings[RNMobileMessagingConfiguration.Keys.carrierInfoSendingDisabled].unwrap(orDefault: false)
         MobileMessaging.privacySettings.userDataPersistingDisabled = configuration.privacySettings[RNMobileMessagingConfiguration.Keys.userDataPersistingDisabled].unwrap(orDefault: false)
@@ -137,7 +137,7 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
         }
         MobileMessaging.userAgent.pluginVersion = "reactNative \(configuration.reactNativePluginVersion)"
         if configuration.logging {
-            MobileMessaging.logger = MMDefaultLogger()
+            MobileMessaging.logger = RNMMLogger()
         }
 
         if configuration.inAppChatEnabled {

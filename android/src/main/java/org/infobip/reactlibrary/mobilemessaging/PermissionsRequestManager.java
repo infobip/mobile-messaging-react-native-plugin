@@ -22,7 +22,6 @@ import com.facebook.react.modules.core.PermissionAwareActivity;
 import com.facebook.react.modules.core.PermissionListener;
 
 import org.infobip.mobile.messaging.resources.R;
-import org.infobip.mobile.messaging.logging.MobileMessagingLogger;
 import org.infobip.mobile.messaging.permissions.PermissionsHelper;
 
 import java.util.Set;
@@ -155,7 +154,7 @@ public class PermissionsRequestManager {
     }
 
     protected void openSettings(Activity activity) {
-        MobileMessagingLogger.d("Will open application settings activity");
+        RNMMLogger.d(Utils.TAG, "Will open application settings activity");
         Intent intent = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
         Uri uri = Uri.fromParts("package", activity.getPackageName(), null);
         intent.setData(uri);

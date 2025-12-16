@@ -81,7 +81,7 @@ class RNMMChatService(
                 override fun onReceive(context: Context, intent: Intent) {
                     val event = broadcastEventMap[intent.action]
                     if (event == null) {
-                        Log.w(TAG, "Cannot process event for broadcast: ${intent.action}")
+                        RNMMLogger.w(TAG, "Cannot process event for broadcast: ${intent.action}")
                         return
                     }
 
@@ -190,7 +190,7 @@ class RNMMChatService(
                     BitmapDrawable(context.resources, drawableStream)
                 }
             } catch (e: IOException) {
-                Log.e("PluginChatCustomization.DrawableLoader", "Failed to load image $drawableSrc", e)
+                RNMMLogger.e("PluginChatCustomization.DrawableLoader", "Failed to load image $drawableSrc", e)
                 null
             }
         }
@@ -225,7 +225,7 @@ class RNMMChatService(
         private fun sendRequestEvent() {
             reactContext
                 ?.let { ReactNativeEvent.send(EVENT_INAPPCHAT_JWT_REQUESTED, it)}
-                ?: Log.e(TAG, "React context is null, cannot send request for JWT.")
+                ?: RNMMLogger.e(TAG, "React context is null, cannot send request for JWT.")
         }
 
         fun requestJwt(callback: JwtProvider.JwtCallback) {
@@ -242,11 +242,11 @@ class RNMMChatService(
                     updateAwaitingState()
                 }
                 reactContext?.runOnUiQueueThread(runnable) ?: run {
-                    Log.w(TAG, "React context is null, cannot resume with JWT value on UI thread.")
+                    RNMMLogger.w(TAG, "React context is null, cannot resume with JWT value on UI thread.")
                     runnable.run()
                 }
             } catch (e: Exception) {
-                Log.e(TAG, "Could not resume with JWT value $newJwt", e)
+                RNMMLogger.e(TAG, "Could not resume with JWT value $newJwt", e)
             }
         }
 
@@ -257,11 +257,11 @@ class RNMMChatService(
                     updateAwaitingState()
                 }
                 reactContext?.runOnUiQueueThread(runnable) ?: run {
-                    Log.w(TAG, "React context is null, cannot resume with JWT error on UI thread.")
+                    RNMMLogger.w(TAG, "React context is null, cannot resume with JWT error on UI thread.")
                     runnable.run()
                 }
             } catch (e: Exception) {
-                Log.e(TAG, "Could not resume with JWT error ${throwable.message}", e)
+                RNMMLogger.e(TAG, "Could not resume with JWT error ${throwable.message}", e)
             }
         }
 
@@ -318,7 +318,7 @@ class RNMMChatService(
             override fun handleError(@NonNull exception: InAppChatException): Boolean {
                 reactContext
                     ?.let { ReactNativeEvent.send(EVENT_INAPPCHAT_EXCEPTION_RECEIVED, it, exception.toJSON())}
-                    ?: Log.e(Utils.TAG, "React context is null, cannot propagate chat exception.")
+                    ?: RNMMLogger.e(Utils.TAG, "React context is null, cannot propagate chat exception.")
                 return true
             }
         }
@@ -330,7 +330,7 @@ class RNMMChatService(
         val fragmentActivity = Utils.getFragmentActivity(reactContext) ?: return
         val fragment = fragmentActivity.supportFragmentManager.findFragmentByTag(Utils.RN_IN_APP_CHAT_FRAGMENT_TAG)
         if (fragment == null) {
-            Log.w(TAG, "Can't find ${Utils.RN_IN_APP_CHAT_FRAGMENT_TAG} to provide onActivityResult")
+            RNMMLogger.w(TAG, "Can't find ${Utils.RN_IN_APP_CHAT_FRAGMENT_TAG} to provide onActivityResult")
             return
         }
         fragment.onActivityResult(requestCode and 0xffff, resultCode, data)
@@ -343,15 +343,15 @@ class RNMMChatService(
 
     //region LifecycleEventListener
     override fun onHostResume() {
-        Log.d(TAG, "onHostResume()")
+        RNMMLogger.d(TAG, "onHostResume()")
     }
 
     override fun onHostPause() {
-        Log.d(TAG, "onHostPause()")
+        RNMMLogger.d(TAG, "onHostPause()")
     }
 
     override fun onHostDestroy() {
-        Log.d(TAG, "onHostDestroy()")
+        RNMMLogger.d(TAG, "onHostDestroy()")
         reactContext.removeActivityEventListener(this)
         reactContext.removeLifecycleEventListener(this)
     }
@@ -360,11 +360,11 @@ class RNMMChatService(
     //region Helpers
     private fun runCatchingExceptions(functionName: String, args: Array<out Any?> = emptyArray(), errorHandler: ((Throwable) -> Unit)? = null, block: () -> Unit) {
         val argsLog = if (args.isEmpty()) "" else " Arguments: ${args.joinToString()}"
-        Log.d(TAG, "$functionName$argsLog")
+        RNMMLogger.d(TAG, "$functionName$argsLog")
         try {
             block()
         } catch (throwable: Throwable) {
-            errorHandler?.invoke(throwable) ?: Log.e(TAG, "$functionName error: ${throwable.message}", throwable)
+            errorHandler?.invoke(throwable) ?: RNMMLogger.e(TAG, "$functionName error: ${throwable.message}", throwable)
         }
     }
     //endregion
@@ -378,7 +378,7 @@ class RNMMChatEventReceiver : ReactNativeBroadcastReceiver() {
 
     override fun onReceive(context: Context?, intent: Intent?) {
         if (InAppChatEvent.UNREAD_MESSAGES_COUNTER_UPDATED.key != intent?.action) {
-            Log.w(TAG, "Cannot process event for broadcast: ${intent?.action}")
+            RNMMLogger.w(TAG, "Cannot process event for broadcast: ${intent?.action}")
             return
         }
         val unreadChatMessagesCounter = intent.getIntExtra(BroadcastParameter.EXTRA_UNREAD_CHAT_MESSAGES_COUNT, 0)
@@ -396,7 +396,7 @@ class RNMMChatEventReceiver : ReactNativeBroadcastReceiver() {
         } else if (context != null) {
             CacheManager.saveEvent(context, eventType, unreadMessagesCounter)
         } else {
-            Log.e(TAG, "Both reactContext and androidContext are null, can't emit or cache event " + eventType)
+            RNMMLogger.e(TAG, "Both reactContext and androidContext are null, can't emit or cache event " + eventType)
         }
     }
 }

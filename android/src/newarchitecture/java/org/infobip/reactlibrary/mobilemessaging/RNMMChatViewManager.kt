@@ -41,27 +41,27 @@ class RNMMChatViewManager(
 
     @ReactProp(name = "sendButtonColor")
     override fun setSendButtonColor(view: RNMMChatView, value: String?) {
-        Log.i(TAG, "setSendButtonColor($value) is not supported in Android")
+        RNMMLogger.i(TAG, "setSendButtonColor($value) is not supported in Android")
         // iOS only prop, no-op on Android
     }
  
     override fun add(view: RNMMChatView) {
-        Log.i(TAG, "add()")
+        RNMMLogger.i(TAG, "add()")
         view.add(reactContext, Utils.getFragmentActivity(reactContext))
     }
 
     override fun remove(view: RNMMChatView) {
-        Log.i(TAG, "remove()")
+        RNMMLogger.i(TAG, "remove()")
         view.remove(Utils.getFragmentActivity(reactContext))
     }
 
     override fun setExceptionHandler(view: RNMMChatView, isHandlerPresent: Boolean) {
-        Log.i(TAG, "setExceptionHandler()")
+        RNMMLogger.i(TAG, "setExceptionHandler()")
         view.setExceptionHandler(isHandlerPresent, reactContext, Utils.getFragmentActivity(reactContext))
     }
 
     override fun showThreadsList(view: RNMMChatView) {
-        Log.i(TAG, "showThreadsList()")
+        RNMMLogger.i(TAG, "showThreadsList()")
         view.showThreadsList(Utils.getFragmentActivity(reactContext))
     }
 

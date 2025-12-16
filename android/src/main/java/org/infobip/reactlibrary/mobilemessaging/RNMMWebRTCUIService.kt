@@ -24,6 +24,67 @@ class RNMMWebRTCUIService(
 
     companion object {
         private var infobipRtcUiInstance: Any? = null
+        const val TAG = "RNMMWebRTCUI"
+
+        fun resetLogger(reactContext: ReactApplicationContext?) {
+            if (reactContext == null) {
+                RNMMLogger.w(TAG, "ReactContext is null, cannot enable native logs for WebRTCUI")
+                return
+            }
+            try {
+                val rtcUiLoggerClass = Class.forName("com.infobip.webrtc.ui.logging.RtcUiLogger")
+                val rtcUiLoggerInstance = rtcUiLoggerClass.getField("INSTANCE").get(null)
+
+                val resetMethod = rtcUiLoggerClass.getDeclaredMethod("reset")
+                resetMethod.isAccessible = true
+                resetMethod.invoke(rtcUiLoggerInstance)
+            } catch (e: ClassNotFoundException) {
+                // Ignored - Android WebRtcUi not enabled - no logs to enable
+            } catch (t: Throwable) {
+                RNMMLogger.e(TAG, "Cannot reset logger for WebRTCUI. Something went wrong.", t)
+            }
+        }
+
+        fun enforceLogsWriter(reactContext: ReactApplicationContext?, writer: RNMMLogWriter) {
+            if (reactContext == null) {
+                RNMMLogger.w(TAG, "ReactContext is null, cannot enable native logs for WebRTCUI")
+                return
+            }
+            try {
+                val rtcUiLoggerClass = Class.forName("com.infobip.webrtc.ui.logging.RtcUiLogger")
+                val rtcUiLoggerInstance = rtcUiLoggerClass.getField("INSTANCE").get(null)
+
+                val initMethod = rtcUiLoggerClass.getDeclaredMethod("init", Context::class.java)
+                initMethod.isAccessible = true
+                initMethod.invoke(rtcUiLoggerInstance, reactContext.applicationContext)
+
+                val enforceMethod = rtcUiLoggerClass.getDeclaredMethod("enforce")
+                enforceMethod.isAccessible = true
+                enforceMethod.invoke(rtcUiLoggerInstance)
+
+                val rtcUiWriterClass = Class.forName("com.infobip.webrtc.ui.logging.RtcUiWriter")
+                val writerInstance = java.lang.reflect.Proxy.newProxyInstance(rtcUiWriterClass.classLoader, arrayOf(rtcUiWriterClass)) { _, method, args ->
+                    if ("write" == method.name) {
+                        val level: Any? = args?.getOrNull(0)
+                        val levelName: String? = (level as? Enum<*>)?.name
+                        val tag: String = args?.getOrNull(1) as? String ?: ""
+                        val message: String = args?.getOrNull(2) as? String ?: ""
+                        val throwable: Throwable? = args?.getOrNull(3) as? Throwable
+                        writer.write(levelName, tag, message, throwable)
+                    }
+                    null
+                }
+
+                val setWriterMethod = rtcUiLoggerClass.getDeclaredMethod("setWriter", rtcUiWriterClass)
+                setWriterMethod.isAccessible = true
+                setWriterMethod.invoke(rtcUiLoggerInstance, writerInstance)
+            } catch (e: ClassNotFoundException) {
+                // Ignored - Android WebRtcUi not enabled - no logs to enable
+            } catch (t: Throwable) {
+                RNMMLogger.e(TAG, "Cannot enable native logs for WebRTCUI. Something went wrong.", t)
+            }
+        }
+
     }
 
     private var successListenerClass: Class<*>? = null

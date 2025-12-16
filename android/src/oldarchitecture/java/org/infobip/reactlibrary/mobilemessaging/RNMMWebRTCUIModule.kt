@@ -34,19 +34,19 @@ class RNMMWebRTCUIModule(
 
     @ReactMethod
     fun enableChatCalls(onSuccess: Callback, onError: Callback) {
-        Log.i(TAG, "enableChatCalls()")
+        RNMMLogger.i(TAG, "enableChatCalls()")
         service.enableChatCalls(onSuccess, onError)
     }
 
     @ReactMethod
     fun enableCalls(identity: String, onSuccess: Callback, onError: Callback) {
-        Log.i(TAG, "enableCalls()")
+        RNMMLogger.i(TAG, "enableCalls()")
         service.enableCalls(identity, onSuccess, onError)
     }
 
     @ReactMethod
     fun disableCalls(onSuccess: Callback, onError: Callback) {
-        Log.i(TAG, "disableCalls()")
+        RNMMLogger.i(TAG, "disableCalls()")
         service.disableCalls(onSuccess, onError)
     }
 }

@@ -32,91 +32,91 @@ class RNMMChatModule(reactContext: ReactApplicationContext) : ReactContextBaseJa
 
     @ReactMethod
     fun showChat(args: ReadableMap?) {
-        Log.i(TAG, "showChat()")
+        RNMMLogger.i(TAG, "showChat()")
         service.showChat(args)
     }
 
     @ReactMethod
     fun showThreadsList() {
-        Log.i(TAG, "showThreadsList()")
+        RNMMLogger.i(TAG, "showThreadsList()")
         // iOS only
     }
 
     @ReactMethod
     fun getMessageCounter(onSuccess: Callback) {
-        Log.i(TAG, "getMessageCounter()")
+        RNMMLogger.i(TAG, "getMessageCounter()")
         service.getMessageCounter(onSuccess)
     }
 
     @ReactMethod
     fun resetMessageCounter() {
-        Log.i(TAG, "resetMessageCounter()")
+        RNMMLogger.i(TAG, "resetMessageCounter()")
         service.resetMessageCounter()
     }
 
     @ReactMethod
     fun setLanguage(localeString: String, onSuccess: Callback, onError: Callback) {
-        Log.i(TAG, "setLanguage()")
+        RNMMLogger.i(TAG, "setLanguage()")
         service.setLanguage(localeString, onSuccess, onError)
     }
 
     @ReactMethod
     fun sendContextualData(data: String, multithreadStrategyFlag: String, onSuccess: Callback, onError: Callback) {
-        Log.i(TAG, "sendContextualData()")
+        RNMMLogger.i(TAG, "sendContextualData()")
         service.sendContextualData(data, multithreadStrategyFlag, onSuccess, onError)
     }
 
     @ReactMethod
     fun setWidgetTheme(widgetTheme: String?) {
-        Log.i(TAG, "setWidgetTheme()")
+        RNMMLogger.i(TAG, "setWidgetTheme()")
         service.setWidgetTheme(widgetTheme)
     }
 
     @ReactMethod
     fun setChatCustomization(map: ReadableMap?) {
-        Log.i(TAG, "setChatCustomization()")
+        RNMMLogger.i(TAG, "setChatCustomization()")
         service.setChatCustomization(map)
     }
 
     @ReactMethod
     fun setChatPushTitle(title: String?) {
-        Log.i(TAG, "setChatPushTitle()")
+        RNMMLogger.i(TAG, "setChatPushTitle()")
         service.setChatPushTitle(title)
     }
 
     @ReactMethod
     fun setChatPushBody(body: String?) {
-        Log.i(TAG, "setChatPushBody()")
+        RNMMLogger.i(TAG, "setChatPushBody()")
         service.setChatPushBody(body)
     }
 
     @ReactMethod
     fun restartConnection() {
-        Log.i(TAG, "restartConnection()")
+        RNMMLogger.i(TAG, "restartConnection()")
         // iOS only
     }
 
     @ReactMethod
     fun stopConnection() {
-        Log.i(TAG, "stopConnection()")
+        RNMMLogger.i(TAG, "stopConnection()")
         // iOS only
     }
 
     @ReactMethod
     fun setChatJwtProvider() {
-        Log.i(TAG, "setChatJwtProvider()")
+        RNMMLogger.i(TAG, "setChatJwtProvider()")
         service.setChatJwtProvider()
     }
 
     @ReactMethod
     fun setChatJwt(jwt: String?) {
-        Log.i(TAG, "setChatJwt()")
+        RNMMLogger.i(TAG, "setChatJwt()")
         service.setChatJwt(jwt)
     }
 
     @ReactMethod
     fun setChatExceptionHandler(isHandlerPresent: Boolean) {
-        Log.i(TAG, "setChatExceptionHandler()")
+        RNMMLogger.i(TAG, "setChatExceptionHandler()")
         service.setChatExceptionHandler(isHandlerPresent)
     }
 

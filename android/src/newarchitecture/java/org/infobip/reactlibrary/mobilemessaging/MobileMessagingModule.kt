@@ -36,75 +36,75 @@ class MobileMessagingModule(reactContext: ReactApplicationContext) : NativeMobil
 
     // Initialization
     override fun init(config: ReadableMap, successCallback: Callback, errorCallback: Callback) {
-        Log.d(TAG, "Init...")
+        RNMMLogger.d(TAG, "Init...")
         service.init(config, successCallback, errorCallback)
     }
 
     // Default message storage
     override fun defaultMessageStorage_find(messageId: String, onSuccess: Callback, onError: Callback) {
-        Log.d(TAG, "defaultMessageStorage_find...")
+        RNMMLogger.d(TAG, "defaultMessageStorage_find...")
         service.defaultMessageStorage_find(messageId, onSuccess, onError)
     }
 
     override fun defaultMessageStorage_findAll(onSuccess: Callback, onError: Callback) {
-        Log.d(TAG, "defaultMessageStorage_findAll...")
+        RNMMLogger.d(TAG, "defaultMessageStorage_findAll...")
         service.defaultMessageStorage_findAll(onSuccess, onError)
     }
 
     override fun defaultMessageStorage_delete(messageId: String, onSuccess: Callback, onError: Callback) {
-        Log.d(TAG, "defaultMessageStorage_delete...")
+        RNMMLogger.d(TAG, "defaultMessageStorage_delete...")
         service.defaultMessageStorage_delete(messageId, onSuccess, onError)
     }
 
     override fun defaultMessageStorage_deleteAll(onSuccess: Callback, onError: Callback) {
-        Log.d(TAG, "defaultMessageStorage_deleteAll...")
+        RNMMLogger.d(TAG, "defaultMessageStorage_deleteAll...")
         service.defaultMessageStorage_deleteAll(onSuccess, onError)
     }
 
     // Inbox
     override fun fetchInboxMessages(token: String, externalUserId: String, filterOptions: ReadableMap, onSuccess: Callback, onError: Callback) {
-        Log.d(TAG, "fetchInboxMessages...")
+        RNMMLogger.d(TAG, "fetchInboxMessages...")
         service.fetchInboxMessages(token, externalUserId, filterOptions, onSuccess, onError)
     }
 
     override fun fetchInboxMessagesWithoutToken(externalUserId: String, filterOptions: ReadableMap, onSuccess: Callback, onError: Callback) {
-        Log.d(TAG, "fetchInboxMessagesWithoutToken...")
+        RNMMLogger.d(TAG, "fetchInboxMessagesWithoutToken...")
         service.fetchInboxMessagesWithoutToken(externalUserId, filterOptions, onSuccess, onError)
     }
 
     override fun setInboxMessagesSeen(externalUserId: String, messageIds: ReadableArray, onSuccess: Callback, onError: Callback) {
-        Log.d(TAG, "setInboxMessagesSeen...")
+        RNMMLogger.d(TAG, "setInboxMessagesSeen...")
         service.setInboxMessagesSeen(externalUserId, messageIds, onSuccess, onError)
     }
 
     override fun saveUser(userData: ReadableMap, successCallback: Callback, errorCallback: Callback) {
-        Log.d(TAG, "Save user...")
+        RNMMLogger.d(TAG, "Save user...")
         service.saveUser(userData, successCallback, errorCallback)
     }
 
     override fun fetchUser(successCallback: Callback, errorCallback: Callback) {
-        Log.d(TAG, "Fetch user...")
+        RNMMLogger.d(TAG, "Fetch user...")
         service.fetchUser(successCallback, errorCallback)
     }
 
     override fun getUser(successCallback: Callback) {
-        Log.d(TAG, "Get user...")
+        RNMMLogger.d(TAG, "Get user...")
         service.getUser(successCallback)
     }
 
     // Installation
     override fun saveInstallation(installation: ReadableMap, successCallback: Callback, errorCallback: Callback) {
-        Log.d(TAG, "Save installation...")
+        RNMMLogger.d(TAG, "Save installation...")
         service.saveInstallation(installation, successCallback, errorCallback)
     }
 
     override fun fetchInstallation(successCallback: Callback, errorCallback: Callback) {
-        Log.d(TAG, "Fetch installation...")
+        RNMMLogger.d(TAG, "Fetch installation...")
         service.fetchInstallation(successCallback, errorCallback)
     }
 
     override fun getInstallation(successCallback: Callback) {
-        Log.d(TAG, "Get installation...")
+        RNMMLogger.d(TAG, "Get installation...")
         service.getInstallation(successCallback)
     }
 
@@ -118,73 +118,73 @@ class MobileMessagingModule(reactContext: ReactApplicationContext) : NativeMobil
     }
 
     override fun personalize(context: ReadableMap, successCallback: Callback, errorCallback: Callback) {
-        Log.d(TAG, "Personalize...")
+        RNMMLogger.d(TAG, "Personalize...")
         service.personalize(context, successCallback, errorCallback)
     }
 
     override fun depersonalize(successCallback: Callback, errorCallback: Callback) {
-        Log.d(TAG, "Depersonalize...")
+        RNMMLogger.d(TAG, "Depersonalize...")
         service.depersonalize(successCallback, errorCallback)
     }
 
     override fun depersonalizeInstallation(pushRegistrationId: String, successCallback: Callback, errorCallback: Callback) {
-        Log.d(TAG, "Depersonalize installation...")
+        RNMMLogger.d(TAG, "Depersonalize installation...")
         service.depersonalizeInstallation(pushRegistrationId, successCallback, errorCallback)
     }
 
     // Events
     override fun submitEvent(eventData: ReadableMap, onError: Callback) {
-        Log.d(TAG, "submitEvent...")
+        RNMMLogger.d(TAG, "submitEvent...")
         service.submitEvent(eventData, onError)
     }
 
     override fun submitEventImmediately(eventData: ReadableMap, onSuccess: Callback, onError: Callback) {
-        Log.d(TAG, "submitEventImmediately...")
+        RNMMLogger.d(TAG, "submitEventImmediately...")
         service.submitEventImmediately(eventData, onSuccess, onError)
     }
 
     override fun markMessagesSeen(messageIds: ReadableArray, successCallback: Callback, errorCallback: Callback) {
-        Log.d(TAG, "MarkMessagesSeen...")
+        RNMMLogger.d(TAG, "MarkMessagesSeen...")
         service.markMessagesSeen(messageIds, successCallback, errorCallback)
     }
 
     // Remote notifications (Android specific)
     override fun registerForAndroidRemoteNotifications() {
-        Log.d(TAG, "Register for Android remote notifications...")
+        RNMMLogger.d(TAG, "Register for Android remote notifications...")
         service.registerForAndroidRemoteNotifications()
     }
 
     // Dialog for error (UI)
     override fun showDialogForError(errorCode: Double, successCallback: Callback, errorCallback: Callback) {
-        Log.d(TAG, "ShowDialogForError...")
+        RNMMLogger.d(TAG, "ShowDialogForError...")
         service.showDialogForError(errorCode, successCallback, errorCallback)
     }
 
     // JWT
     override fun setUserDataJwt(jwt: String?, successCallback: Callback, errorCallback: Callback) {
-        Log.d(TAG, "SetUserDataJwt...")
+        RNMMLogger.d(TAG, "SetUserDataJwt...")
         service.setUserDataJwt(jwt, successCallback, errorCallback)
     }
 
     // Custom message storage from JS
     override fun messageStorage_provideFindAllResult(messages: ReadableArray) {
-        Log.d(TAG, "MessageStorage_provideFindAllResult...")
+        RNMMLogger.d(TAG, "MessageStorage_provideFindAllResult...")
         service.messageStorage_provideFindAllResult(messages)
     }
 
     override fun messageStorage_provideFindResult(message: ReadableMap) {
-        Log.d(TAG, "MessageStorage_provideFindResult...")
+        RNMMLogger.d(TAG, "MessageStorage_provideFindResult...")
         service.messageStorage_provideFindResult(message)
     }
 
     // Event system methods (required for React Native EventEmitter)
     override fun addListener(eventName: String) {
-        Log.d(TAG, "addListener: $eventName")
+        RNMMLogger.d(TAG, "addListener: $eventName")
         service.addListener(eventName)
     }
 
     override fun removeListeners(count: Double) {
-        Log.d(TAG, "removeListeners: $count")
+        RNMMLogger.d(TAG, "removeListeners: $count")
         service.removeListeners(count.toInt())
     }
 

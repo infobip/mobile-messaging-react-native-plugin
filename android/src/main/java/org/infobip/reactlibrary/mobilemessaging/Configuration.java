@@ -109,7 +109,7 @@ public class Configuration {
     boolean fullFeaturedInAppsEnabled;
     Map<String, ?> messageStorage;
     boolean defaultMessageStorage;
-    boolean loggingEnabled;
+    boolean logging;
     String reactNativePluginVersion = "unknown";
     PrivacySettings privacySettings = new PrivacySettings();
     List<Category> notificationCategories = new ArrayList<Category>();

@@ -44,3 +44,7 @@ ios/Pods
 Podfile.lock
 *.tgz
 package-lock.json
+
+# Claude
+Claude.md
+./claude/*

@@ -26,7 +26,7 @@ class ReactNativeMobileMessagingPackage : BaseReactPackage() {
     }
 
     override fun getModule(name: String, reactContext: ReactApplicationContext): NativeModule? {
-        Log.i(TAG, "getModule...")
+        RNMMLogger.i(TAG, "getModule...")
         return when (name) {
             MobileMessagingModule.NAME -> MobileMessagingModule(reactContext)
             RNMMChatModule.NAME -> RNMMChatModule(reactContext)
@@ -37,7 +37,7 @@ class ReactNativeMobileMessagingPackage : BaseReactPackage() {
     }
 
     override fun getReactModuleInfoProvider(): ReactModuleInfoProvider {
-        Log.i("ReactNativeMobileMessagingPackage", "getReactModuleInfoProvider...")
+        RNMMLogger.i("ReactNativeMobileMessagingPackage", "getReactModuleInfoProvider...")
         return ReactModuleInfoProvider {
             val reactModuleInfos: MutableMap<String, ReactModuleInfo> = HashMap()
             val isTurboModule = BuildConfig.IS_NEW_ARCHITECTURE_ENABLED
@@ -85,13 +85,13 @@ class ReactNativeMobileMessagingPackage : BaseReactPackage() {
                     isTurboModule   // isTurboModule
                 )
             )
-            Log.i(TAG, "ReactModuleInfos: " + reactModuleInfos.toString())
+            RNMMLogger.i(TAG, "ReactModuleInfos: " + reactModuleInfos.toString())
             reactModuleInfos
         }
     }
 
     override fun createViewManagers(reactContext: ReactApplicationContext): List<ViewManager<*, *>> {
-        Log.i(TAG, "createViewManagers...")
+        RNMMLogger.i(TAG, "createViewManagers...")
         return listOf(RNMMChatViewManager(reactContext))
     }
 }

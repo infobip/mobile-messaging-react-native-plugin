@@ -31,7 +31,7 @@ class ReactNativeEvent {
 
     static void send(String eventName, ReactContext reactContext, JSONObject jsonObject, Object... objects) {
         if (jsonObject == null && objects == null) {
-            Log.d(Utils.TAG, "objects are null, so another method should be used");
+            RNMMLogger.d(Utils.TAG, "objects are null, so another method should be used");
             send(eventName, reactContext);
             return;
         }
@@ -65,7 +65,7 @@ class ReactNativeEvent {
                 }
             }
         } catch (JSONException e) {
-            Log.e(Utils.TAG, "Arguments can't be converted to JS types");
+            RNMMLogger.e(Utils.TAG, "Arguments can't be converted to JS types");
         }
         send(eventName, reactContext, array);
     }
@@ -75,7 +75,7 @@ class ReactNativeEvent {
             return;
         }
         if (reactContext == null) {
-            Log.e(Utils.TAG, "reactContext is null, can't send event " + eventName);
+            RNMMLogger.e(Utils.TAG, "reactContext is null, can't send event " + eventName);
             return;
         }
 
@@ -87,7 +87,7 @@ class ReactNativeEvent {
             return;
         }
         if (reactContext == null) {
-            Log.e(Utils.TAG, "reactContext is null, can't send event " + eventName);
+            RNMMLogger.e(Utils.TAG, "reactContext is null, can't send event " + eventName);
             return;
         }
 
@@ -99,7 +99,7 @@ class ReactNativeEvent {
             return;
         }
         if (reactContext == null) {
-            Log.e(Utils.TAG, "reactContext is null, can't send event " + eventName);
+            RNMMLogger.e(Utils.TAG, "reactContext is null, can't send event " + eventName);
             return;
         }
         reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(eventName, null);

@@ -103,6 +103,7 @@ struct EventName {
     static let messageStorage_save = "messageStorage.save"
     static let messageStorage_find = "messageStorage.find"
     static let messageStorage_findAll = "messageStorage.findAll"
+    static let debugLoggerMessageReceived = "internal.platformNativeLogSent"
     static let inAppChat_availabilityUpdated = "inAppChat.availabilityUpdated"
     static let inAppChat_unreadMessageCounterUpdated = "inAppChat.unreadMessageCounterUpdated"
     static let inAppChat_viewStateChanged = "inAppChat.viewStateChanged"

@@ -40,9 +40,9 @@ declare namespace MobileMessagingReactNative {
          */
         messageStorage?: CustomMessageStorage;
         defaultMessageStorage?: boolean | undefined;
+        logging?: boolean | undefined;
         ios?: {
             notificationTypes?: string[] | undefined;
-            logging?: boolean | undefined
         } | undefined;
         android?: {
             notificationIcon?: string; // a resource name for a status bar icon (without extension), located in 'android/src/main/res/mipmap'

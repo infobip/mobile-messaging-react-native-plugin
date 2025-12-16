@@ -66,7 +66,7 @@ class RNMMChatView @JvmOverloads constructor(
             if (parent is ViewGroup) {
                 setupLayoutHack(parent)
             } else {
-                Log.e(TAG, "Parent is not ViewGroup, cannot show InAppChatFragment.")
+                RNMMLogger.e(TAG, "Parent is not ViewGroup, cannot show InAppChatFragment.")
             }
 
             val fragmentManager = fragmentActivity?.supportFragmentManager
@@ -75,7 +75,7 @@ class RNMMChatView @JvmOverloads constructor(
                     .replace(this.id, fragment, Utils.RN_IN_APP_CHAT_FRAGMENT_TAG)
                     .commitNow()
             } else {
-                Log.e(TAG, "FragmentManager is null, cannot add InAppChatFragment.")
+                RNMMLogger.e(TAG, "FragmentManager is null, cannot add InAppChatFragment.")
             }
         }
     }
@@ -91,7 +91,7 @@ class RNMMChatView @JvmOverloads constructor(
                     .commitNow()
                 cachedFragment = null
             } else {
-                Log.e(TAG, "InAppChatFragment or FragmentManager is null, cannot remove InAppChatFragment.")
+                RNMMLogger.e(TAG, "InAppChatFragment or FragmentManager is null, cannot remove InAppChatFragment.")
             }
         }
     }
@@ -102,7 +102,7 @@ class RNMMChatView @JvmOverloads constructor(
             if (fragment != null) {
                 fragment.showThreadList()
             } else {
-                Log.e(TAG, "InAppChatFragment is null, cannot show threads list.")
+                RNMMLogger.e(TAG, "InAppChatFragment is null, cannot show threads list.")
             }
         }
     }
@@ -133,11 +133,11 @@ class RNMMChatView @JvmOverloads constructor(
     //region Helpers
     private fun runCatchingExceptions(functionName: String, args: Array<out Any?> = emptyArray(), errorHandler: ((Throwable) -> Unit)? = null, block: () -> Unit) {
         val argsLog = if (args.isEmpty()) "" else " Arguments: ${args.joinToString()}"
-        Log.d(TAG, "$functionName$argsLog")
+        RNMMLogger.d(TAG, "$functionName$argsLog")
         try {
             block()
         } catch (throwable: Throwable) {
-            errorHandler?.invoke(throwable) ?: Log.e(TAG, "$functionName error: ${throwable.message}", throwable)
+            errorHandler?.invoke(throwable) ?: RNMMLogger.e(TAG, "$functionName error: ${throwable.message}", throwable)
         }
     }
 

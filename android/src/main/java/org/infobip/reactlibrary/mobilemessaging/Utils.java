@@ -103,7 +103,7 @@ public class Utils {
     public static FragmentActivity getFragmentActivity(ReactApplicationContext context) {
         FragmentActivity fragmentActivity = (FragmentActivity) context.getCurrentActivity();
         if (fragmentActivity == null) {
-            Log.e(Utils.TAG, "RNMMChatView can't get fragmentActivity");
+            RNMMLogger.e(Utils.TAG, "RNMMChatView can't get fragmentActivity");
             return null;
         }
         return fragmentActivity;

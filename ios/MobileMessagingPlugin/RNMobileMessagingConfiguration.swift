@@ -56,7 +56,7 @@ class RNMobileMessagingConfiguration {
 
         self.appCode = appCode
         self.webRTCUI = rawConfig[RNMobileMessagingConfiguration.Keys.webRTCUI] as? [String: AnyObject]
-        self.logging = ios[RNMobileMessagingConfiguration.Keys.logging].unwrap(orDefault: false)
+        self.logging = rawConfig[RNMobileMessagingConfiguration.Keys.logging].unwrap(orDefault: false)
         self.defaultMessageStorage = rawConfig[RNMobileMessagingConfiguration.Keys.defaultMessageStorage].unwrap(orDefault: false)
         self.messageStorageEnabled = rawConfig[RNMobileMessagingConfiguration.Keys.messageStorage] != nil ? true : false
         self.inAppChatEnabled = rawConfig[RNMobileMessagingConfiguration.Keys.inAppChatEnabled].unwrap(orDefault: false)

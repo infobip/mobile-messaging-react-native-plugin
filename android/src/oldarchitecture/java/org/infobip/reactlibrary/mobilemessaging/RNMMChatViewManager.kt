@@ -57,34 +57,34 @@ class RNMMChatViewManager(
             COMMAND_SHOW_THREADS_LIST -> showThreadsList(view)
             COMMAND_SET_EXCEPTION_HANDLER -> setExceptionHandler(view, args?.getBoolean(0))
             else -> {
-                Log.w(TAG, "RNMMChatViewManager received unsupported command with Id: $commandId")
+                RNMMLogger.w(TAG, "RNMMChatViewManager received unsupported command with Id: $commandId")
             }
         }
     }
 
     @ReactProp(name = "sendButtonColor")
     fun setSendButtonColor(view: RNMMChatView, value: String?) {
-        Log.i(TAG, "setSendButtonColor($value) is not supported in Android")
+        RNMMLogger.i(TAG, "setSendButtonColor($value) is not supported in Android")
         // iOS only prop, no-op on Android
     }
  
     private fun add(view: RNMMChatView) {
-        Log.i(TAG, "add()")
+        RNMMLogger.i(TAG, "add()")
         view.add(reactContext, Utils.getFragmentActivity(reactContext))
     }
 
     private fun remove(view: RNMMChatView) {
-        Log.i(TAG, "remove()")
+        RNMMLogger.i(TAG, "remove()")
         view.remove(Utils.getFragmentActivity(reactContext))
     }
 
     private fun setExceptionHandler(view: RNMMChatView, isHandlerPresent: Boolean?) {
-        Log.i(TAG, "setExceptionHandler()")
+        RNMMLogger.i(TAG, "setExceptionHandler()")
         view.setExceptionHandler(isHandlerPresent ?: false, reactContext, Utils.getFragmentActivity(reactContext))
     }
 
     private fun showThreadsList(view: RNMMChatView) {
-        Log.i(TAG, "showThreadsList()")
+        RNMMLogger.i(TAG, "showThreadsList()")
         view.showThreadsList(Utils.getFragmentActivity(reactContext))
     }
 

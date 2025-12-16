@@ -60,6 +60,7 @@ import org.infobip.mobile.messaging.interactive.MobileInteractive
 import org.infobip.mobile.messaging.interactive.NotificationAction
 import org.infobip.mobile.messaging.interactive.NotificationCategory
 import org.infobip.mobile.messaging.logging.MobileMessagingLogger
+import org.infobip.mobile.messaging.logging.LogcatWriter
 import org.infobip.mobile.messaging.mobileapi.InternalSdkError
 import org.infobip.mobile.messaging.mobileapi.MobileMessagingError
 import org.infobip.mobile.messaging.mobileapi.Result
@@ -104,6 +105,8 @@ class ReactNativeMobileMessagingService(
         const val EVENT_NOTIFICATION_TAPPED = "notificationTapped"
         const val EVENT_NOTIFICATION_ACTION_TAPPED = "actionTapped"
         const val EVENT_MESSAGE_RECEIVED = "messageReceived"
+
+        const val EVENT_PLATFORM_NATIVE_LOG_SENT = "internal.platformNativeLogSent"
 
         const val EVENT_INAPPCHAT_UNREAD_MESSAGES_COUNT_UPDATED = "inAppChat.unreadMessageCounterUpdated"
         const val EVENT_INAPPCHAT_VIEW_STATE_CHANGED = "inAppChat.viewStateChanged"
@@ -155,7 +158,7 @@ class ReactNativeMobileMessagingService(
 
         private fun getMessageStorageBroadcastEvent(intent: Intent?): String? {
             if (intent?.action == null) {
-                Log.w(Utils.TAG, "Cannot process event for broadcast, cause intent or action is null")
+                RNMMLogger.w(Utils.TAG, "Cannot process event for broadcast, cause intent or action is null")
                 return null
             }
             return messageStorageEventMap[intent.action]
@@ -175,21 +178,21 @@ class ReactNativeMobileMessagingService(
         override fun onReceive(context: Context, intent: Intent) {
             val event = getMessageStorageBroadcastEvent(intent)
             if (event == null) {
-                Log.w(Utils.TAG, "Cannot process event for messageStorageReceiver: ${intent.action}")
+                RNMMLogger.w(Utils.TAG, "Cannot process event for messageStorageReceiver: ${intent.action}")
                 return
             }
-            Log.i(Utils.TAG, "messageStorageReceiver event: $event")
+            RNMMLogger.i(Utils.TAG, "messageStorageReceiver event: $event")
             if (intent.extras == null) {
                 ReactNativeEvent.send(event, reactContext)
                 return
             }
             val messages = Message.createFrom(intent.getParcelableArrayListExtra<Bundle>(BroadcastParameter.EXTRA_MESSAGES))
             if (messages == null) {
-                Log.w(Utils.TAG, "messageStorageReceiver messages is null")
+                RNMMLogger.w(Utils.TAG, "messageStorageReceiver messages is null")
                 ReactNativeEvent.send(event, reactContext)
                 return
             }
-            Log.i(Utils.TAG, "messageStorageReceiver messages: $messages")
+            RNMMLogger.i(Utils.TAG, "messageStorageReceiver messages: $messages")
             try {
                 ReactNativeEvent.send(event, reactContext, ReactNativeJson.convertJsonToArray(MessageJson.toJSONArray(messages.toTypedArray())))
             } catch (e: JSONException) {
@@ -202,7 +205,7 @@ class ReactNativeMobileMessagingService(
         override fun onReceive(context: Context, intent: Intent) {
             val event = broadcastEventMap[intent.action]
             if (event == null) {
-                Log.w(Utils.TAG, "Cannot process event for broadcast: ${intent.action}")
+                RNMMLogger.w(Utils.TAG, "Cannot process event for broadcast: ${intent.action}")
                 return
             }
 
@@ -249,15 +252,22 @@ class ReactNativeMobileMessagingService(
 
     fun init(args: ReadableMap, successCallback: Callback, errorCallback: Callback) {
         try {
-            Log.d(Utils.TAG, "Init mobile messaging...")
             val configuration = Configuration.resolveConfiguration(ReactNativeJson.convertMapToJson(args))
             ConfigCache.configuration = configuration
+            if (configuration.logging) {
+                val writer = RNMMLogWriter(reactContext)
+                RNMMLogger.useReactNativeConsole(writer)
+                MobileMessagingLogger.enforce()
+                MobileMessagingLogger.setWriter(writer)
+                RNMMWebRTCUIService.enforceLogsWriter(reactContext, writer)
+            } else {
+                RNMMLogger.useNativeLogcat()
+                MobileMessagingLogger.reset()
+                RNMMWebRTCUIService.resetLogger(reactContext)
+            }
+            RNMMLogger.d(Utils.TAG, "Init mobile messaging...")
 
             val context = reactContext.applicationContext as Application
-
-            if (configuration.loggingEnabled) {
-                MobileMessagingLogger.enforce()
-            }
 
             PreferenceHelper.saveString(context, MobileMessagingProperty.SYSTEM_DATA_VERSION_POSTFIX, "reactNative ${configuration.reactNativePluginVersion}")
 
@@ -327,7 +337,7 @@ class ReactNativeMobileMessagingService(
                 val cls = Class.forName("org.infobip.mobile.messaging.cryptor.ECBCryptorImpl")
                 cryptor = cls.getDeclaredConstructor(String::class.java).newInstance(DeviceInformation.getDeviceID(context)) as Cryptor
             } catch (e: Exception) {
-                Log.d(Utils.TAG, "Will not migrate cryptor :")
+                RNMMLogger.d(Utils.TAG, "Will not migrate cryptor :")
                 e.printStackTrace()
             }
             cryptor?.let { c ->
@@ -346,7 +356,7 @@ class ReactNativeMobileMessagingService(
 
                 override fun onError(e: InternalSdkError, googleErrorCode: Int?) {
                     errorCallback.invoke(Utils.callbackError(e.get(), googleErrorCode))
-                    Log.e(Utils.TAG, "Cannot start SDK: ${e.get()} errorCode: $googleErrorCode")
+                    RNMMLogger.e(Utils.TAG, "Cannot start SDK: ${e.get()} errorCode: $googleErrorCode")
                 }
             })
 
@@ -359,7 +369,7 @@ class ReactNativeMobileMessagingService(
     }
 
     fun saveInstallation(installation: ReadableMap, successCallback: Callback, errorCallback: Callback) {
-        Log.d(Utils.TAG, "Save installation...")
+        RNMMLogger.d(Utils.TAG, "Save installation...")
         try {
             val resolvedInstallation = InstallationJson.resolveInstallation(ReactNativeJson.convertMapToJson(installation))
             mobileMessaging.saveInstallation(resolvedInstallation, installationResultListener(successCallback, errorCallback))
@@ -377,7 +387,7 @@ class ReactNativeMobileMessagingService(
     }
 
     fun getInstallation(successCallback: Callback) {
-        Log.d(Utils.TAG, "Get installation...")
+        RNMMLogger.d(Utils.TAG, "Get installation...")
         val installation = mobileMessaging.getInstallation()
         var readableMap: ReadableMap? = null
         try {
@@ -389,7 +399,7 @@ class ReactNativeMobileMessagingService(
     }
 
     fun setInstallationAsPrimary(pushRegistrationId: String, primary: Boolean, successCallback: Callback, errorCallback: Callback) {
-        Log.d(Utils.TAG, "Set primary installation...")
+        RNMMLogger.d(Utils.TAG, "Set primary installation...")
         if (pushRegistrationId.isEmpty()) {
             errorCallback.invoke(Utils.callbackError("Cannot resolve pushRegistrationId from arguments", null))
             return
@@ -402,7 +412,7 @@ class ReactNativeMobileMessagingService(
     }
 
     fun personalize(args: ReadableMap?, successCallback: Callback, errorCallback: Callback) {
-        Log.d(Utils.TAG, "Personalize...")
+        RNMMLogger.d(Utils.TAG, "Personalize...")
         try {
             val ctx: PersonalizationCtx = PersonalizationCtx.resolvePersonalizationCtx(ReactNativeJson.convertMapToJson(args))
             mobileMessaging.personalize(
@@ -436,7 +446,7 @@ class ReactNativeMobileMessagingService(
     }
 
     fun depersonalize(successCallback: Callback, errorCallback: Callback) {
-        Log.d(Utils.TAG, "Depersonalize...")
+        RNMMLogger.d(Utils.TAG, "Depersonalize...")
         try {
             mobileMessaging.depersonalize(object : MobileMessaging.ResultListener<SuccessPending>() {
                 override fun onResult(result: Result<SuccessPending, MobileMessagingError>) {
@@ -457,7 +467,7 @@ class ReactNativeMobileMessagingService(
     }
 
     fun depersonalizeInstallation(pushRegistrationId: String, successCallback: Callback, errorCallback: Callback) {
-        Log.d(Utils.TAG, "Depersonalize installation...")
+        RNMMLogger.d(Utils.TAG, "Depersonalize installation...")
         if (pushRegistrationId.isEmpty()) {
             errorCallback.invoke(Utils.callbackError("Cannot resolve pushRegistrationId from arguments", null))
             return
@@ -473,7 +483,7 @@ class ReactNativeMobileMessagingService(
     }
 
     fun saveUser(args: ReadableMap, successCallback: Callback, errorCallback: Callback) {
-        Log.d(Utils.TAG, "Save user...")
+        RNMMLogger.d(Utils.TAG, "Save user...")
         try {
             val user = UserJson.resolveUser(ReactNativeJson.convertMapToJson(args))
             mobileMessaging.saveUser(user, userResultListener(successCallback, errorCallback))
@@ -483,7 +493,7 @@ class ReactNativeMobileMessagingService(
     }
 
     fun fetchUser(successCallback: Callback, errorCallback: Callback) {
-        Log.d(Utils.TAG, "Fetch user...")
+        RNMMLogger.d(Utils.TAG, "Fetch user...")
         try {
             mobileMessaging.fetchUser(userResultListener(successCallback, errorCallback))
         } catch (e: Exception) {
@@ -492,7 +502,7 @@ class ReactNativeMobileMessagingService(
     }
 
     fun getUser(successCallback: Callback) {
-        Log.d(Utils.TAG, "Get user...")
+        RNMMLogger.d(Utils.TAG, "Get user...")
         val user = mobileMessaging.getUser()
         var readableMap: ReadableMap? = null
         try {
@@ -504,7 +514,7 @@ class ReactNativeMobileMessagingService(
     }
 
     fun setUserDataJwt(jwt: String?, successCallback: Callback, errorCallback: Callback) {
-        Log.d(Utils.TAG, "SetUserDataJwt...")
+        RNMMLogger.d(Utils.TAG, "SetUserDataJwt...")
         try {
             mobileMessaging.setJwtSupplier({ jwt })
             successCallback.invoke()
@@ -514,7 +524,7 @@ class ReactNativeMobileMessagingService(
     }
 
     fun markMessagesSeen(args: ReadableArray, successCallback: Callback, errorCallback: Callback) {
-        Log.d(Utils.TAG, "Mark messages seen...")
+        RNMMLogger.d(Utils.TAG, "Mark messages seen...")
         try {
             val messageIds = Utils.resolveStringArray(args)
             CoroutineScope(Dispatchers.IO).launch {
@@ -531,19 +541,19 @@ class ReactNativeMobileMessagingService(
     }
 
     fun registerForAndroidRemoteNotifications() {
-        Log.d(Utils.TAG, "Register for Android remote notifications...")
+        RNMMLogger.d(Utils.TAG, "Register for Android remote notifications...")
         val activity = reactContext.currentActivity
         if (activity != null && activity is PermissionAwareActivity) {
             permissionsRequestManager.isRequiredPermissionsGranted(activity, this)
         } else {
-            Log.e(Utils.TAG, "Cannot register for remote notifications because activity isn't exist")
+            RNMMLogger.e(Utils.TAG, "Cannot register for remote notifications because activity isn't exist")
         }
     }
 
     // PermissionsRequester interface implementation
 
     override fun onPermissionGranted() {
-        Log.i(Utils.TAG, "Post Notifications permission granted")
+        RNMMLogger.i(Utils.TAG, "Post Notifications permission granted")
     }
 
     override fun requiredPermissions(): Array<String> {
@@ -576,7 +586,7 @@ class ReactNativeMobileMessagingService(
     fun showDialogForError(errorCodeDouble: Double, successCallback: Callback, errorCallback: Callback) {
         try {
             val errorCode = errorCodeDouble.toInt()
-            Log.d(Utils.TAG, "Show dialog for error: $errorCode")
+            RNMMLogger.d(Utils.TAG, "Show dialog for error: $errorCode")
             val googleApiAvailability = GoogleApiAvailability.getInstance()
             if (!googleApiAvailability.isUserResolvableError(errorCode)) {
                 errorCallback.invoke(Utils.callbackError("Error code [$errorCode] is not user resolvable", null))
@@ -612,7 +622,7 @@ class ReactNativeMobileMessagingService(
         }
 
         if (!showErrorDialogContext.isValid()) {
-            Log.e(Utils.TAG, "Show dialog context is invalid, cannot forward information to React Native")
+            RNMMLogger.e(Utils.TAG, "Show dialog context is invalid, cannot forward information to React Native")
             return
         }
 
@@ -716,7 +726,7 @@ class ReactNativeMobileMessagingService(
     // Default message storage methods
     @Synchronized
     fun defaultMessageStorage_find(messageId: String, onSuccess: Callback, onError: Callback) {
-        Log.d(Utils.TAG, "Default message storage find: $messageId")
+        RNMMLogger.d(Utils.TAG, "Default message storage find: $messageId")
         val messageStore = mobileMessaging.messageStore
         if (messageStore == null) {
             onError.invoke(Utils.callbackError("Message store does not exist", null))
@@ -734,13 +744,13 @@ class ReactNativeMobileMessagingService(
             }
             onSuccess.invoke()
         } catch (e: Exception) {
-            Log.e(Utils.TAG, "Error finding message: ${e.message}", e)
+            RNMMLogger.e(Utils.TAG, "Error finding message: ${e.message}", e)
             onError.invoke(Utils.callbackError("Error finding message: ${e.message}", null))
         }
     }
 
     fun defaultMessageStorage_findAll(onSuccess: Callback, onError: Callback) {
-        Log.d(Utils.TAG, "Default message storage find all...")
+        RNMMLogger.d(Utils.TAG, "Default message storage find all...")
         val messageStore = mobileMessaging.messageStore
         if (messageStore == null) {
             onError.invoke(Utils.callbackError("Message store does not exist", null))
@@ -752,14 +762,14 @@ class ReactNativeMobileMessagingService(
             val readableArray = ReactNativeJson.convertJsonToArray(MessageJson.toJSONArray(messages.toTypedArray()))
             onSuccess.invoke(readableArray)
         } catch (e: Exception) {
-            Log.e(Utils.TAG, "Error finding all messages: ${e.message}", e)
+            RNMMLogger.e(Utils.TAG, "Error finding all messages: ${e.message}", e)
             onError.invoke(Utils.callbackError("Error finding all messages: ${e.message}", null))
         }
     }
 
     @Synchronized
     fun defaultMessageStorage_delete(messageId: String, onSuccess: Callback, onError: Callback) {
-        Log.d(Utils.TAG, "Default message storage delete: $messageId")
+        RNMMLogger.d(Utils.TAG, "Default message storage delete: $messageId")
         val messageStore = mobileMessaging.messageStore
         if (messageStore == null) {
             onError.invoke(Utils.callbackError("Message store does not exist", null))
@@ -780,14 +790,14 @@ class ReactNativeMobileMessagingService(
             messageStore.save(reactContext, *messagesToKeep.toTypedArray())
             onSuccess.invoke()
         } catch (e: Exception) {
-            Log.e(Utils.TAG, "Error deleting message: ${e.message}", e)
+            RNMMLogger.e(Utils.TAG, "Error deleting message: ${e.message}", e)
             onError.invoke(Utils.callbackError("Error deleting message: ${e.message}", null))
         }
     }
 
     @Synchronized
     fun defaultMessageStorage_deleteAll(onSuccess: Callback, onError: Callback) {
-        Log.d(Utils.TAG, "Default message storage delete all...")
+        RNMMLogger.d(Utils.TAG, "Default message storage delete all...")
         val messageStore = mobileMessaging.messageStore
         if (messageStore == null) {
             onError.invoke(Utils.callbackError("Message store does not exist", null))
@@ -798,7 +808,7 @@ class ReactNativeMobileMessagingService(
             messageStore.deleteAll(reactContext)
             onSuccess.invoke()
         } catch (e: Exception) {
-            Log.e(Utils.TAG, "Error deleting all messages: ${e.message}", e)
+            RNMMLogger.e(Utils.TAG, "Error deleting all messages: ${e.message}", e)
             onError.invoke(Utils.callbackError("Error deleting all messages: ${e.message}", null))
         }
     }
@@ -816,36 +826,36 @@ class ReactNativeMobileMessagingService(
     }
 
     fun fetchInboxMessages(token: String, externalUserId: String, args: ReadableMap, successCallback: Callback, errorCallback: Callback) {
-        Log.d(Utils.TAG, "Fetch inbox messages with token...")
+        RNMMLogger.d(Utils.TAG, "Fetch inbox messages with token...")
         try {
             val filterOptions = MobileInboxFilterOptionsJson.mobileInboxFilterOptionsFromJSON(ReactNativeJson.convertMapToJson(args))
             mobileMessagingInbox.fetchInbox(token, externalUserId, filterOptions, inboxResultListener(successCallback, errorCallback))
         } catch (e: Exception) {
-            Log.d(Utils.TAG, "Error fetching inbox: ${e.message}")
+            RNMMLogger.d(Utils.TAG, "Error fetching inbox: ${e.message}")
             errorCallback.invoke(Utils.callbackError("Error fetching inbox: ${e.message}", null))
         }
     }
 
     fun fetchInboxMessagesWithoutToken(externalUserId: String, args: ReadableMap, successCallback: Callback, errorCallback: Callback) {
-        Log.d(Utils.TAG, "Fetch inbox messages without token...")
+        RNMMLogger.d(Utils.TAG, "Fetch inbox messages without token...")
         try {
             val filterOptions = MobileInboxFilterOptionsJson.mobileInboxFilterOptionsFromJSON(
                 ReactNativeJson.convertMapToJson(args)
             )
             mobileMessagingInbox.fetchInbox(externalUserId, filterOptions, inboxResultListener(successCallback, errorCallback))
         } catch (e: Exception) {
-            Log.d(Utils.TAG, "Error fetching inbox: ${e.message}")
+            RNMMLogger.d(Utils.TAG, "Error fetching inbox: ${e.message}")
             errorCallback.invoke(Utils.callbackError("Error fetching inbox: ${e.message}", null))
         }
     }
 
     fun setInboxMessagesSeen(externalUserId: String, args: ReadableArray, successCallback: Callback, errorCallback: Callback) {
-        Log.d(Utils.TAG, "Set inbox messages seen...")
+        RNMMLogger.d(Utils.TAG, "Set inbox messages seen...")
         try {
             val messageIds = convertReadableArrayToStringArray(args)
             mobileMessagingInbox.setSeen(externalUserId, messageIds, setSeenResultListener(successCallback, errorCallback))
         } catch (e: Exception) {
-            Log.e(Utils.TAG, "Error setting messages seen: ${e.message}", e)
+            RNMMLogger.e(Utils.TAG, "Error setting messages seen: ${e.message}", e)
             errorCallback.invoke(Utils.callbackError("Error setting messages seen: ${e.message}", null))
         }
     }
@@ -858,7 +868,7 @@ class ReactNativeMobileMessagingService(
                         val readableMap = ReactNativeJson.convertJsonToMap(InboxMapper.toJSON(result.data))
                         successCallback.invoke(readableMap)
                     } catch (e: JSONException) {
-                        Log.e(Utils.TAG, "Error converting inbox result: ${e.message}", e)
+                        RNMMLogger.e(Utils.TAG, "Error converting inbox result: ${e.message}", e)
                         errorCallback.invoke(Utils.callbackError("Error converting inbox result: ${e.message}", null))
                     }
                 } else {
@@ -889,23 +899,23 @@ class ReactNativeMobileMessagingService(
 
     // Event submission methods
     fun submitEvent(eventData: ReadableMap, onError: Callback) {
-        Log.d(Utils.TAG, "Submit event...")
+        RNMMLogger.d(Utils.TAG, "Submit event...")
         try {
             val customEvent = CustomEventJson.fromJSON(ReactNativeJson.convertMapToJson(eventData))
             mobileMessaging.submitEvent(customEvent)
         } catch (e: Exception) {
-            Log.e(Utils.TAG, "Error submitting event: ${e.message}", e)
+            RNMMLogger.e(Utils.TAG, "Error submitting event: ${e.message}", e)
             onError.invoke(Utils.callbackError("Error submitting event: ${e.message}", null))
         }
     }
 
     fun submitEventImmediately(eventData: ReadableMap, onSuccess: Callback, onError: Callback) {
-        Log.d(Utils.TAG, "Submit event immediately...")
+        RNMMLogger.d(Utils.TAG, "Submit event immediately...")
         try {
             val customEvent = CustomEventJson.fromJSON(ReactNativeJson.convertMapToJson(eventData))
             mobileMessaging.submitEvent(customEvent, customEventResultListener(onSuccess, onError))
         } catch (e: Exception) {
-            Log.e(Utils.TAG, "Error submitting event immediately: ${e.message}", e)
+            RNMMLogger.e(Utils.TAG, "Error submitting event immediately: ${e.message}", e)
             onError.invoke(Utils.callbackError("Error submitting event immediately: ${e.message}", null))
         }
     }
@@ -924,25 +934,25 @@ class ReactNativeMobileMessagingService(
 
     // Custom message storage: methods to provide results to Native Bridge from JS
     fun messageStorage_provideFindAllResult(result: ReadableArray) {
-        Log.d(Utils.TAG, "messageStorage_provideFindAllResult")
+        RNMMLogger.d(Utils.TAG, "messageStorage_provideFindAllResult")
         MessageStoreAdapter.init(reactContext)
 
         try {
             val jsonArray = ReactNativeJson.convertArrayToJson(result)
             MessageStoreAdapter.messageStorage_findAllResults.addIfAbsent(jsonArray)
         } catch (e: JSONException) {
-            Log.e(Utils.TAG, "Provided results can't be parsed: ${e.message}", e)
+            RNMMLogger.e(Utils.TAG, "Provided results can't be parsed: ${e.message}", e)
         }
     }
 
     fun messageStorage_provideFindResult(result: ReadableMap) {
         // Not needed for Android - keep for API parity
-        Log.d(Utils.TAG, "messageStorage_provideFindResult: no-op on Android")
+        RNMMLogger.d(Utils.TAG, "messageStorage_provideFindResult: no-op on Android")
     }
 
     // Event system methods (required for React Native EventEmitter)
     fun addListener(eventName: String) {
-        Log.d(Utils.TAG, "addListener: $eventName")
+        RNMMLogger.d(Utils.TAG, "addListener: $eventName")
         jsHasListeners = true
         val events = CacheManager.loadEvents(reactContext, eventName)
         for (event in events) {
@@ -953,7 +963,7 @@ class ReactNativeMobileMessagingService(
     }
 
     fun removeListeners(count: Int) {
-        Log.d(Utils.TAG, "removeListeners: $count")
+        RNMMLogger.d(Utils.TAG, "removeListeners: $count")
         // Keep: Required for RN built in Event Emitter Calls
     }
 
@@ -988,7 +998,7 @@ class ReactNativeMobileMessagingService(
             reactContext.unregisterReceiver(chatBroadcastReceiver)
             LocalBroadcastManager.getInstance(reactContext).unregisterReceiver(messageStorageReceiver)
         } catch (e: IllegalArgumentException) {
-            Log.d(Utils.TAG, "Can't unregister broadcast receivers")
+            RNMMLogger.d(Utils.TAG, "Can't unregister broadcast receivers")
         }
         broadcastReceiverRegistered = false
     }
@@ -1014,7 +1024,7 @@ class ReactNativeMobileMessagingService(
         }
 
         override fun findAll(context: Context): List<Message> {
-            Log.i(Utils.TAG, "MessageStoreAdapter findAll...")
+            RNMMLogger.i(Utils.TAG, "MessageStoreAdapter findAll...")
 
             messageStorage_findAllResults.clear()
             LocalBroadcastManager.getInstance(context).sendBroadcast(Intent(EVENT_MESSAGESTORAGE_FIND_ALL))
@@ -1025,7 +1035,7 @@ class ReactNativeMobileMessagingService(
                     CopyOnWriteArrayList()
                 }
             } catch (e: Exception) {
-                Log.e(Utils.TAG, "Cannot find messages: $e")
+                RNMMLogger.e(Utils.TAG, "Cannot find messages: $e")
                 CopyOnWriteArrayList()
             }
         }
@@ -1035,7 +1045,7 @@ class ReactNativeMobileMessagingService(
         }
 
         override fun save(context: Context, vararg messages: Message) {
-            Log.i(Utils.TAG, "MessageStoreAdapter save messages...")
+            RNMMLogger.i(Utils.TAG, "MessageStoreAdapter save messages...")
             val saveMessageIntent = Intent(EVENT_MESSAGESTORAGE_SAVE)
             saveMessageIntent.putParcelableArrayListExtra(
                 BroadcastParameter.EXTRA_MESSAGES,
@@ -1045,7 +1055,7 @@ class ReactNativeMobileMessagingService(
         }
 
         override fun deleteAll(context: Context) {
-            Log.e(Utils.TAG, "deleteAll is not implemented because it should not be called from within library")
+            RNMMLogger.e(Utils.TAG, "deleteAll is not implemented because it should not be called from within library")
         }
     }
 }
@@ -1065,7 +1075,7 @@ class MessageEventReceiver : ReactNativeBroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
         val event = messageBroadcastEventMap[intent?.action]
         if (event == null) {
-            Log.w(Utils.TAG, "Cannot process event for broadcast: ${intent?.action}")
+            RNMMLogger.w(Utils.TAG, "Cannot process event for broadcast: ${intent?.action}")
             return
         }
 
@@ -1092,7 +1102,7 @@ class MessageEventReceiver : ReactNativeBroadcastReceiver() {
         } else if (context != null) {
             CacheManager.saveEvent(context, eventType, message, actionId, actionInputText)
         } else {
-            Log.e(Utils.TAG, "Both reactContext and androidContext are null, can't emit or cache event " + eventType)
+            RNMMLogger.e(Utils.TAG, "Both reactContext and androidContext are null, can't emit or cache event " + eventType)
         }
     }
 
