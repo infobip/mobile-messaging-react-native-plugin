@@ -12,6 +12,7 @@ export interface Spec extends TurboModule {
     showChat(args: {[key: string]: string}): void;
     showThreadsList(): void;
     getMessageCounter(onSuccess: (count: number) => void): void;
+    isChatAvailable(onSuccess: (isAvailable: boolean) => void): void;
     resetMessageCounter(): void;
     setLanguage(localeString: string, onSuccess: (lang: string) => void, onError: (error: Object) => void): void;
     sendContextualData(data: string, multithreadStrategyFlag: string, onSuccess: () => void, onError: (error: Object) => void): void;

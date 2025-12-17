@@ -13,6 +13,7 @@ class RNMobileMessagingEventsManager {
     private var eventEmitter: RCTEventEmitter!
     public var hasEventListeners = false
     private var cachedMobileMessagingNotifications = [Notification]()
+    private(set) var isChatAvailable: Bool = false
 
     private let supportedNotifications: [String: String] = [
         EventName.messageReceived: MMNotificationMessageReceived,
@@ -46,8 +47,8 @@ class RNMobileMessagingEventsManager {
         setupObservingMMNotifications()
     }
 
-    func stop() {
-        setupObservingMMNotifications(stopObservations: true)
+    func stop(stopObservations: Bool = false) {
+        setupObservingMMNotifications(stopObservations: stopObservations)
         cachedMobileMessagingNotifications = []
     }
 
@@ -113,7 +114,8 @@ class RNMobileMessagingEventsManager {
             }
         case MMNotificationInAppChatAvailabilityUpdated:
             eventName = EventName.inAppChat_availabilityUpdated
-            notificationResult = notification.userInfo?[MMNotificationKeyInAppChatEnabled] as? Bool
+            isChatAvailable = notification.userInfo?[MMNotificationKeyInAppChatEnabled] as? Bool ?? false
+            notificationResult = isChatAvailable
         case MMNotificationInAppChatUnreadMessagesCounterUpdated:
             eventName = EventName.inAppChat_unreadMessageCounterUpdated
             notificationResult = notification.userInfo?[MMNotificationKeyInAppChatUnreadMessagesCounter] as? Int

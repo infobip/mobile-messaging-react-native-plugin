@@ -19,6 +19,7 @@
 RCT_EXPORT_MODULE_NO_LOAD(RNMMChat, RNMMChat)
 RCT_EXTERN_METHOD(showChat:)
 RCT_EXTERN_METHOD(getMessageCounter:(RCTResponseSenderBlock)resultCallback)
+RCT_EXTERN_METHOD(isChatAvailable:(RCTResponseSenderBlock)resultCallback)
 RCT_EXTERN_METHOD(setWidgetTheme:)
 RCT_EXTERN_METHOD(setChatCustomization:)
 RCT_EXTERN_METHOD(setLanguage:(NSString *)data onSuccess:(RCTResponseSenderBlock)successCallback onError:(RCTResponseSenderBlock)errorCallback)

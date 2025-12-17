@@ -23,7 +23,9 @@ declare namespace MobileMessagingReactNative {
         'inAppChat.availabilityUpdated' |
         'inAppChat.unreadMessageCounterUpdated' |
         'deeplink' |
-        'inAppChat.viewStateChanged';
+        'inAppChat.viewStateChanged' |
+        'inAppChat.configurationSynced' |
+        'inAppChat.livechatRegistrationIdUpdated';
 
     export interface Configuration {
         /**
@@ -280,7 +282,7 @@ declare namespace MobileMessagingReactNative {
     export interface ChatException {
         code?: number;
         name?: string;
-        message?: string; 
+        message?: string;
         origin?: string;
         platform?: string;
     }
@@ -655,6 +657,14 @@ declare namespace MobileMessagingReactNative {
         resetMessageCounter(): void;
 
         /**
+         * Checks whether the in-app chat is ready to be shown to the user
+         * In-app chat is considered ready when the widget configuration has been synced and Infobip's unique push registration ID has been issued.
+         * @name isChatAvailable
+         * @param {Function} onResult callback with boolean indicating if chat is available
+         */
+        isChatAvailable(onResult: (isAvailable: boolean) => void): void;
+
+        /**
          * This method is iOS only and it has no effect in Android.
          * Navigates to THREAD_LIST view in multithread widget if in-app chat is shown as React Component.
          * @name showThreadsList
@@ -682,7 +692,7 @@ declare namespace MobileMessagingReactNative {
          * });
          * ```
          *
-         * > ⚠️ On Android, this callback may be invoked multiple times during the widget's lifecycle 
+         * > ⚠️ On Android, this callback may be invoked multiple times during the widget's lifecycle
          * (e.g., due to screen orientation changes or network reconnection).
          * It is important to return a **fresh and valid JWT** each time.
          *
@@ -694,15 +704,15 @@ declare namespace MobileMessagingReactNative {
         /**
          * Sets the chat exception handler in case you want to intercept and
          * display the errors coming from the chat on your own (instead of relying on the prebuild error banners).
-         * 
+         *
          * The `exceptionHandler` is a function that receives the exception. Passing `null` will remove the previously set handler.
-         * 
+         *
          * ```ts
          * mobileMessaging.setChatExceptionHandler((exception) => {
          *   console.log("Chat exception occurred:", exception);
          * });
          * ```
-         * 
+         *
          * @param exceptionHandler A function that receives an ChatException when it happens. Passing `null` will remove the previously set handler.
          * @param onError Optional error handler for catching exceptions thrown when listening for exceptions.
          */

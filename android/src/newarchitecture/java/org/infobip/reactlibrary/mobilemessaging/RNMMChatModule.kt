@@ -43,6 +43,11 @@ class RNMMChatModule(reactContext: ReactApplicationContext) : NativeRNMMChatSpec
         service.getMessageCounter(onSuccess)
     }
 
+    override fun isChatAvailable(onSuccess: Callback) {
+        RNMMLogger.i(TAG, "isChatAvailable()")
+        service.isChatAvailable(onSuccess)
+    }
+
     override fun resetMessageCounter() {
         RNMMLogger.i(TAG, "resetMessageCounter()")
         service.resetMessageCounter()

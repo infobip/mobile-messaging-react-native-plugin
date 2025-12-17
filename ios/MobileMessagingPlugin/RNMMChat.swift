@@ -46,6 +46,11 @@ class RNMMChat: NSObject  {
         onResult([MobileMessaging.inAppChat?.getMessageCounter ?? 0])
     }
 
+    @objc(isChatAvailable:)
+    func isChatAvailable(onResult: @escaping RCTResponseSenderBlock) {
+        onResult([ReactNativeMobileMessaging.shared?.isChatAvailable ?? false])
+    }
+
     @objc(resetMessageCounter)
     func resetMessageCounter() {
         MobileMessaging.inAppChat?.resetMessageCounter()
@@ -175,7 +180,6 @@ class RNMMChat: NSObject  {
 }
 
 extension RNMMChat: MMInAppChatDelegate {
-
     @objc func getJWT() -> String? {
         guard willUseJWT else { return nil }
         var jwtResult: String?

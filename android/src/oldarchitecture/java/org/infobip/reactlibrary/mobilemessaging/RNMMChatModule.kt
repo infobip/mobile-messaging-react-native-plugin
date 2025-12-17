@@ -49,6 +49,12 @@ class RNMMChatModule(reactContext: ReactApplicationContext) : ReactContextBaseJa
     }
 
     @ReactMethod
+    fun isChatAvailable(onSuccess: Callback) {
+        RNMMLogger.i(TAG, "isChatAvailable()")
+        service.isChatAvailable(onSuccess)
+    }
+
+    @ReactMethod
     fun resetMessageCounter() {
         RNMMLogger.i(TAG, "resetMessageCounter()")
         service.resetMessageCounter()

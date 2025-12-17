@@ -665,6 +665,15 @@ class MobileMessaging {
         RNMMChat.resetMessageCounter();
     };
 
+    /**
+     * Checks whether the in-app chat is ready to be shown to the user
+     * In-app chat is considered ready when the widget configuration has been synced and Infobip's unique push registration ID has been issued.
+     * @name isChatAvailable
+     * @param {Function} onResult callback with boolean indicating if chat is available
+     */
+    isChatAvailable(onResult) {
+        RNMMChat.isChatAvailable(onResult);
+    };
 
     /**
      * This method is iOS only and it has no effect in Android.

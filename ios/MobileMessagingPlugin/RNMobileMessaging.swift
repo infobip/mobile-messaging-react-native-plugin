@@ -64,7 +64,7 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
         }
         super.sendEvent(withName: name, body: body)
     }
-    
+        
     @objc
     override static func requiresMainQueueSetup() -> Bool {
         return true
@@ -79,7 +79,7 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
     }
     
     deinit {
-        self.eventsManager?.stop()
+        self.eventsManager?.stop(stopObservations: true)
     }
     
     @objc(init:onSuccess:onError:)
@@ -121,6 +121,7 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
     }
     
     private func start(configuration: RNMobileMessagingConfiguration, onSuccess: @escaping RCTResponseSenderBlock) {
+        self.eventsManager?.startObserving()
         MobileMessaging.privacySettings.systemInfoSendingDisabled = configuration.privacySettings[RNMobileMessagingConfiguration.Keys.systemInfoSendingDisabled].unwrap(orDefault: false)
         MobileMessaging.privacySettings.carrierInfoSendingDisabled = configuration.privacySettings[RNMobileMessagingConfiguration.Keys.carrierInfoSendingDisabled].unwrap(orDefault: false)
         MobileMessaging.privacySettings.userDataPersistingDisabled = configuration.privacySettings[RNMobileMessagingConfiguration.Keys.userDataPersistingDisabled].unwrap(orDefault: false)
@@ -161,8 +162,8 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
         })
     }
     
-    private func stop(completion: @escaping () -> Void) {
-        eventsManager?.stop()
+    private func stop(stopObservations: Bool = false, completion: @escaping () -> Void) {
+        self.eventsManager?.stop(stopObservations: stopObservations)
         MobileMessaging.stop(false, completion: completion)
     }
     
@@ -472,4 +473,9 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
           return jwt
       }
     }
+    
+    var isChatAvailable: Bool {
+        return eventsManager?.isChatAvailable ?? false
+    }
+
 }

@@ -131,13 +131,19 @@ class RNMMChatService(
     fun getMessageCounter(onSuccess: Callback) {
         runCatchingExceptions("getMessageCounter()") {
             onSuccess.invoke(inAppChat.messageCounter)
-        } 
+        }
+    }
+
+    fun isChatAvailable(onSuccess: Callback) {
+        runCatchingExceptions("isChatAvailable()") {
+            onSuccess.invoke(inAppChat.isChatAvailable())
+        }
     }
 
     fun resetMessageCounter() {
         runCatchingExceptions("resetMessageCounter()") {
             inAppChat.resetMessageCounter()
-        } 
+        }
     }
 
     fun setLanguage(localeString: String, onSuccess: Callback, onError: Callback) {
@@ -156,7 +162,7 @@ class RNMMChatService(
                     }
                 })
             },
-            errorHandler = { t -> 
+            errorHandler = { t ->
                 onError.invoke(Utils.callbackError(t.message, null))
             }
         )
@@ -170,10 +176,10 @@ class RNMMChatService(
                 inAppChat.sendContextualData(data, MultithreadStrategy.valueOf(multithreadStrategyFlag))
                 onSuccess.invoke()
             },
-            errorHandler = { t -> 
-                onError.invoke(Utils.callbackError(t.message, null)) 
+            errorHandler = { t ->
+                onError.invoke(Utils.callbackError(t.message, null))
             }
-         ) 
+         )
     }
 
     fun setWidgetTheme(widgetTheme: String?) {

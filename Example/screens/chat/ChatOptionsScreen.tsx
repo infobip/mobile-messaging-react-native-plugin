@@ -196,31 +196,58 @@ const ChatOptionsScreen: React.FC<ChatScreenProps> = ({navigation}) => {
     );
   };
 
-  const showChat = () => {
-    mobileMessaging.setLanguage(
-      'en',
-      (language: any) => console.log('React app: Language set ' + language),
-      (error: MobileMessagingError) =>
-        console.log('React app: Error setting language: ' + JSON.stringify(error)),
-    );
-    // Uncomment to use custom exception handler
-    // mobileMessaging.setChatExceptionHandler(
-    //   (exception: ChatException) => console.log('React app: Chat exception received: ' + JSON.stringify(exception)),
-    //   (error: Error) => console.log('React app: Chat exception handler error: ' + error)
-    // );
-    mobileMessaging.showChat();
+  const checkChatAvailability = async (): Promise<boolean> => {
+    return new Promise<boolean>((resolve) => {
+      mobileMessaging.isChatAvailable((isAvailable: boolean) => {
+        if (!isAvailable) {
+          Alert.alert(
+            'Chat Not Available',
+            'Chat is currently not available. Please try again later.'
+          );
+        }
+        resolve(isAvailable);
+      });
+    });
   };
 
-  const showChatViewScreen = () => {
-    navigation.navigate('ChatViewScreen');
+  const showChat = async () => {
+    const isAvailable = await checkChatAvailability();
+    if (isAvailable) {
+          mobileMessaging.setLanguage(
+          'en',
+          (language: any) => console.log('React app: Language set ' + language),
+          (error: MobileMessagingError) =>
+            console.log('React app: Error setting language: ' + JSON.stringify(error)),
+        );
+        // Uncomment to use custom exception handler
+        // mobileMessaging.setChatExceptionHandler(
+        //   (exception: ChatException) => console.log('React app: Chat exception received: ' + JSON.stringify(exception)),
+        //   (error: Error) => console.log('React app: Chat exception handler error: ' + error)
+        // );
+        mobileMessaging.showChat();
+    }
   };
 
-  const showChatViewCustomLayoutScreen = () => {
-    navigation.navigate('ChatViewCustomLayoutScreen');
+  const showChatViewScreen = async () => {
+    const isAvailable = await checkChatAvailability();
+    if (isAvailable) {
+        navigation.navigate('ChatViewScreen');
+    }
+  };
+
+  const showChatViewCustomLayoutScreen = async () => {
+    const isAvailable = await checkChatAvailability();
+    if (isAvailable) {        
+        navigation.navigate('ChatViewCustomLayoutScreen');
+    }
   };
 
   const showChatViewMultithreadScreen = () => {
-    navigation.navigate('ChatViewMultithreadScreen');
+      checkChatAvailability((isAvailable) => {
+        if (isAvailable) {   
+            navigation.navigate('ChatViewMultithreadScreen');
+        }
+    });
   };
 
   const enableWebRTC = () => {
