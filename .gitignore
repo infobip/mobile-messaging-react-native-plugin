@@ -48,3 +48,4 @@ package-lock.json
 # Claude
 Claude.md
 ./claude/*
+local_build.sh

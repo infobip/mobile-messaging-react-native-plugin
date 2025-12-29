@@ -9,6 +9,7 @@
 package org.infobip.reactlibrary.mobilemessaging;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.google.firebase.FirebaseOptions;
 
@@ -116,6 +117,7 @@ public class Configuration {
     WebRTCUI webRTCUI;
     InAppChatCustomization inAppChatCustomization;
     String userDataJwt;
+    @Nullable String backendBaseURL;
 
     @NonNull
     static Configuration resolveConfiguration(JSONObject args) throws JSONException {

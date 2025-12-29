@@ -197,12 +197,12 @@ const ChatOptionsScreen: React.FC<ChatScreenProps> = ({navigation}) => {
   };
 
   const checkChatAvailability = async (): Promise<boolean> => {
-    return new Promise<boolean>((resolve) => {
+    return new Promise<boolean>(resolve => {
       mobileMessaging.isChatAvailable((isAvailable: boolean) => {
         if (!isAvailable) {
           Alert.alert(
             'Chat Not Available',
-            'Chat is currently not available. Please try again later.'
+            'Chat is currently not available. Please try again later.',
           );
         }
         resolve(isAvailable);
@@ -213,41 +213,42 @@ const ChatOptionsScreen: React.FC<ChatScreenProps> = ({navigation}) => {
   const showChat = async () => {
     const isAvailable = await checkChatAvailability();
     if (isAvailable) {
-          mobileMessaging.setLanguage(
-          'en',
-          (language: any) => console.log('React app: Language set ' + language),
-          (error: MobileMessagingError) =>
-            console.log('React app: Error setting language: ' + JSON.stringify(error)),
-        );
-        // Uncomment to use custom exception handler
-        // mobileMessaging.setChatExceptionHandler(
-        //   (exception: ChatException) => console.log('React app: Chat exception received: ' + JSON.stringify(exception)),
-        //   (error: Error) => console.log('React app: Chat exception handler error: ' + error)
-        // );
-        mobileMessaging.showChat();
+      mobileMessaging.setLanguage(
+        'en',
+        (language: any) => console.log('React app: Language set ' + language),
+        (error: MobileMessagingError) =>
+          console.log(
+            'React app: Error setting language: ' + JSON.stringify(error),
+          ),
+      );
+      // Uncomment to use custom exception handler
+      // mobileMessaging.setChatExceptionHandler(
+      //   (exception: ChatException) => console.log('React app: Chat exception received: ' + JSON.stringify(exception)),
+      //   (error: Error) => console.log('React app: Chat exception handler error: ' + error)
+      // );
+      mobileMessaging.showChat();
     }
   };
 
   const showChatViewScreen = async () => {
     const isAvailable = await checkChatAvailability();
     if (isAvailable) {
-        navigation.navigate('ChatViewScreen');
+      navigation.navigate('ChatViewScreen');
     }
   };
 
   const showChatViewCustomLayoutScreen = async () => {
     const isAvailable = await checkChatAvailability();
-    if (isAvailable) {        
-        navigation.navigate('ChatViewCustomLayoutScreen');
+    if (isAvailable) {
+      navigation.navigate('ChatViewCustomLayoutScreen');
     }
   };
 
-  const showChatViewMultithreadScreen = () => {
-      checkChatAvailability((isAvailable) => {
-        if (isAvailable) {   
-            navigation.navigate('ChatViewMultithreadScreen');
-        }
-    });
+  const showChatViewMultithreadScreen = async () => {
+    const isAvailable = await checkChatAvailability();
+    if (isAvailable) {
+      navigation.navigate('ChatViewMultithreadScreen');
+    }
   };
 
   const enableWebRTC = () => {
@@ -378,11 +379,14 @@ const ChatOptionsScreen: React.FC<ChatScreenProps> = ({navigation}) => {
           <Picker
             selectedValue={subjectType}
             style={styles.picker}
-            {...(Platform.OS === 'ios' ? { itemStyle: styles.pickerItem } : {})}
+            {...(Platform.OS === 'ios' ? {itemStyle: styles.pickerItem} : {})}
             onValueChange={(itemValue: SubjectType) =>
               setSubjectType(itemValue)
             }>
-            <Picker.Item label="External person ID" value={SubjectType.ExternalPersonId} />
+            <Picker.Item
+              label="External person ID"
+              value={SubjectType.ExternalPersonId}
+            />
             <Picker.Item label="Phone number" value={SubjectType.PhoneNumber} />
             <Picker.Item label="E-mail" value={SubjectType.Email} />
           </Picker>

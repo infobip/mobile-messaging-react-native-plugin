@@ -126,4 +126,10 @@ class RNMMChatModule(reactContext: ReactApplicationContext) : ReactContextBaseJa
         service.setChatExceptionHandler(isHandlerPresent)
     }
 
+    @ReactMethod
+    fun setChatDomain(domain: String?) {
+        RNMMLogger.i(TAG, "setChatDomain()")
+        service.setChatDomain(domain)       
+    }
+
 }

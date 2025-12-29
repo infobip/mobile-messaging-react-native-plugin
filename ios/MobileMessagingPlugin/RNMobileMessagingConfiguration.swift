@@ -31,6 +31,7 @@ class RNMobileMessagingConfiguration {
         static let fullFeaturedInAppsEnabled = "fullFeaturedInAppsEnabled"
         static let webViewSettings = "webViewSettings"
         static let userDataJwt = "userDataJwt"
+        static let backendBaseURL = "backendBaseURL"
     }
 
     let appCode: String
@@ -46,6 +47,7 @@ class RNMobileMessagingConfiguration {
     let fullFeaturedInAppsEnabled: Bool
     let webViewSettings: [String: AnyObject]?
     let userDataJwt: String?
+    let backendBaseURL: String?
 
     init?(rawConfig: [String: AnyObject]) {
         guard let appCode = rawConfig[RNMobileMessagingConfiguration.Keys.applicationCode] as? String,
@@ -61,6 +63,7 @@ class RNMobileMessagingConfiguration {
         self.messageStorageEnabled = rawConfig[RNMobileMessagingConfiguration.Keys.messageStorage] != nil ? true : false
         self.inAppChatEnabled = rawConfig[RNMobileMessagingConfiguration.Keys.inAppChatEnabled].unwrap(orDefault: false)
         self.fullFeaturedInAppsEnabled = rawConfig[RNMobileMessagingConfiguration.Keys.fullFeaturedInAppsEnabled].unwrap(orDefault: false)
+        self.backendBaseURL = rawConfig[RNMobileMessagingConfiguration.Keys.backendBaseURL] as? String
 
         if let rawPrivacySettings = rawConfig[RNMobileMessagingConfiguration.Keys.privacySettings] as? [String: Any] {
             var ps = [String: Any]()

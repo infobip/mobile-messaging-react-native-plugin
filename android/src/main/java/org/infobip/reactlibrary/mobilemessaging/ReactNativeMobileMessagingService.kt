@@ -117,7 +117,7 @@ class ReactNativeMobileMessagingService(
         @JvmStatic
         @Volatile
         var jsHasListeners = false
-        
+
         @JvmStatic
         @Volatile
         var pluginInitialized = false
@@ -274,6 +274,10 @@ class ReactNativeMobileMessagingService(
             val builder = MobileMessaging.Builder(context)
                 .withoutRegisteringForRemoteNotifications()
                 .withApplicationCode(configuration.applicationCode)
+
+            configuration.backendBaseURL?.let { baseURL ->
+                builder.withApiUri(baseURL)
+            }
 
             if (configuration.fullFeaturedInAppsEnabled) {
                 builder.withFullFeaturedInApps()

@@ -25,6 +25,7 @@ export interface Spec extends TurboModule {
     setChatJwtProvider(): void;
     setChatJwt(jwt: string | null): void;
     setChatExceptionHandler(isHandlerPresent: boolean): void;
+    setChatDomain(domain: string | null): void;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('RNMMChat');

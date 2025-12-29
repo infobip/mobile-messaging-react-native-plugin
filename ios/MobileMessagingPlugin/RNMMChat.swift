@@ -177,6 +177,12 @@ class RNMMChat: NSObject  {
     func stopConnection() {
         RNMMChatView.viewController?.stopConnection()
     }
+    
+    @objc(setChatDomain:)
+    func setChatDomain(domain: String?) {
+        MobileMessaging.inAppChat?.domain = domain
+    }
+    
 }
 
 extension RNMMChat: MMInAppChatDelegate {

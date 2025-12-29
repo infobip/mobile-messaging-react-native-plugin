@@ -605,9 +605,9 @@ class MobileMessaging {
      *   ...
      * }
      */
-     setChatCustomization(customization) {
-         RNMMChat.setChatCustomization(customization)
-     };
+    setChatCustomization(customization) {
+        RNMMChat.setChatCustomization(customization)
+    };
 
     /**
     * Set widget theme for In-app chat messages
@@ -862,6 +862,16 @@ class MobileMessaging {
         }
         RNMMChat.setChatPushBody(body);
     };
+
+    /**
+     * Set chat domain to be used in in-app chat widget.
+     * > ⚠️ Do not use this method if you are not instructed to do so by Infobip support.
+     * @param domain for chat widget to be set
+     * @name setChatDomain
+     */
+    setChatDomain(domain) {
+        RNMMChat.setChatDomain(domain);
+    }
 
     /**
      * Set JSON Web Token for user data operations and personalization.

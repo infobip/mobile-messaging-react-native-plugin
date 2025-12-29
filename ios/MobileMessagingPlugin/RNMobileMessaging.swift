@@ -126,7 +126,10 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
         MobileMessaging.privacySettings.carrierInfoSendingDisabled = configuration.privacySettings[RNMobileMessagingConfiguration.Keys.carrierInfoSendingDisabled].unwrap(orDefault: false)
         MobileMessaging.privacySettings.userDataPersistingDisabled = configuration.privacySettings[RNMobileMessagingConfiguration.Keys.userDataPersistingDisabled].unwrap(orDefault: false)
         
-        var mobileMessaging = MobileMessaging.withApplicationCode(configuration.appCode, notificationType: configuration.notificationType)
+        var mobileMessaging = MobileMessaging.withApplicationCode(
+            configuration.appCode,
+            notificationType: configuration.notificationType,
+            backendBaseURL: configuration.backendBaseURL ?? MMConsts.APIValues.prodDynamicBaseURLString)
         
         if let storageAdapter = messageStorageAdapter, configuration.messageStorageEnabled {
             mobileMessaging = mobileMessaging?.withMessageStorage(storageAdapter)

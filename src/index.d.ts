@@ -34,18 +34,18 @@ declare namespace MobileMessagingReactNative {
         applicationCode: string;
         webRTCUI?: {
             configurationId: string;
-        } | undefined;
-        inAppChatEnabled?: boolean | undefined;
-        fullFeaturedInAppsEnabled?: boolean | undefined;
+        };
+        inAppChatEnabled?: boolean;
+        fullFeaturedInAppsEnabled?: boolean;
         /**
          * Message storage save callback
          */
         messageStorage?: CustomMessageStorage;
-        defaultMessageStorage?: boolean | undefined;
-        logging?: boolean | undefined;
+        defaultMessageStorage?: boolean;
+        logging?: boolean;
         ios?: {
-            notificationTypes?: string[] | undefined;
-        } | undefined;
+            notificationTypes?: string[];
+        };
         android?: {
             notificationIcon?: string; // a resource name for a status bar icon (without extension), located in 'android/src/main/res/mipmap'
             multipleNotifications?: boolean;
@@ -62,113 +62,114 @@ declare namespace MobileMessagingReactNative {
             notificationChannelId?: string;
             notificationChannelName?: string;
             notificationSound?: string;
-        } | undefined;
+        };
         privacySettings?: {
-            applicationCodePersistingDisabled?: boolean | undefined;
-            userDataPersistingDisabled?: boolean | undefined;
-            carrierInfoSendingDisabled?: boolean | undefined;
-            systemInfoSendingDisabled?: boolean | undefined
-        } | undefined;
+            applicationCodePersistingDisabled?: boolean;
+            userDataPersistingDisabled?: boolean;
+            carrierInfoSendingDisabled?: boolean;
+            systemInfoSendingDisabled?: boolean
+        };
         notificationCategories?: [
             {
-                identifier: string | undefined;
+                identifier?: string;
                 actions?: [
                     {
-                        identifier: string | undefined;
-                        title?: string | undefined;
-                        foreground?: boolean | undefined;
-                        authenticationRequired?: boolean | undefined;
-                        moRequired?: boolean | undefined;
-                        destructive?: boolean | undefined;
-                        icon?: string | undefined;
-                        textInputActionButtonTitle?: string | undefined;
-                        textInputPlaceholder?: string | undefined
-                    }] | undefined
-            }] | undefined;
-        userDataJwt?: string | undefined;
+                        identifier?: string;
+                        title?: string;
+                        foreground?: boolean;
+                        authenticationRequired?: boolean;
+                        moRequired?: boolean;
+                        destructive?: boolean;
+                        icon?: string;
+                        textInputActionButtonTitle?: string;
+                        textInputPlaceholder?: string
+                    }]
+            }];
+        userDataJwt?: string;
+        backendBaseURL?: string;
     }
 
     export interface UserData {
         externalUserId?: string;
-        firstName?: string | undefined;
-        lastName?: string | undefined;
-        middleName?: string | undefined;
-        gender?: Gender | undefined;
-        birthday?: string | undefined;
-        phones?: string[] | undefined;
-        emails?: string[] | undefined;
-        tags?: string[] | undefined;
-        customAttributes?: Record<string, string | number | boolean | object[]> | undefined;
+        firstName?: string;
+        lastName?: string;
+        middleName?: string;
+        gender?: Gender;
+        birthday?: string;
+        phones?: string[];
+        emails?: string[];
+        tags?: string[];
+        customAttributes?: Record<string, string | number | boolean | object[]>;
     }
 
     export interface Installation {
-        pushRegistrationId?: string | undefined;
-        isPrimaryDevice?: boolean | undefined;
-        isPushRegistrationEnabled?: boolean | undefined;
-        notificationsEnabled?: boolean | undefined;
-        sdkVersion?: string | undefined;
-        appVersion?: string | undefined;
-        os?: OS | undefined;
+        pushRegistrationId?: string;
+        isPrimaryDevice?: boolean;
+        isPushRegistrationEnabled?: boolean;
+        notificationsEnabled?: boolean;
+        sdkVersion?: string;
+        appVersion?: string;
+        os?: OS;
         osVersion?: string;
-        deviceManufacturer?: string | undefined;
-        deviceModel?: string | undefined;
-        deviceSecure?: boolean | undefined;
-        language?: string | undefined;
-        deviceTimezoneId?: string | undefined;
-        applicationUserId?: string | undefined;
-        deviceName?: string | undefined;
-        customAttributes?: Record<string, string | number | boolean> | undefined;
+        deviceManufacturer?: string;
+        deviceModel?: string;
+        deviceSecure?: boolean;
+        language?: string;
+        deviceTimezoneId?: string;
+        applicationUserId?: string;
+        deviceName?: string;
+        customAttributes?: Record<string, string | number | boolean>;
     }
 
     export interface UserIdentity {
-        phones?: string[] | undefined;
-        emails?: string[] | undefined;
+        phones?: string[];
+        emails?: string[];
         externalUserId?: string;
     }
 
     export interface MMInbox {
         countTotal: number;
         countUnread: number;
-        messages?: [Message] | undefined;
+        messages?: [Message];
     }
 
     export interface MMInboxFilterOptions {
-        fromDateTime?: String | undefined;
-        toDateTime?: String | undefined;
-        topic?: string | undefined;
-        limit?: number | undefined;
+        fromDateTime?: string;
+        toDateTime?: string;
+        topic?: string;
+        limit?: number;
     }
 
     export interface PersonalizeContext {
         userIdentity: UserIdentity;
-        userAttributes?: Record<string, string | number | boolean | object[]> | undefined;
-        forceDepersonalize?: boolean | undefined;
-        keepAsLead?: boolean | undefined;
+        userAttributes?: Record<string, string | number | boolean | object[]>;
+        forceDepersonalize?: boolean;
+        keepAsLead?: boolean;
     }
 
     export interface Message {
         messageId: string;
-        title?: string | undefined;
-        body: string | undefined;
-        sound?: string | undefined;
-        silent?: string | undefined;
-        customPayload?: Record<string, string> | undefined;
-        internalData?: string | undefined;
-        sentTimestamp?: number | undefined;
-        receivedTimestamp?: number | undefined;
-        seenDate?: number | undefined;
-        contentUrl?: string | undefined;
-        seen?: boolean | undefined;
-        originalPayload?: Record<string, string> | undefined; // iOS only
-        vibrate?: boolean | undefined; // Android only
-        icon?: string | undefined; // Android only
-        category?: string | undefined; // Android only
-        chat?: boolean | undefined;
-        browserUrl?: string | undefined;
-        deeplink?: string | undefined;
-        webViewUrl?: string | undefined;
-        inAppOpenTitle?: string | undefined;
-        inAppDismissTitle?: string | undefined;
+        title?: string;
+        body?: string;
+        sound?: string;
+        silent?: string;
+        customPayload?: Record<string, string>;
+        internalData?: string;
+        sentTimestamp?: number;
+        receivedTimestamp?: number;
+        seenDate?: number;
+        contentUrl?: string;
+        seen?: boolean;
+        originalPayload?: Record<string, string>; // iOS only
+        vibrate?: boolean; // Android only
+        icon?: string; // Android only
+        category?: string; // Android only
+        chat?: boolean;
+        browserUrl?: string;
+        deeplink?: string;
+        webViewUrl?: string;
+        inAppOpenTitle?: string;
+        inAppDismissTitle?: string;
     }
 
     export interface MobileMessagingError {
@@ -179,9 +180,10 @@ declare namespace MobileMessagingReactNative {
 
     export interface ChatConfig {
         ios?: {
-            showModally: boolean;
-        } | undefined;
+            shouldBePresentedModally: boolean;
+        };
     }
+
 
     export interface DefaultMessageStorage {
         find(messageId: string, onSuccess: (message: Message) => void, onError: () => void): void;
@@ -246,37 +248,37 @@ declare namespace MobileMessagingReactNative {
     }
 
     export interface ChatCustomization {
-        chatStatusBarBackgroundColor: string;
-        chatStatusBarIconsColorMode: string;
-        chatToolbar: ToolbarCustomization;
-        attachmentPreviewToolbar: ToolbarCustomization;
-        attachmentPreviewToolbarSaveMenuItemIcon: string;
-        attachmentPreviewToolbarMenuItemsIconTint: string;
-	    networkErrorText: string;
-	    networkErrorTextColor: string;
-	    networkErrorTextAppearance: string;
-        networkErrorLabelBackgroundColor: string;
-        chatBackgroundColor: string;
-        chatProgressBarColor: string;
-        chatInputTextAppearance: string;
-        chatInputTextColor: string;
-        chatInputBackgroundColor: string;
-        chatInputHintText: string;
-        chatInputHintTextColor: string;
-        chatInputAttachmentIcon: string;
-        chatInputAttachmentIconTint: string;
-        chatInputAttachmentBackgroundDrawable: string;
-        chatInputAttachmentBackgroundColor: string;
-        chatInputSendIcon: string;
-        chatInputSendIconTint: string;
-        chatInputSendBackgroundDrawable: string;
-        chatInputSendBackgroundColor: string;
-        chatInputSeparatorLineColor: string;
-        chatInputSeparatorLineVisible: boolean;
-        chatInputCursorColor: string;
-        chatInputCharCounterTextAppearance: string;
-        chatInputCharCounterDefaultColor: string;
-        chatInputCharCounterAlertColor: string;
+        chatStatusBarBackgroundColor?: string;
+        chatStatusBarIconsColorMode?: string;
+        chatToolbar?: ToolbarCustomization;
+        attachmentPreviewToolbar?: ToolbarCustomization;
+        attachmentPreviewToolbarSaveMenuItemIcon?: string;
+        attachmentPreviewToolbarMenuItemsIconTint?: string;
+    	networkErrorText?: string;
+	    networkErrorTextColor?: string;
+	    networkErrorTextAppearance?: string;
+        networkErrorLabelBackgroundColor?: string;
+        chatBackgroundColor?: string;
+        chatProgressBarColor?: string;
+        chatInputTextAppearance?: string;
+        chatInputTextColor?: string;
+        chatInputBackgroundColor?: string;
+        chatInputHintText?: string;
+        chatInputHintTextColor?: string;
+        chatInputAttachmentIcon?: string;
+        chatInputAttachmentIconTint?: string;
+        chatInputAttachmentBackgroundDrawable?: string;
+        chatInputAttachmentBackgroundColor?: string;
+        chatInputSendIcon?: string;
+        chatInputSendIconTint?: string;
+        chatInputSendBackgroundDrawable?: string;
+        chatInputSendBackgroundColor?: string;
+        chatInputSeparatorLineColor?: string;
+        chatInputSeparatorLineVisible?: boolean;
+        chatInputCursorColor?: string;
+        chatInputCharCounterTextAppearance?: string;
+        chatInputCharCounterDefaultColor?: string;
+        chatInputCharCounterAlertColor?: string;
     }
 
     export interface ChatException {
@@ -285,71 +287,6 @@ declare namespace MobileMessagingReactNative {
         message?: string;
         origin?: string;
         platform?: string;
-    }
-
-    // To be deprecated in favour of ChatCustomization above
-    export interface ChatCustomizationConfiguration {
-        toolbarTitle: string;
-        toolbarTintColor: string;
-        toolbarBackgroundColor: string;
-        toolbarTitleColor: string;
-        chatBackgroundColor: string;
-        widgetTheme: string;
-        noConnectionAlertTextColor: string;
-        noConnectionAlertBackgroundColor: string;
-        chatInputPlaceholderTextColor: string;
-        chatInputCursorColor: string;
-        chatInputBackgroundColor: string;
-        sendButtonIconUri: string;
-        attachmentButtonIconUri: string;
-        chatInputSeparatorVisible: boolean;
-        // iOS only properties
-        attachmentPreviewBarsColor: string;
-        attachmentPreviewItemsColor: string;
-        textContainerTopMargin: double;
-        textContainerLeftPadding: double;
-        textContainerCornerRadius: double;
-        textViewTopMargin: double;
-        placeholderHeight: double;
-        placeholderSideMargin: double;
-        buttonHeight: double;
-        buttonTouchableOverlap: double;
-        buttonRightMargin: double;
-        utilityButtonWidth: double;
-        utilityButtonBottomMargin: double;
-        initialHeight: double;
-        mainFont: string;
-        charCounterFont: string;
-        //android only properties
-        //status bar properties
-        statusBarColorLight: boolean;
-        statusBarBackgroundColor: string;
-        //toolbar properties
-        navigationIconUri: string;
-        navigationIconTint: string;
-        subtitleText: string;
-        subtitleTextColor: string;
-        subtitleTextAppearanceRes: string;
-        subtitleCentered: boolean;
-        titleTextAppearanceRes: string;
-        titleCentered: boolean;
-        menuItemsIconTint: string;
-        menuItemSaveAttachmentIcon: string;
-        //chat properties
-        progressBarColor: string;
-        networkConnectionErrorTextAppearanceRes: string;
-        networkConnectionErrorText: string;
-        //chat input properties
-        inputTextColor: string;
-        inputAttachmentIconTint: string;
-        inputAttachmentBackgroundColor: string;
-        inputAttachmentBackgroundDrawable: string;
-        inputSendIconTint: string;
-        inputSendBackgroundColor: string;
-        inputSendBackgroundDrawable: string;
-        inputSeparatorLineColor: string;
-        inputHintText: string;
-        inputTextAppearance: string;
     }
 
     export type ChatMultithreadStrategy = 'ACTIVE' | 'ALL' | 'ALL_PLUS_NEW';
@@ -600,6 +537,7 @@ declare namespace MobileMessagingReactNative {
          */
         showChat(config ?: ChatConfig): void;
 
+
         /**
          * Set custom style of In-app chat
          * @param customization various colors in hex format, texts, margins etc.
@@ -754,6 +692,14 @@ declare namespace MobileMessagingReactNative {
          * @name setChatPushBody
          */
         setChatPushBody(body: string): void;
+
+        /**
+         * Set chat domain to be used in in-app chat widget.
+         * > ⚠️ Do not use this method if you are not instructed to do so by Infobip support.
+         * @param domain for chat widget to be set
+         * @name setChatDomain
+         */
+        setChatDomain(domain?: string): void;
 
         /**
          * Set JSON Web Token for user data operations and personalization.

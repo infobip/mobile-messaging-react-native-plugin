@@ -329,6 +329,12 @@ class RNMMChatService(
             }
         }
     }
+
+    fun setChatDomain(domain: String?) {
+        runCatchingExceptions("setChatDomain()", arrayOf(domain)) {
+            inAppChat.setDomain(domain)
+        }
+    }
     //endregion
 
     //region ActivityEventListener
