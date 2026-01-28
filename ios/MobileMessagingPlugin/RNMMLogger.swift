@@ -26,7 +26,9 @@ class RNMMLogger: NSObject, MMLogging {
             of: "https://github.com/infobip/mobile-messaging-sdk-ios/wiki/In%E2%80%90app-chat#library-events",
             with: "https://github.com/infobip/mobile-messaging-react-native-plugin/wiki/In%E2%80%90app-chat#in-app-chat-events")
         let payload: [String: Any] = ["message" : rnMessage]
-        ReactNativeMobileMessaging.shared?.sendEvent(withName: EventName.debugLoggerMessageReceived, body: payload)
+        DispatchQueue.mmEnsureMain {
+            ReactNativeMobileMessaging.shared?.sendEvent(withName: EventName.debugLoggerMessageReceived, body: payload)
+        }
     }
     
     public func logDebug(message: String) {

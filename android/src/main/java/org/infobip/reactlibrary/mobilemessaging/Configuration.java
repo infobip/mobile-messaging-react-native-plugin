@@ -53,53 +53,6 @@ public class Configuration {
         List<Action> actions;
     }
 
-    class InAppChatCustomization {
-        //common
-        String widgetTheme;
-        String toolbarTitle;
-        String toolbarTitleColor;
-        String toolbarBackgroundColor;
-        String chatBackgroundColor;
-        String noConnectionAlertTextColor;
-        String noConnectionAlertBackgroundColor;
-        String chatInputPlaceholderTextColor;
-        String chatInputCursorColor;
-        String chatInputBackgroundColor;
-        String sendButtonIconUri;
-        String attachmentButtonIconUri;
-        boolean chatInputSeparatorVisible;
-        //android only
-        //status bar properties
-        boolean statusBarColorLight;
-        String statusBarBackgroundColor;
-        //toolbar properties
-        String navigationIconUri;
-        String navigationIconTint;
-        String subtitleText;
-        String subtitleTextColor;
-        String subtitleTextAppearanceRes;
-        boolean subtitleCentered;
-        String titleTextAppearanceRes;
-        boolean titleCentered;
-        String menuItemsIconTint;
-        String menuItemSaveAttachmentIcon;
-        //chat properties
-        String progressBarColor;
-        String networkConnectionErrorTextAppearanceRes;
-        String networkConnectionErrorText;
-        //chat input properties
-        String inputTextColor;
-        String inputAttachmentIconTint;
-        String inputAttachmentBackgroundColor;
-        String inputAttachmentBackgroundDrawable;
-        String inputSendIconTint;
-        String inputSendBackgroundColor;
-        String inputSendBackgroundDrawable;
-        String inputSeparatorLineColor;
-        String inputHintText;
-        String inputTextAppearance;
-    }
-
     class WebRTCUI {
         String configurationId;
     }
@@ -115,7 +68,6 @@ public class Configuration {
     PrivacySettings privacySettings = new PrivacySettings();
     List<Category> notificationCategories = new ArrayList<Category>();
     WebRTCUI webRTCUI;
-    InAppChatCustomization inAppChatCustomization;
     String userDataJwt;
     @Nullable String backendBaseURL;
 
@@ -127,20 +79,6 @@ public class Configuration {
 
         Configuration config = new JsonSerializer().deserialize(args.toString(), Configuration.class);
         if (config == null || config.applicationCode == null) {
-            throw new IllegalArgumentException("Configuration is invalid");
-        }
-
-        return config;
-    }
-
-    @NonNull
-    static InAppChatCustomization resolveChatSettings(JSONObject args) throws JSONException {
-        if (args == null) {
-            throw new IllegalArgumentException("Cannot resolve configuration from arguments");
-        }
-
-        InAppChatCustomization config = new JsonSerializer().deserialize(args.toString(), InAppChatCustomization.class);
-        if (config == null) {
             throw new IllegalArgumentException("Configuration is invalid");
         }
 

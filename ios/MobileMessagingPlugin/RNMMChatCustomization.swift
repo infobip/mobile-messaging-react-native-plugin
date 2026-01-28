@@ -42,10 +42,6 @@ enum ChatCustomizationKeys: String {
     attachmentPreviewToolbar,
     attachmentPreviewToolbarMenuItemsIconTint,
     attachmentPreviewToolbarSaveMenuItemIcon,
-    networkErrorText,
-    networkErrorTextColor,
-    networkErrorTextAppearance,
-    networkErrorLabelBackgroundColor,
     chatBackgroundColor,
     chatProgressBarColor,
     chatInputTextAppearance,
@@ -66,7 +62,19 @@ enum ChatCustomizationKeys: String {
     chatInputCursorColor,
     chatInputCharCounterTextAppearance,
     chatInputCharCounterDefaultColor,
-    chatInputCharCounterAlertColor
+    chatInputCharCounterAlertColor,
+    networkErrorTextColor,
+    networkErrorLabelBackgroundColor,
+    chatBannerErrorTextColor,
+    chatBannerErrorBackgroundColor,
+    chatBannerErrorIcon,
+    chatBannerErrorIconTint,
+    chatFullScreenErrorTitleText,
+    chatFullScreenErrorTitleTextColor,
+    chatFullScreenErrorDescriptionText,
+    chatFullScreenErrorDescriptionTextColor,
+    chatFullScreenErrorBackgroundColor,
+    chatFullScreenErrorIcon
 
     func getDict(from settings: [String: AnyObject]) -> [String: AnyObject]? {
         return settings[self.rawValue] as? [String: AnyObject]

@@ -478,7 +478,7 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
     }
     
     var isChatAvailable: Bool {
-        return eventsManager?.isChatAvailable ?? false
+        return RNMobileMessagingEventsManager.isChatAvailable
     }
 
 }

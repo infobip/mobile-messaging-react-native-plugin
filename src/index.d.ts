@@ -258,6 +258,25 @@ declare namespace MobileMessagingReactNative {
 	    networkErrorTextColor?: string;
 	    networkErrorTextAppearance?: string;
         networkErrorLabelBackgroundColor?: string;
+        networkErrorIcon?: string; // android only
+        networkErrorIconTint?: string; // android only
+        chatBannerErrorTextColor?: string;
+        chatBannerErrorTextAppearance?: string; // android only
+        chatBannerErrorBackgroundColor?: string;
+        chatBannerErrorIcon?: string;
+        chatBannerErrorIconTint?: string;
+        chatFullScreenErrorTitleText?: string;
+        chatFullScreenErrorTitleTextColor?: string;
+        chatFullScreenErrorTitleTextAppearance?: string;
+        chatFullScreenErrorDescriptionText?: string;
+        chatFullScreenErrorDescriptionTextColor?: string;
+        chatFullScreenErrorDescriptionTextAppearance?: string;
+        chatFullScreenErrorBackgroundColor?: string;
+        chatFullScreenErrorIcon?: string;
+        chatFullScreenErrorIconTint?: string;
+        chatFullScreenErrorRefreshButtonText?: string; // android only
+        chatFullScreenErrorRefreshButtonTextColor?: string; // android only
+        chatFullScreenErrorRefreshButtonVisible?: boolean; // android only
         chatBackgroundColor?: string;
         chatProgressBarColor?: string;
         chatInputTextAppearance?: string;

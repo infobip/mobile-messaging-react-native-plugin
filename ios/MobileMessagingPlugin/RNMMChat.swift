@@ -87,11 +87,22 @@ class RNMMChat: NSObject  {
             self?.setNotNil(&chatsettings.chatInputSeparatorLineColor, ChatCustomizationKeys.chatInputSeparatorLineColor.getColor(from: settings))
             self?.setNotNil(&chatsettings.advancedSettings.isLineSeparatorHidden, ChatCustomizationKeys.chatInputSeparatorLineVisible.getBool(from: settings))
             self?.setNotNil(&chatsettings.advancedSettings.typingIndicatorColor, ChatCustomizationKeys.chatInputCursorColor.getColor(from: settings))
-            self?.setNotNil(&chatsettings.errorLabelTextColor, ChatCustomizationKeys.networkErrorTextColor.getColor(from: settings))
-            self?.setNotNil(&chatsettings.errorLabelBackgroundColor, ChatCustomizationKeys.networkErrorLabelBackgroundColor.getColor(from: settings))
             self?.setNotNil(&chatsettings.advancedSettings.mainPlaceholderTextColor, ChatCustomizationKeys.chatInputHintTextColor.getColor(from: settings))
             self?.setNotNil(&chatsettings.advancedSettings.charCounterDefaultColor, ChatCustomizationKeys.chatInputCharCounterDefaultColor.getColor(from: settings))
             self?.setNotNil(&chatsettings.advancedSettings.charCounterAlertColor, ChatCustomizationKeys.chatInputCharCounterAlertColor.getColor(from: settings))
+            
+            self?.setNotNil(&chatsettings.networkErrorLabelTextColor, ChatCustomizationKeys.networkErrorTextColor.getColor(from: settings))
+            self?.setNotNil(&chatsettings.networkErrorLabelBackgroundColor, ChatCustomizationKeys.networkErrorLabelBackgroundColor.getColor(from: settings))
+            self?.setNotNil(&chatsettings.errorLabelTextColor, ChatCustomizationKeys.chatBannerErrorTextColor.getColor(from: settings))
+            self?.setNotNil(&chatsettings.errorLabelBackgroundColor, ChatCustomizationKeys.chatBannerErrorBackgroundColor.getColor(from: settings))
+            self?.setNotNil(&chatsettings.errorBannerIcon, ChatCustomizationKeys.chatBannerErrorIcon.getImage(from: settings))
+            self?.setNotNil(&chatsettings.errorBannerIconTint, ChatCustomizationKeys.chatBannerErrorIconTint.getColor(from: settings))
+            self?.setNotNil(&chatsettings.fullScreenErrorImage, ChatCustomizationKeys.chatFullScreenErrorIcon.getImage(from: settings))
+            self?.setNotNil(&chatsettings.fullScreenErrorTitleText, ChatCustomizationKeys.chatFullScreenErrorTitleText.getString(from: settings))
+            self?.setNotNil(&chatsettings.fullScreenErrorSubtitleText, ChatCustomizationKeys.chatFullScreenErrorDescriptionText.getString(from: settings))
+            self?.setNotNil(&chatsettings.fullScreenErrorTitleTextColor, ChatCustomizationKeys.chatFullScreenErrorTitleTextColor.getColor(from: settings))
+            self?.setNotNil(&chatsettings.fullScreenErrorSubtitleTextColor, ChatCustomizationKeys.chatFullScreenErrorDescriptionTextColor.getColor(from: settings))
+            self?.setNotNil(&chatsettings.fullScreenErrorBackgroundColor, ChatCustomizationKeys.chatFullScreenErrorBackgroundColor.getColor(from: settings))
         }
     }
     
