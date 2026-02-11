@@ -16,7 +16,7 @@ const ReactNativeMobileMessaging = require('./specs/NativeMobileMessaging').defa
 const RNMMChat = require('./specs/NativeRNMMChat').default
 const RNMMWebRTCUI = require('./specs/NativeRNMMWebRTCUI').default;
 
-export ChatView, { ChatViewHandle, ChatViewProps } from './components/ChatView';
+export { default as ChatView, ChatViewHandle, ChatViewProps } from './components/ChatView';
 
 /**
  * Constructor
