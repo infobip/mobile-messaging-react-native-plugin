@@ -21,7 +21,6 @@ import androidx.collection.ArraySet;
 import com.facebook.react.modules.core.PermissionAwareActivity;
 import com.facebook.react.modules.core.PermissionListener;
 
-import org.infobip.mobile.messaging.resources.R;
 import org.infobip.mobile.messaging.permissions.PermissionsHelper;
 
 import java.util.Set;

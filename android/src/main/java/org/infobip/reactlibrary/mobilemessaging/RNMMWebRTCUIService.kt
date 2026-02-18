@@ -9,10 +9,8 @@
 package org.infobip.reactlibrary.mobilemessaging
 
 import android.content.Context
-import androidx.annotation.NonNull
 import com.facebook.react.bridge.Callback
 import com.facebook.react.bridge.ReactApplicationContext
-import org.infobip.mobile.messaging.util.StringUtils
 import java.lang.reflect.Proxy
 
 /**

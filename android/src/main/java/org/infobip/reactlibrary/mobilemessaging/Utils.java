@@ -9,7 +9,6 @@
 package org.infobip.reactlibrary.mobilemessaging;
 
 import android.content.res.Resources;
-import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;

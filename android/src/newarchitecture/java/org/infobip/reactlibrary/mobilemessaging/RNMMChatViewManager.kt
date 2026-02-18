@@ -8,7 +8,6 @@
 
 package org.infobip.reactlibrary.mobilemessaging
 
-import android.util.Log;
 import com.facebook.react.uimanager.ViewGroupManager
 import com.facebook.react.uimanager.annotations.ReactProp
 import com.facebook.react.uimanager.ThemedReactContext
@@ -17,8 +16,6 @@ import com.facebook.react.uimanager.ViewManagerDelegate
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.viewmanagers.RNMMChatViewManagerInterface
 import com.facebook.react.viewmanagers.RNMMChatViewManagerDelegate
-import org.infobip.reactlibrary.mobilemessaging.RNMMChatView
-import org.infobip.reactlibrary.mobilemessaging.Utils.getFragmentActivity
 
 
 @ReactModule(name = RNMMChatViewManager.NAME)

@@ -17,6 +17,7 @@
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		A8D275B32E8AB4CE00FF400D /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8D275B22E8AB4CE00FF400D /* SceneDelegate.swift */; };
 		B6F564649D3D83DE86B87829 /* libPods-MobileMessagingNotificationExtension.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FFC45A267B78F62EF8FA9D3C /* libPods-MobileMessagingNotificationExtension.a */; };
+		DEAF100123456789ABCDEF01 /* MobileMessagingNotificationExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 9DF90089F9EF2CEC0E538294 /* MobileMessagingNotificationExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -43,6 +44,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
+				DEAF100123456789ABCDEF01 /* MobileMessagingNotificationExtension.appex in Embed App Extensions */,
 			);
 			name = "Embed App Extensions";
 			runOnlyForDeploymentPostprocessing = 0;

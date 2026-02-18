@@ -9,25 +9,13 @@
 package org.infobip.reactlibrary.mobilemessaging
 
 import android.content.Context
-import android.os.Build
 import android.util.AttributeSet
-import android.util.Log
 import android.view.ViewGroup
 import android.view.ViewParent
 import android.widget.FrameLayout
-import android.view.ViewTreeObserver
-import androidx.annotation.NonNull
-import androidx.annotation.Nullable
-import androidx.annotation.RequiresApi
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentContainerView
-import androidx.fragment.app.FragmentTransaction
-import org.infobip.mobile.messaging.chat.InAppChat
 import org.infobip.mobile.messaging.chat.view.InAppChatFragment
 import org.infobip.mobile.messaging.chat.core.InAppChatException
-import org.infobip.mobile.messaging.chat.view.InAppChatErrorsHandler
 import com.facebook.react.bridge.ReactApplicationContext
 
 /**

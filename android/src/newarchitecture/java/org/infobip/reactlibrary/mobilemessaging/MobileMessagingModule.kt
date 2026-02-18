@@ -8,7 +8,6 @@
 
 package org.infobip.reactlibrary.mobilemessaging
 
-import android.util.Log
 import com.facebook.react.bridge.Callback
 import com.facebook.react.bridge.LifecycleEventListener
 import com.facebook.react.bridge.ReactApplicationContext

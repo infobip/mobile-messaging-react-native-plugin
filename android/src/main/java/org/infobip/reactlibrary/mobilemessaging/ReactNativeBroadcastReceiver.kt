@@ -12,7 +12,6 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import com.facebook.react.ReactApplication
 import com.facebook.react.bridge.ReactContext
-import org.infobip.reactlibrary.mobilemessaging.ReactNativeMobileMessagingService
 
 /**
  * Base class for BroadcastReceivers that need to interact with React Native.

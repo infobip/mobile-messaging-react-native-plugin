@@ -17,7 +17,8 @@
  *  <ChatView ref={chatRef} sendButtonColor="#3478F6" style={{ flex: 1 }} />;
  *  chatRef.current?.showThreadsList();
  */
-import React, {
+import {
+  type ElementRef,
   forwardRef,
   useImperativeHandle,
   useLayoutEffect,
@@ -58,7 +59,7 @@ export interface ChatViewHandle {
 export interface ChatViewProps extends RNMMChatViewProps { }
 
 const ChatView = forwardRef<ChatViewHandle, ChatViewProps>(({ sendButtonColor, style }, ref) => {
-  const RNMMChatRef = useRef<React.ElementRef<typeof RNMMChatView>>(null);
+  const RNMMChatRef = useRef<ElementRef<typeof RNMMChatView>>(null);
   const CHAT_EVENT_EXCEPTION_RECEIVED = "inAppChat.internal.exceptionReceived";
   let eventEmitter = new NativeEventEmitter(NativeModules.ReactNativeMobileMessaging);
   const isFabric = (global as any).nativeFabricUIManager != null;
@@ -76,7 +77,7 @@ const ChatView = forwardRef<ChatViewHandle, ChatViewProps>(({ sendButtonColor, s
   }
 
   function dispatchCommand(
-    viewRef: React.ElementRef<typeof RNMMChatView> | null,
+    viewRef: ElementRef<typeof RNMMChatView> | null,
     command: 'add' | 'remove' | 'showThreadsList' | 'setExceptionHandler',
     params: any[] = [],
   ) {

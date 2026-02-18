@@ -20,7 +20,6 @@ import android.content.IntentFilter
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 
@@ -31,8 +30,6 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
-import com.facebook.react.bridge.WritableMap
-import com.facebook.react.ReactApplication
 import com.facebook.react.modules.core.PermissionAwareActivity
 import com.facebook.react.modules.core.PermissionListener
 import com.google.android.gms.common.ConnectionResult
@@ -49,7 +46,6 @@ import org.infobip.mobile.messaging.NotificationSettings
 import org.infobip.mobile.messaging.SuccessPending
 import org.infobip.mobile.messaging.User
 import org.infobip.mobile.messaging.chat.InAppChat
-import org.infobip.mobile.messaging.chat.core.InAppChatEvent
 import org.infobip.mobile.messaging.dal.bundle.MessageBundleMapper
 import org.infobip.mobile.messaging.inbox.Inbox
 import org.infobip.mobile.messaging.inbox.InboxMapper
@@ -60,7 +56,6 @@ import org.infobip.mobile.messaging.interactive.MobileInteractive
 import org.infobip.mobile.messaging.interactive.NotificationAction
 import org.infobip.mobile.messaging.interactive.NotificationCategory
 import org.infobip.mobile.messaging.logging.MobileMessagingLogger
-import org.infobip.mobile.messaging.logging.LogcatWriter
 import org.infobip.mobile.messaging.mobileapi.InternalSdkError
 import org.infobip.mobile.messaging.mobileapi.MobileMessagingError
 import org.infobip.mobile.messaging.mobileapi.Result
@@ -76,12 +71,10 @@ import org.infobip.mobile.messaging.util.PreferenceHelper
 import org.infobip.mobile.messaging.plugins.InstallationJson
 
 import org.infobip.reactlibrary.mobilemessaging.datamappers.ReactNativeJson
-import org.infobip.reactlibrary.mobilemessaging.ReactNativeBroadcastReceiver
 
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
-import java.util.*
 import java.util.concurrent.CopyOnWriteArrayList
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -649,7 +642,7 @@ class ReactNativeMobileMessagingService(
         }
     }
 
-    override fun onNewIntent(intent: Intent?) {
+    override fun onNewIntent(intent: Intent) {
         // Empty implementation
     }
 

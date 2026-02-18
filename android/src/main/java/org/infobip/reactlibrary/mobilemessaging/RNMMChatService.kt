@@ -15,9 +15,6 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.BitmapDrawable
-import android.os.Build
-import android.os.Bundle
-import android.util.Log
 import androidx.annotation.NonNull
 import com.facebook.react.bridge.*
 import org.infobip.mobile.messaging.MobileMessaging
@@ -29,13 +26,11 @@ import org.infobip.mobile.messaging.chat.core.widget.LivechatWidgetLanguage
 import org.infobip.mobile.messaging.chat.core.InAppChatEvent
 import org.infobip.mobile.messaging.chat.view.InAppChatErrorsHandler
 import org.infobip.mobile.messaging.chat.view.styles.PluginChatCustomization
-import org.infobip.mobile.messaging.chat.view.styles.PluginChatCustomization.DrawableLoader
 import org.infobip.mobile.messaging.mobileapi.MobileMessagingError
 import org.infobip.mobile.messaging.mobileapi.Result
 import org.infobip.mobile.messaging.BroadcastParameter
 
 import org.infobip.reactlibrary.mobilemessaging.datamappers.ReactNativeJson
-import org.infobip.reactlibrary.mobilemessaging.ReactNativeBroadcastReceiver
 import com.facebook.react.bridge.ReactContext
 
 import java.io.IOException
@@ -205,21 +200,21 @@ class RNMMChatService(
     fun setChatCustomization(map: ReadableMap?) {
         runCatchingExceptions("setChatCustomization()", arrayOf(map)) {
             val theme = map?.let { ReactNativeJson.convertMapToJson(it) }
-                ?.let { PluginChatCustomization.parseOrNull(it) }
-                ?.let { it.createTheme(reactContext, reactNativeDrawableLoader) }
-            inAppChat.setTheme(theme)
+                        ?.let { PluginChatCustomization.parseOrNull(it) }
+                ?.createTheme(reactContext, reactNativeDrawableLoader)
+            inAppChat.theme = theme
         }
     }
 
     fun setChatPushTitle(title: String?) {
         runCatchingExceptions("setChatPushTitle()", arrayOf(title)) {
-            inAppChat.setChatPushTitle(title)
+            inAppChat.chatPushTitle = title
         }
     }
 
     fun setChatPushBody(body: String?) {
         runCatchingExceptions("setChatPushBody()", arrayOf(body)) {
-            inAppChat.setChatPushBody(body)
+            inAppChat.chatPushBody = body
         }
     }
 
@@ -332,13 +327,13 @@ class RNMMChatService(
 
     fun setChatDomain(domain: String?) {
         runCatchingExceptions("setChatDomain()", arrayOf(domain)) {
-            inAppChat.setDomain(domain)
+            inAppChat.domain = domain
         }
     }
     //endregion
 
     //region ActivityEventListener
-    override fun onActivityResult(activity: Activity?, requestCode: Int, resultCode: Int, data: Intent?) {
+    override fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, data: Intent?) {
         val fragmentActivity = Utils.getFragmentActivity(reactContext) ?: return
         val fragment = fragmentActivity.supportFragmentManager.findFragmentByTag(Utils.RN_IN_APP_CHAT_FRAGMENT_TAG)
         if (fragment == null) {
@@ -348,7 +343,7 @@ class RNMMChatService(
         fragment.onActivityResult(requestCode and 0xffff, resultCode, data)
     }
 
-    override fun onNewIntent(intent: Intent?) {
+    override fun onNewIntent(intent: Intent) {
         // Activity `onNewIntent` - no-op
     }
     //endregion
