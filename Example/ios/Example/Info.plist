@@ -41,6 +41,8 @@
 	<string>Example wants to use photo library to send attachments</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Example wants to use photo library to send attachments and save photos from the camera</string>
+	<key>RCTNewArchEnabled</key>
+	<true/>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

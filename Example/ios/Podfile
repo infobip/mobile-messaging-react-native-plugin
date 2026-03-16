@@ -32,10 +32,6 @@ target 'Example' do
     # Pods for testing
   end
 
-  target 'MobileMessagingNotificationExtension' do
-      inherit! :search_paths
-  end
-
   post_install do |installer|
 
     installer.pods_project.targets.each do |target|
@@ -44,6 +40,9 @@ target 'Example' do
             config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] = '$(inherited) COCOAPODS=1 WEBRTCUI_ENABLED=1'
             config.build_settings['OTHER_SWIFT_FLAGS'] = '$(inherited) -D WEBRTCUI_ENABLED'
           end
+        end
+        target.build_configurations.each do |config|
+          config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.1'
         end
     end
 
@@ -54,5 +53,19 @@ target 'Example' do
       :mac_catalyst_enabled => false,
       # :ccache_enabled => true
     )
+
+    # Disable extension API restriction for MobileMessaging after all other
+    # post-install hooks, so the setting is not overridden.
+    installer.pods_project.targets.each do |target|
+      if target.name.start_with?('MobileMessaging')
+        target.build_configurations.each do |config|
+          config.build_settings['APPLICATION_EXTENSION_API_ONLY'] = 'NO'
+        end
+      end
+    end
   end
+end
+
+target 'MobileMessagingNotificationExtension' do
+  pod 'MobileMessaging/Core', '14.4.3'
 end

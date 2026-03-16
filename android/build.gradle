@@ -37,11 +37,11 @@ def withWebRTCUI = rootProject.findProperty('withWebRTCUI') ?: false
 
 android {
     namespace "org.infobip.reactlibrary.mobilemessaging"
-    compileSdk 35
+    compileSdk 36
 
     defaultConfig {
         minSdk 21
-        targetSdk 35
+        targetSdk 36
         buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
         consumerProguardFiles 'infobip-mm-proguard-rules.pro'
     }

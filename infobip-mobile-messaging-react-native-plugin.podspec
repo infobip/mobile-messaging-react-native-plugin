@@ -20,6 +20,7 @@ Pod::Spec.new do |s|
   s.requires_arc = true
 
   s.dependency "React-Core"
+  s.dependency "React-Core-prebuilt"
 
   s.dependency "MobileMessaging/Core", mmVersion
   s.dependency "MobileMessaging/InAppChat", mmVersion
