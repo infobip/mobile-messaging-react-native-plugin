@@ -54,18 +54,9 @@ target 'Example' do
       # :ccache_enabled => true
     )
 
-    # Disable extension API restriction for MobileMessaging after all other
-    # post-install hooks, so the setting is not overridden.
-    installer.pods_project.targets.each do |target|
-      if target.name.start_with?('MobileMessaging')
-        target.build_configurations.each do |config|
-          config.build_settings['APPLICATION_EXTENSION_API_ONLY'] = 'NO'
-        end
-      end
-    end
   end
 end
 
-target 'MobileMessagingNotificationExtension' do
-  pod 'MobileMessaging/Core', '14.4.3'
+target 'MobileMessagingNotificationServiceExtension' do
+  pod 'MobileMessagingNotificationExtension', '15.0.0'
 end
