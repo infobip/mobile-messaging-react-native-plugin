@@ -64,6 +64,20 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
         }
         super.sendEvent(withName: name, body: body)
     }
+    
+    func sendDirectEvent(withName name: String!, body: Any!) {
+        guard let _eventsManager = eventsManager, _eventsManager.hasEventListeners == true else {
+            // JS listener persists on the mobileMessaging singleton but RCTEventEmitter's _listenerCount may be zero during a React Navigation transition (reproducible with custom chat navigations and JWT async callback/authentication flow). Bypass that guard by invoking RCTDeviceEventEmitter directly via the public callableJSModules API (bridgeless-safe; the same path super.sendEvent uses internally).
+            MMLogDebug("[RNMobileMessaging] sendDirectEvent: invoking RCTDeviceEventEmitter directly")
+            self.callableJSModules?.invokeModule(
+                "RCTDeviceEventEmitter",
+                method: "emit",
+                withArgs: [name!, body ?? NSNull()]
+            )
+            return
+        }
+        super.sendEvent(withName: name, body: body)
+    }
         
     @objc
     override static func requiresMainQueueSetup() -> Bool {

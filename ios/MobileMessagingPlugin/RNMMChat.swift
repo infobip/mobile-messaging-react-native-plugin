@@ -13,8 +13,14 @@ import MobileMessaging
 class RNMMChat: NSObject  {
     private var willUseJWT = false
     private var willUseChatExceptionHandler = false
-    private var jwtRequestQueue: [((String?) -> Void)] = []
+    private var jwtRequestQueue: [JWTRequest] = []
     private let jwtQueueLock = NSLock()
+
+    private final class JWTRequest {
+        var completed = false
+        let onResult: (String?) -> Void
+        init(_ onResult: @escaping (String?) -> Void) { self.onResult = onResult }
+    }
 
     @objc(showChat:)
     func showChat(presentingOptions: NSDictionary) {
@@ -161,22 +167,26 @@ class RNMMChat: NSObject  {
     @objc(setChatJwtProvider)
     func setChatJwtProvider() {
         willUseJWT = true
+        // We cannot rely on 'showChat' for setting the delegate as we have several presentation modes - any async provider/handler request sets the delegate to ensure proper completions are triggered
+        MobileMessaging.inAppChat?.delegate = self
     }
 
     @objc(setChatExceptionHandler:)
     func setChatExceptionHandler(isHandlerPresent: NSNumber) {
         // NSNumber due to how RN bridge wraps JavaScript booleans
         willUseChatExceptionHandler = isHandlerPresent.boolValue
+        MobileMessaging.inAppChat?.delegate = self
     }
     
     @objc(setChatJwt:)
     func setChatJwt(jwt: String?) {
         jwtQueueLock.lock()
-        if !jwtRequestQueue.isEmpty {
-            let completion = jwtRequestQueue.removeFirst()
-            completion(jwt)
-        }
-        jwtQueueLock.unlock()
+        defer { jwtQueueLock.unlock() }
+        guard let request = jwtRequestQueue.first(where: { !$0.completed }) else { return }
+        request.completed = true
+        jwtRequestQueue.removeAll(where: { $0 === request })
+        // Settled inside the lock so a concurrent getJWT cleanup observes completed == true and jwtResult is set before getJWT returns.
+        request.onResult(jwt)
     }
 
     @objc(restartConnection)
@@ -201,15 +211,27 @@ extension RNMMChat: MMInAppChatDelegate {
         guard willUseJWT else { return nil }
         var jwtResult: String?
         let semaphore = DispatchSemaphore(value: 0)
-
-        jwtQueueLock.lock()
-        jwtRequestQueue.append { jwt in
+        let request = JWTRequest { jwt in
             jwtResult = jwt
             semaphore.signal()
         }
+
+        jwtQueueLock.lock()
+        jwtRequestQueue.append(request)
         jwtQueueLock.unlock()
-        ReactNativeMobileMessaging.shared?.sendEvent(withName: EventName.inAppChat_jwtRequested, body: nil)
+
+        ReactNativeMobileMessaging.shared?.sendDirectEvent(withName: EventName.inAppChat_jwtRequested, body: nil)
         _ = semaphore.wait(timeout: .now() + 45)
+
+        // Remove this request by identity (not position) so a setChatJwt that fires between the wait timeout and the lock cannot cause us to evict a different in-flight request.
+        jwtQueueLock.lock()
+        if !request.completed {
+            request.completed = true
+            if let idx = jwtRequestQueue.firstIndex(where: { $0 === request }) {
+                jwtRequestQueue.remove(at: idx)
+            }
+        }
+        jwtQueueLock.unlock()
         return jwtResult
     }
     

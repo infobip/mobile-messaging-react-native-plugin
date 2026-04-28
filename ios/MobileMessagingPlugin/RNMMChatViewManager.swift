@@ -37,7 +37,9 @@ class RNMMChatViewManager: RCTViewManager {
     }
 
     override func didMoveToWindow() {
-        embedViewController()
+        if window != nil { // this could be triggered in an improper manner from RN side, so we confirm UI is in a proper state
+            embedViewController()
+        }
         super.didMoveToWindow()
     }
 
