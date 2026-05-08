@@ -20,7 +20,9 @@ Pod::Spec.new do |s|
   s.requires_arc = true
 
   s.dependency "React-Core"
-  s.dependency "React-Core-prebuilt"
+  if ENV['RCT_USE_PREBUILT_RNCORE'] == '1'
+    s.dependency "React-Core-prebuilt"
+  end
 
   s.dependency "MobileMessaging/Core", mmVersion
   s.dependency "MobileMessaging/InAppChat", mmVersion
