@@ -285,7 +285,14 @@ class MobileMessaging {
      * @name fetchInboxMessages
      * @param token access token (JWT in a strictly predefined format) required for current user to have access to the Inbox messages
      * @param externalUserId External User ID is meant to be an ID of a user in an external (non-Infobip) service
-     * @param filterOptions filtering options applied to messages list in response. Nullable, will return default number of messages
+     * @param filterOptions filtering options applied to messages list in response.
+     * {
+     *   fromDateTime: <String; filter messages received after this datetime in ISO8601 format with timezone, e.g. "2024-03-11T12:00:00+01:00">,
+     *   toDateTime: <String; filter messages received before this datetime in ISO8601 format with timezone, e.g. "2024-03-20T12:00:00+01:00">,
+     *   topic: <String; filter messages by a single topic. Mutually exclusive with 'topics'>,
+     *   topics: <Array<String>; filter messages by multiple topics, e.g. ["topic1", "topic2"]. Mutually exclusive with 'topic'>,
+     *   limit: <Number; maximum number of messages to return. Default is 20 for standard/single-topic fetches. When using 'topics', no default limit is applied unless explicitly provided, and the limit applies to the total returned messages, not per topic>,
+     * }
      * @param onSuccess will be called on success
      * @param {Function} onError will be called on error
      */
@@ -298,7 +305,14 @@ class MobileMessaging {
      *
      * @name fetchInboxMessagesWithoutToken
      * @param externalUserId External User ID is meant to be an ID of a user in an external (non-Infobip) service
-     * @param filterOptions filtering options applied to messages list in response. Nullable, will return default number of messages
+     * @param filterOptions filtering options applied to messages list in response.
+     * {
+     *   fromDateTime: <String; filter messages received after this datetime in ISO8601 format with timezone, e.g. "2024-03-11T12:00:00+01:00">,
+     *   toDateTime: <String; filter messages received before this datetime in ISO8601 format with timezone, e.g. "2024-03-20T12:00:00+01:00">,
+     *   topic: <String; filter messages by a single topic. Mutually exclusive with 'topics'>,
+     *   topics: <Array<String>; filter messages by multiple topics, e.g. ["topic1", "topic2"]. Mutually exclusive with 'topic'>,
+     *   limit: <Number; maximum number of messages to return. Default is 20 for standard/single-topic fetches. When using 'topics', no default limit is applied unless explicitly provided, and the limit applies to the total returned messages, not per topic>,
+     * }
      * @param onSuccess will be called on success
      * @param {Function} onError will be called on error
      */

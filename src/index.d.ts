@@ -130,13 +130,16 @@ declare namespace MobileMessagingReactNative {
     export interface MMInbox {
         countTotal: number;
         countUnread: number;
-        messages?: [Message];
+        countTotalFiltered?: number;
+        countUnreadFiltered?: number;
+        messages?: Message[];
     }
 
     export interface MMInboxFilterOptions {
         fromDateTime?: string;
         toDateTime?: string;
         topic?: string;
+        topics?: string[];
         limit?: number;
     }
 
@@ -149,6 +152,7 @@ declare namespace MobileMessagingReactNative {
 
     export interface Message {
         messageId: string;
+        topic?: string;
         title?: string;
         body?: string;
         sound?: string;

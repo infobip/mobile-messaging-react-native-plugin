@@ -29,6 +29,7 @@ import {getCurrentUserJwt} from '../utils/JWTUtils';
 
 type FilterOptions = {
   topic?: string;
+  topics?: string[];
   limit?: number;
   fromDateTime?: string;
   toDateTime?: string;
@@ -63,9 +64,14 @@ const InboxScreen: React.FC = () => {
 
   const buildFilterOptions = useCallback((): FilterOptions => {
     const opts: FilterOptions = {};
-    const trimmedTopic = filters.topic.trim();
-    if (trimmedTopic) {
-      opts.topic = trimmedTopic;
+    const parsedTopics = filters.topic
+      .split(',')
+      .map(value => value.trim())
+      .filter(Boolean);
+    if (parsedTopics.length === 1) {
+      opts.topic = parsedTopics[0];
+    } else if (parsedTopics.length > 1) {
+      opts.topics = parsedTopics;
     }
     const trimmedFrom = filters.fromDateTime.trim();
     if (trimmedFrom) {
@@ -130,19 +136,13 @@ const InboxScreen: React.FC = () => {
   };
 
   const applyInboxResult = (inbox: MMInbox) => {
-    const msgs = Array.isArray(inbox.messages) ? (inbox.messages as unknown as Message[]) : ([] as Message[]);
+    const msgs = Array.isArray(inbox.messages) ? inbox.messages : [];
     setMessages(sortMessages(msgs));
     setCounts({
       total: inbox.countTotal || msgs.length,
       unread: inbox.countUnread || 0,
-      filteredTotal:
-        typeof (inbox as any).countTotalFiltered === 'number'
-          ? (inbox as any).countTotalFiltered
-          : undefined,
-      filteredUnread:
-        typeof (inbox as any).countUnreadFiltered === 'number'
-          ? (inbox as any).countUnreadFiltered
-          : undefined,
+      filteredTotal: inbox.countTotalFiltered,
+      filteredUnread: inbox.countUnreadFiltered,
     });
   };
 
@@ -242,14 +242,15 @@ const InboxScreen: React.FC = () => {
       </View>
       <View style={styles.filters}>
         <View style={styles.filterRow}>
-          <Text style={styles.filterLabel}>Topic</Text>
+          <Text style={styles.filterLabel}>Topic(s)</Text>
           <TextInput
             value={filters.topic}
             onChangeText={text =>
               setFilters(prev => ({...prev, topic: text}))
             }
-            placeholder="Optional"
+            placeholder="Optional, comma-separated"
             style={styles.input}
+            autoCapitalize="none"
           />
         </View>
         <View style={styles.filterRow}>

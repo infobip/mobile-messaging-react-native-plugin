@@ -39,6 +39,12 @@ extension MMInbox {
         var result = [String: Any]()
         result["countTotal"] = countTotal
         result["countUnread"] = countUnread
+        if let countTotalFiltered = countTotalFiltered {
+            result["countTotalFiltered"] = countTotalFiltered
+        }
+        if let countUnreadFiltered = countUnreadFiltered {
+            result["countUnreadFiltered"] = countUnreadFiltered
+        }
         result["messages"] = messages.map({ return $0.dictionaryRepresentation })
         return result
     }
