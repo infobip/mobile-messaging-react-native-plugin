@@ -99,10 +99,11 @@ class App extends Component<{}, AppState> {
   }
 
   componentDidMount() {
+    const deeplinkEvents = ['notificationTapped', 'actionTapped'];
     const events = [
       ...mobileMessaging.supportedEvents,
       ...mobileMessaging.inAppChatEvents,
-    ];
+    ].filter(e => !deeplinkEvents.includes(e));
 
     events.forEach((event: string) => {
       const subscription = mobileMessaging.subscribe(event, (value: any) => {

@@ -12,23 +12,17 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
-import android.util.Log;
-
-import org.infobip.mobile.messaging.api.support.http.serialization.JsonSerializer;
-import org.infobip.mobile.messaging.dal.json.JSONArrayAdapter;
-import org.infobip.mobile.messaging.dal.json.JSONObjectAdapter;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 class CacheManager {
-    private static final String EVENTS_KEY = Utils.TAG + ".cache.events";
+    private static final String LEGACY_EVENTS_KEY = Utils.TAG + ".cache.events";
     private static final Object cacheLock = new Object();
-    private static final JsonSerializer serializer = new JsonSerializer(false, new JSONObjectAdapter(), new JSONArrayAdapter());
+    private static final List<Event> cachedEvents = new ArrayList<>();
+    private static final int MAX_CACHE_SIZE = 100;
 
     static class Event {
         String type;
@@ -45,102 +39,57 @@ class CacheManager {
         public String toString() {
             return type;
         }
-
     }
 
-    static void saveEvent(Context context, String event, JSONObject object, String actionId, String actionInputText) {
+    static void saveEvent(String event, JSONObject object, String actionId, String actionInputText) {
+        synchronized (cacheLock) {
+            if (cachedEvents.size() >= MAX_CACHE_SIZE) {
+                Event removed = cachedEvents.remove(0);
+                RNMMLogger.w(Utils.TAG, "Cache full, dropping oldest event: " + removed.type);
+            }
+            cachedEvents.add(new Event(event, object, actionId, actionInputText));
+        }
+    }
+
+    static void saveEvent(String event, int unreadMessagesCounter) {
+        synchronized (cacheLock) {
+            if (cachedEvents.size() >= MAX_CACHE_SIZE) {
+                Event removed = cachedEvents.remove(0);
+                RNMMLogger.w(Utils.TAG, "Cache full, dropping oldest event: " + removed.type);
+            }
+            cachedEvents.add(new Event(event, null, unreadMessagesCounter));
+        }
+    }
+
+    static Event[] loadEvents(String eventType) {
+        synchronized (cacheLock) {
+            List<Event> matched = new ArrayList<>();
+            Iterator<Event> iterator = cachedEvents.iterator();
+            while (iterator.hasNext()) {
+                Event e = iterator.next();
+                if (eventType.equals(e.type)) {
+                    matched.add(e);
+                    iterator.remove();
+                }
+            }
+            return matched.toArray(new Event[0]);
+        }
+    }
+
+    static void clearCache() {
+        synchronized (cacheLock) {
+            cachedEvents.clear();
+        }
+    }
+
+    static void cleanupLegacyCache(Context context) {
         if (context == null) {
-            RNMMLogger.e(Utils.TAG, "context is null, can't cache event " + event);
             return;
         }
-        String serialized = serializer.serialize(new Event(event, object, actionId, actionInputText));
-        saveStringsToSet(context, EVENTS_KEY, serialized);
-    }
-
-    static void saveEvent(Context context, String event, int unreadMessagesCounter) {
-        if (context == null) {
-            RNMMLogger.e(Utils.TAG, "context is null, can't cache event " + event);
-            return;
-        }
-        //int `unreadMessagesCounter` isn't a JSONObject, so it'll go as a second argument
-        String serialized = serializer.serialize(new Event(event, null, unreadMessagesCounter));
-        saveStringsToSet(context, EVENTS_KEY, serialized);
-    }
-
-    static Event[] loadEvents(Context context, String eventType) {
-        if (context == null) {
-            RNMMLogger.e(Utils.TAG, "context is null, can't load cached events " + eventType);
-            return new Event[0];
-        }
-        Set<String> serialized = getStringSet(context, EVENTS_KEY);
-        if (serialized == null || serialized.isEmpty()) {
-            return new Event[0];
-        }
-
-        List<Event> matched = new ArrayList<>();
-        Set<String> unmatchedSerialized = new HashSet<>();
-        for (String s : serialized) {
-            Event e = serializer.deserialize(s, Event.class);
-            if (eventType.equals(e.type)) {
-                matched.add(e);
-            } else {
-                unmatchedSerialized.add(s);
-            }
-        }
-
-        updateStringsSet(context, EVENTS_KEY, unmatchedSerialized);
-
-        return matched.toArray(new Event[matched.size()]);
-    }
-
-    private static Set<String> getStringSet(Context context, String key) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        synchronized (cacheLock) {
-            return new HashSet<>(sharedPreferences.getStringSet(key, new HashSet<String>()));
-        }
-    }
-
-    private static Set<String> getAndRemoveStringSet(Context context, String key) {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        Set<String> set;
-        synchronized (cacheLock) {
-            set = sharedPreferences.getStringSet(key, new HashSet<String>());
-            if (set.isEmpty()) {
-                return new HashSet<String>();
-            }
-            sharedPreferences
-                    .edit()
-                    .remove(key)
-                    .apply();
-        }
-        return set;
-    }
-
-    @SuppressWarnings("UnusedReturnValue")
-    private static Set<String> saveStringsToSet(Context context, String key, String... strings) {
-        return saveStringSet(context, key, new HashSet<String>(Arrays.asList(strings)));
-    }
-
-    private static Set<String> saveStringSet(Context context, String key, Set<String> newSet) {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        synchronized (cacheLock) {
-            Set<String> set = sharedPreferences.getStringSet(key, new HashSet<String>());
-            newSet.addAll(set);
-            sharedPreferences
-                    .edit()
-                    .putStringSet(key, newSet)
-                    .apply();
-            return set;
-        }
-    }
-
-    private static void updateStringsSet(Context context, String key, Set<String> newSet) {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        synchronized (cacheLock) {
-            sharedPreferences
-                    .edit()
-                    .putStringSet(key, newSet)
-                    .apply();
+        if (sharedPreferences.contains(LEGACY_EVENTS_KEY)) {
+            sharedPreferences.edit().remove(LEGACY_EVENTS_KEY).apply();
+            RNMMLogger.d(Utils.TAG, "Cleaned up legacy SharedPreferences event cache");
         }
     }
 }

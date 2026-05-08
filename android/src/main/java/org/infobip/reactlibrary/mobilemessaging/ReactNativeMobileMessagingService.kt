@@ -951,7 +951,7 @@ class ReactNativeMobileMessagingService(
     fun addListener(eventName: String) {
         RNMMLogger.d(Utils.TAG, "addListener: $eventName")
         jsHasListeners = true
-        val events = CacheManager.loadEvents(reactContext, eventName)
+        val events = CacheManager.loadEvents(eventName)
         for (event in events) {
             if (eventName == event.type) {
                 ReactNativeEvent.send(event.type, reactContext, event.jsonObject, *event.objects)
@@ -1088,18 +1088,22 @@ class MessageEventReceiver : ReactNativeBroadcastReceiver() {
         emitOrCache(event, context, message, actionId, actionInputText)
     }
 
+    // Early-exit when plugin is not initialized avoids calling getReactContext() which throws
+    // UnsupportedOperationException on new architecture when app is killed. When reactContext is
+    // null (e.g. during lifecycle transitions), events are cached regardless of jsHasListeners
+    // since sending requires a valid ReactContext. This preserves the original behavior.
     private fun emitOrCache(eventType: String, context: Context?, message: JSONObject?, actionId: String?, actionInputText: String?) {
+        if (!pluginInitialized) {
+            CacheManager.saveEvent(eventType, message, actionId, actionInputText)
+            return
+        }
         val reactContext: ReactContext? = getReactContext(context)
-        if (!pluginInitialized || reactContext == null) {
-            CacheManager.saveEvent(context, eventType, message, actionId, actionInputText)
-        } else if (jsHasListeners && reactContext != null) {
+        if (reactContext == null) {
+            CacheManager.saveEvent(eventType, message, actionId, actionInputText)
+        } else if (jsHasListeners) {
             ReactNativeEvent.send(eventType, reactContext, message, actionId, actionInputText)
-        } else if (reactContext != null) {
-            CacheManager.saveEvent(reactContext, eventType, message, actionId, actionInputText)
-        } else if (context != null) {
-            CacheManager.saveEvent(context, eventType, message, actionId, actionInputText)
         } else {
-            RNMMLogger.e(Utils.TAG, "Both reactContext and androidContext are null, can't emit or cache event " + eventType)
+            CacheManager.saveEvent(eventType, message, actionId, actionInputText)
         }
     }
 

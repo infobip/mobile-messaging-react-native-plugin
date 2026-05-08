@@ -392,18 +392,22 @@ class RNMMChatEventReceiver : ReactNativeBroadcastReceiver() {
         emitOrCache(context, RNMMChatService.EVENT_INAPPCHAT_UNREAD_MESSAGES_COUNT_UPDATED, unreadChatMessagesCounter)
     }
 
+    // Early-exit when plugin is not initialized avoids calling getReactContext() which throws
+    // UnsupportedOperationException on new architecture when app is killed. When reactContext is
+    // null (e.g. during lifecycle transitions), events are cached regardless of jsHasListeners
+    // since sending requires a valid ReactContext. This preserves the original behavior.
     private fun emitOrCache(context: Context?, eventType: String, unreadMessagesCounter: Int) {
+        if (!pluginInitialized) {
+            CacheManager.saveEvent(eventType, unreadMessagesCounter)
+            return
+        }
         val reactContext: ReactContext? = getReactContext(context)
-        if (!pluginInitialized || reactContext == null) {
-            CacheManager.saveEvent(context, eventType, unreadMessagesCounter)
-        } else if (jsHasListeners && reactContext != null) {
+        if (reactContext == null) {
+            CacheManager.saveEvent(eventType, unreadMessagesCounter)
+        } else if (jsHasListeners) {
             ReactNativeEvent.send(eventType, reactContext, unreadMessagesCounter)
-        } else if (reactContext != null) {
-            CacheManager.saveEvent(reactContext, eventType, unreadMessagesCounter)
-        } else if (context != null) {
-            CacheManager.saveEvent(context, eventType, unreadMessagesCounter)
         } else {
-            RNMMLogger.e(TAG, "Both reactContext and androidContext are null, can't emit or cache event " + eventType)
+            CacheManager.saveEvent(eventType, unreadMessagesCounter)
         }
     }
 }

@@ -27,11 +27,16 @@ abstract class ReactNativeBroadcastReceiver : BroadcastReceiver() {
         get() = ReactNativeMobileMessagingService.jsHasListeners
 
     protected fun getReactContext(context: Context?): ReactContext? {
-        return ReactNativeMobileMessagingService.lastReactContext
-            ?: (context?.applicationContext as? ReactApplication)
-                ?.reactNativeHost
-                ?.reactInstanceManager
-                ?.currentReactContext
+        return try {
+            ReactNativeMobileMessagingService.lastReactContext
+                ?: (context?.applicationContext as? ReactApplication)
+                    ?.reactNativeHost
+                    ?.reactInstanceManager
+                    ?.currentReactContext
+        } catch (e: Exception) {
+            RNMMLogger.w(Utils.TAG, "Failed to get ReactContext: ${e.message}")
+            null
+        }
     }
 
 }   

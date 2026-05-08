@@ -27,6 +27,7 @@ class MobileMessagingModule(reactContext: ReactApplicationContext) : NativeMobil
 
     init {
         reactApplicationContext.addLifecycleEventListener(this)
+        CacheManager.cleanupLegacyCache(reactApplicationContext)
         ReactNativeMobileMessagingService.pluginInitialized = true
         service.registerBroadcastReceiver()
     }
@@ -199,6 +200,7 @@ class MobileMessagingModule(reactContext: ReactApplicationContext) : NativeMobil
     override fun onHostDestroy() {
         ReactNativeMobileMessagingService.pluginInitialized = false
         service.unregisterBroadcastReceiver()
+        CacheManager.clearCache()
         reactApplicationContext.removeLifecycleEventListener(this)
         ReactNativeMobileMessagingService.unregisterService(reactApplicationContext)
     }

@@ -254,12 +254,16 @@ const HomeScreen = ({navigation}: HomeScreenProps) => {
     handleDeeplinkEvent(event.url);
   }
 
+  const deeplinkRouteMap: Record<string, string> = {
+    testdeeplinking: 'TestDeeplinkingScreen',
+    testdeeplinking2: 'TestDeeplinkingScreen2',
+  };
+
   function handleDeeplinkEvent(deeplinkUrl: string) {
-    console.log(deeplinkUrl);
     let pathSegments = new URL(deeplinkUrl).pathname.split('/').filter(Boolean);
     for (let pathSegment of pathSegments) {
-      console.log('Deeplink path segment: ' + pathSegment);
-      navigation.navigate(pathSegment);
+      let screenName = deeplinkRouteMap[pathSegment] || pathSegment;
+      navigation.navigate(screenName);
     }
   }
 
