@@ -166,7 +166,6 @@ class MobileMessaging {
  *              notificationSound: <String>
      *	    }
      *		privacySettings: {
-     *			applicationCodePersistingDisabled: <Boolean>,
      *			userDataPersistingDisabled: <Boolean>,
      *			carrierInfoSendingDisabled: <Boolean>,
      *			systemInfoSendingDisabled: <Boolean>

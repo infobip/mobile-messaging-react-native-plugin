@@ -98,60 +98,109 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
     
     @objc(init:onSuccess:onError:)
     func start(config: NSDictionary, onSuccess: @escaping RCTResponseSenderBlock, onError: @escaping RCTResponseSenderBlock) {
-        guard let config = config as? [String : AnyObject], let configuration = RNMobileMessagingConfiguration(rawConfig: config) else {
+        guard var userConfigDict = config as? [String : AnyObject],
+              let applicationCode = userConfigDict.removeValue(forKey: RNMobileMessagingConfiguration.Keys.applicationCode) as? String,
+              let configuration = RNMobileMessagingConfiguration(rawConfig: userConfigDict)
+        else {
             onError([NSError(type: .InvalidArguments).reactNativeObject])
             return
         }
         
         let successCallback: RCTResponseSenderBlock = { [weak self] response in
-            RNMobileMessagingConfiguration.saveConfigToDefaults(rawConfig: config)
+            RNMobileMessagingConfiguration.saveConfigToDefaults(rawConfig: userConfigDict)
             self?.isStarted = true
             onSuccess(response)
         }
-        
+
         let cachedConfigDict = RNMobileMessagingConfiguration.getRawConfigFromDefaults()
-        if let cachedConfigDict = cachedConfigDict, (config as NSDictionary) != (cachedConfigDict as NSDictionary)
-        {
+        let keychainApplicationCode = MobileMessaging.getKeychainApplicationCode()
+        let shouldRestart = needsRestart(userConfigDict: userConfigDict, applicationCode: applicationCode)
+        let shouldStart = cachedConfigDict == nil || keychainApplicationCode == nil
+
+        if shouldRestart {
             stop {
-                self.start(configuration: configuration, onSuccess: successCallback)
+                self.startWithApplicationCode(
+                    configuration: configuration,
+                    applicationCode: applicationCode,
+                    onSuccess: successCallback,
+                    onError: onError
+                )
             }
-        } else if cachedConfigDict == nil {
-            start(configuration: configuration, onSuccess: successCallback)
+        } else if shouldStart {
+            startWithApplicationCode(
+                configuration: configuration,
+                applicationCode: applicationCode,
+                onSuccess: successCallback,
+                onError: onError
+            )
         } else {
             successCallback(nil)
         }
     }
     
     private func performEarlyStartIfPossible() {
-        if let cachedConfigDict = RNMobileMessagingConfiguration.getRawConfigFromDefaults(),
-           let configuration = RNMobileMessagingConfiguration(rawConfig: cachedConfigDict),
-           !self.isStarted,
-           !isEarlyStartPerformed
+        let cachedConfigDict = RNMobileMessagingConfiguration.getRawConfigFromDefaults()
+        let configuration = cachedConfigDict.flatMap(RNMobileMessagingConfiguration.init)
+        let applicationCode = MobileMessaging.getKeychainApplicationCode()
+
+        guard let configuration = configuration,
+              let applicationCode = applicationCode,
+              !self.isStarted,
+              !isEarlyStartPerformed else
         {
-            MMLogDebug("[RNMobileMessaging] Performing early start")
-            isEarlyStartPerformed = true
-            start(configuration: configuration) { response in }
+            return
         }
+
+        isEarlyStartPerformed = true
+        startWithApplicationCode(configuration: configuration, applicationCode: applicationCode) { response in }
     }
     
-    private func start(configuration: RNMobileMessagingConfiguration, onSuccess: @escaping RCTResponseSenderBlock) {
+    private func startWithApplicationCode(
+        configuration: RNMobileMessagingConfiguration,
+        applicationCode: String,
+        onSuccess: @escaping RCTResponseSenderBlock,
+        onError: RCTResponseSenderBlock? = nil
+    ) {
+        guard let mobileMessaging = createMobileMessagingInstance(
+            configuration: configuration,
+            applicationCode: applicationCode
+        ) else {
+            MMLogError("[RNMobileMessaging] Failed to initialize MobileMessaging instance, SDK can't start.")
+            onError?([NSError(type: .InitializationFailed).reactNativeObject])
+            return
+        }
+
+        applyConfigurationAndStart(
+            mobileMessaging,
+            configuration: configuration,
+            onSuccess: onSuccess
+        )
+    }
+
+    private func createMobileMessagingInstance(configuration: RNMobileMessagingConfiguration, applicationCode: String) -> MobileMessaging? {
+        let backendBaseURL = configuration.backendBaseURL ?? MMConsts.APIValues.prodDynamicBaseURLString
+        return MobileMessaging.withApplicationCode(
+            applicationCode,
+            notificationType: configuration.notificationType,
+            backendBaseURL: backendBaseURL
+        )
+    }
+
+    private func applyConfigurationAndStart(_ mobileMessaging: MobileMessaging, configuration: RNMobileMessagingConfiguration, onSuccess: @escaping RCTResponseSenderBlock) {
         self.eventsManager?.startObserving()
         MobileMessaging.privacySettings.systemInfoSendingDisabled = configuration.privacySettings[RNMobileMessagingConfiguration.Keys.systemInfoSendingDisabled].unwrap(orDefault: false)
         MobileMessaging.privacySettings.carrierInfoSendingDisabled = configuration.privacySettings[RNMobileMessagingConfiguration.Keys.carrierInfoSendingDisabled].unwrap(orDefault: false)
         MobileMessaging.privacySettings.userDataPersistingDisabled = configuration.privacySettings[RNMobileMessagingConfiguration.Keys.userDataPersistingDisabled].unwrap(orDefault: false)
         
-        var mobileMessaging = MobileMessaging.withApplicationCode(
-            configuration.appCode,
-            notificationType: configuration.notificationType,
-            backendBaseURL: configuration.backendBaseURL ?? MMConsts.APIValues.prodDynamicBaseURLString)
+        var mobileMessaging = mobileMessaging
         
         if let storageAdapter = messageStorageAdapter, configuration.messageStorageEnabled {
-            mobileMessaging = mobileMessaging?.withMessageStorage(storageAdapter)
+            mobileMessaging = mobileMessaging.withMessageStorage(storageAdapter)
         } else if configuration.defaultMessageStorage {
-            mobileMessaging = mobileMessaging?.withDefaultMessageStorage()
+            mobileMessaging = mobileMessaging.withDefaultMessageStorage()
         }
         if let categories = configuration.categories {
-            mobileMessaging = mobileMessaging?.withInteractiveNotificationCategories(Set(categories))
+            mobileMessaging = mobileMessaging.withInteractiveNotificationCategories(Set(categories))
         }
         MobileMessaging.userAgent.pluginVersion = "reactNative \(configuration.reactNativePluginVersion)"
         if configuration.logging {
@@ -159,22 +208,22 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
         }
 
         if configuration.inAppChatEnabled {
-            mobileMessaging = mobileMessaging?.withInAppChat()
+            mobileMessaging = mobileMessaging.withInAppChat()
         }
 
         if configuration.fullFeaturedInAppsEnabled {
-            mobileMessaging = mobileMessaging?.withFullFeaturedInApps()
+            mobileMessaging = mobileMessaging.withFullFeaturedInApps()
         }
         
         if let webViewSettings = configuration.webViewSettings {
-            mobileMessaging?.webViewSettings.configureWith(rawConfig: webViewSettings)
+            mobileMessaging.webViewSettings.configureWith(rawConfig: webViewSettings)
         }
 
         if let jwt = configuration.userDataJwt, !jwt.isEmpty {
-          mobileMessaging = mobileMessaging?.withJwtSupplier(VariableJwtSupplier(jwt: jwt))
+            mobileMessaging = mobileMessaging.withJwtSupplier(VariableJwtSupplier(jwt: jwt))
         }
 
-        mobileMessaging?.start({
+        mobileMessaging.start({
             onSuccess(nil)
         })
     }
@@ -182,6 +231,13 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
     private func stop(stopObservations: Bool = false, completion: @escaping () -> Void) {
         self.eventsManager?.stop(stopObservations: stopObservations)
         MobileMessaging.stop(false, completion: completion)
+    }
+
+    private func needsRestart(userConfigDict: [String: AnyObject], applicationCode: String) -> Bool {
+        let configurationChanged = RNMobileMessagingConfiguration.didConfigurationChange(userConfigDict: userConfigDict)
+        let applicationCodeChanged = MobileMessaging.didApplicationCodeChange(applicationCode: applicationCode)
+
+        return configurationChanged || applicationCodeChanged
     }
     
     /*User Profile Management*/

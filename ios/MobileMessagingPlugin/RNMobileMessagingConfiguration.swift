@@ -11,6 +11,7 @@ import MobileMessaging
 
 class RNMobileMessagingConfiguration {
     static let userDefaultsConfigKey = "com.mobile-messaging.reactNativePluginConfiguration"
+    static let ignoreKeysWhenComparing: [String] = [Keys.reactNativePluginVersion]
 
     struct Keys {
         static let privacySettings = "privacySettings"
@@ -34,7 +35,6 @@ class RNMobileMessagingConfiguration {
         static let backendBaseURL = "backendBaseURL"
     }
 
-    let appCode: String
     let webRTCUI: [String: AnyObject]?
     let messageStorageEnabled: Bool
     let defaultMessageStorage: Bool
@@ -50,13 +50,11 @@ class RNMobileMessagingConfiguration {
     let backendBaseURL: String?
 
     init?(rawConfig: [String: AnyObject]) {
-        guard let appCode = rawConfig[RNMobileMessagingConfiguration.Keys.applicationCode] as? String,
-            let ios = rawConfig["ios"] as? [String: AnyObject] else
+        guard let ios = rawConfig["ios"] as? [String: AnyObject] else
         {
             return nil
         }
 
-        self.appCode = appCode
         self.webRTCUI = rawConfig[RNMobileMessagingConfiguration.Keys.webRTCUI] as? [String: AnyObject]
         self.logging = rawConfig[RNMobileMessagingConfiguration.Keys.logging].unwrap(orDefault: false)
         self.defaultMessageStorage = rawConfig[RNMobileMessagingConfiguration.Keys.defaultMessageStorage].unwrap(orDefault: false)
@@ -70,7 +68,6 @@ class RNMobileMessagingConfiguration {
             ps[RNMobileMessagingConfiguration.Keys.userDataPersistingDisabled] = rawPrivacySettings[RNMobileMessagingConfiguration.Keys.userDataPersistingDisabled].unwrap(orDefault: false)
             ps[RNMobileMessagingConfiguration.Keys.carrierInfoSendingDisabled] = rawPrivacySettings[RNMobileMessagingConfiguration.Keys.carrierInfoSendingDisabled].unwrap(orDefault: false)
             ps[RNMobileMessagingConfiguration.Keys.systemInfoSendingDisabled] = rawPrivacySettings[RNMobileMessagingConfiguration.Keys.systemInfoSendingDisabled].unwrap(orDefault: false)
-            ps[RNMobileMessagingConfiguration.Keys.applicationCodePersistingDisabled] = rawPrivacySettings[RNMobileMessagingConfiguration.Keys.applicationCodePersistingDisabled].unwrap(orDefault: false)
 
             privacySettings = ps
         } else {
@@ -108,17 +105,7 @@ class RNMobileMessagingConfiguration {
     }
 
     static func saveConfigToDefaults(rawConfig: [String: AnyObject]) {
-        var serializableConfig = rawConfig.compactMapValues { value -> AnyObject? in
-            if value is NSString || value is NSNumber || value is NSArray || value is NSDictionary || value is NSDate || value is NSData {
-                return value
-            }
-            return nil
-        }
-        if serializableConfig[RNMobileMessagingConfiguration.Keys.messageStorage] != nil {
-            // Temporal fix so the archiving doesn't fail (messageStorage doesn't contain codable objects).
-            // Below we overwrite it with a dummy value so messageStorageEnabled keeps working.
-            serializableConfig[RNMobileMessagingConfiguration.Keys.messageStorage] = NSString(string: "message_storage")
-        }
+        let serializableConfig = serializedConfig(from: rawConfig)
 
         do {
             let data: Data = try NSKeyedArchiver.archivedData(withRootObject: serializableConfig, requiringSecureCoding: false)
@@ -135,10 +122,70 @@ class RNMobileMessagingConfiguration {
         }
 
         do {
-            return try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(data) as? [String: AnyObject]
+            guard let rawConfig = try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(data) as? [String: AnyObject] else {
+                return nil
+            }
+
+            let normalizedConfig = serializedConfig(from: rawConfig)
+            if (normalizedConfig as NSDictionary) != (rawConfig as NSDictionary) {
+                saveConfigToDefaults(rawConfig: normalizedConfig)
+            }
+
+            return normalizedConfig
         } catch {
             MMLogError("[MobileMessaging] Failed to unarchive config from UserDefaults: \(error)")
             return nil
+        }
+    }
+
+    static func didConfigurationChange(userConfigDict: [String: AnyObject]) -> Bool {
+        var serializedUserConfig = serializedConfig(from: userConfigDict)
+        guard let cachedConfigDict = getRawConfigFromDefaults() else {
+            return false
+        }
+        var serializedCachedConfig = serializedConfig(from: cachedConfigDict)
+
+        removeIgnoredKeys(from: &serializedUserConfig)
+        removeIgnoredKeys(from: &serializedCachedConfig)
+
+        return (serializedUserConfig as NSDictionary) != (serializedCachedConfig as NSDictionary)
+    }
+
+    private static func serializedConfig(from rawConfig: [String: AnyObject]) -> [String: AnyObject] {
+        var rawConfig = rawConfig
+        rawConfig.removeValue(forKey: RNMobileMessagingConfiguration.Keys.applicationCode)
+        sanitizePrivacySettings(in: &rawConfig)
+
+        var serializableConfig = rawConfig.compactMapValues { value -> AnyObject? in
+            if value is NSString || value is NSNumber || value is NSArray || value is NSDictionary || value is NSDate || value is NSData {
+                return value
+            }
+            return nil
+        }
+
+        if rawConfig[RNMobileMessagingConfiguration.Keys.messageStorage] != nil {
+            // Preserve the fact that custom message storage was configured without persisting the JS callbacks.
+            serializableConfig[RNMobileMessagingConfiguration.Keys.messageStorage] = NSString(string: "message_storage")
+        }
+
+        return serializableConfig
+    }
+
+    private static func removeIgnoredKeys(from config: inout [String: AnyObject]) {
+        ignoreKeysWhenComparing.forEach { config.removeValue(forKey: $0) }
+    }
+
+    private static func sanitizePrivacySettings(in rawConfig: inout [String: AnyObject]) {
+        guard var rawPrivacySettings = rawConfig[RNMobileMessagingConfiguration.Keys.privacySettings] as? [String: Any] else {
+            return
+        }
+
+        rawPrivacySettings.removeValue(forKey: RNMobileMessagingConfiguration.Keys.applicationCodePersistingDisabled)
+
+        if rawPrivacySettings.isEmpty {
+            rawConfig.removeValue(forKey: RNMobileMessagingConfiguration.Keys.privacySettings)
+        } else {
+            rawConfig[RNMobileMessagingConfiguration.Keys.privacySettings] = rawPrivacySettings as NSDictionary
         }
     }
 }

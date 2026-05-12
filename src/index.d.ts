@@ -64,7 +64,6 @@ declare namespace MobileMessagingReactNative {
             notificationSound?: string;
         };
         privacySettings?: {
-            applicationCodePersistingDisabled?: boolean;
             userDataPersistingDisabled?: boolean;
             carrierInfoSendingDisabled?: boolean;
             systemInfoSendingDisabled?: boolean
