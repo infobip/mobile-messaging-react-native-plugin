@@ -30,6 +30,7 @@ const PersonalizeScreen: React.FC = () => {
   const [externalUserId, setExternalUserId] = useState<string>('');
   const [forceDepersonalize, setForceDepersonalize] = useState<boolean>(false);
   const [keepAsLead, setKeepAsLead] = useState<boolean>(false);
+  const [setDeviceAsPrimary, setSetAsPrimary] = useState<boolean>(false);
 
   const confirmPersonalizeHandler = () => {
     // Construct userIdentity with phones and emails if provided
@@ -72,6 +73,7 @@ const PersonalizeScreen: React.FC = () => {
         userAttributes: userAttributes,
         forceDepersonalize: forceDepersonalize,
         keepAsLead: keepAsLead,
+        setDeviceAsPrimary: setDeviceAsPrimary,
       },
       personalizeContext => {
         Alert.alert(
@@ -93,6 +95,7 @@ const PersonalizeScreen: React.FC = () => {
     setExternalUserId('');
     setForceDepersonalize(false);
     setKeepAsLead(false);
+    setSetAsPrimary(false);
   };
 
   return (
@@ -159,6 +162,12 @@ const PersonalizeScreen: React.FC = () => {
         <View style={styles.switchContainer}>
           <Text style={styles.switchLabel}>Keep As Lead</Text>
           <Switch value={keepAsLead} onValueChange={setKeepAsLead} />
+        </View>
+
+        {/* Set As Primary */}
+        <View style={styles.switchContainer}>
+          <Text style={styles.switchLabel}>Set As Primary</Text>
+          <Switch value={setDeviceAsPrimary} onValueChange={setSetAsPrimary} />
         </View>
 
         {/* Buttons */}

@@ -147,6 +147,7 @@ declare namespace MobileMessagingReactNative {
         userAttributes?: Record<string, string | number | boolean | object[]>;
         forceDepersonalize?: boolean;
         keepAsLead?: boolean;
+        setDeviceAsPrimary?: boolean;
     }
 
     export interface Message {

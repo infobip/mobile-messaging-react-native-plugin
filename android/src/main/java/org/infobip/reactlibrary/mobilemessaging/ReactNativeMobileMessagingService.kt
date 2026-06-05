@@ -417,6 +417,7 @@ class ReactNativeMobileMessagingService(
                 ctx.userAttributes,
                 ctx.forceDepersonalize,
                 ctx.keepAsLead,
+                ctx.setDeviceAsPrimary,
                 object : MobileMessaging.ResultListener<User>() {
                     override fun onResult(result: Result<User, MobileMessagingError>) {
                         if (result.isSuccess()) {
