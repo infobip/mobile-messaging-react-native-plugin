@@ -160,6 +160,12 @@ class MobileMessagingModule(reactContext: ReactApplicationContext) : NativeMobil
         service.showDialogForError(errorCode, successCallback, errorCallback)
     }
 
+    // Cleanup
+    override fun cleanup(successCallback: Callback, errorCallback: Callback) {
+        RNMMLogger.d(TAG, "Cleanup...")
+        service.cleanup(successCallback, errorCallback)
+    }
+
     // JWT
     override fun setUserDataJwt(jwt: String?, successCallback: Callback, errorCallback: Callback) {
         RNMMLogger.d(TAG, "SetUserDataJwt...")

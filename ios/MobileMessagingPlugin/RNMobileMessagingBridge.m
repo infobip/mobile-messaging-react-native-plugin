@@ -54,6 +54,9 @@ RCT_EXTERN_METHOD(fetchInboxMessages:(NSString *)token externalUserId:(NSString 
 RCT_EXTERN_METHOD(fetchInboxMessagesWithoutToken:(NSString *)externalUserId inboxFilterOptions:(NSDictionary *)inboxFilterOptions onSuccess:(RCTResponseSenderBlock)successCallback onError:(RCTResponseSenderBlock)errorCallback)
 RCT_EXTERN_METHOD(setInboxMessagesSeen:(NSString *)externalUserId messages:(NSArray *)messages onSuccess:(RCTResponseSenderBlock)successCallback onError:(RCTResponseSenderBlock)errorCallback)
 
+/*Cleanup*/
+RCT_EXTERN_METHOD(cleanup:(RCTResponseSenderBlock)onSuccess onError:(RCTResponseSenderBlock)onError)
+
 /*JWT*/
 RCT_EXTERN_METHOD(setUserDataJwt:(NSString *)jwt onSuccess:(RCTResponseSenderBlock)successCallback onError:(RCTResponseSenderBlock)errorCallback)
 @end

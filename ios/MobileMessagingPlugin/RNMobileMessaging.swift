@@ -397,12 +397,15 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
     @objc(depersonalize:onError:)
     func depersonalize(onSuccess: @escaping RCTResponseSenderBlock, onError: @escaping RCTResponseSenderBlock) {
         MobileMessaging.depersonalize(completion: { (status, error) in
-            if (status == MMSuccessPending.pending) {
-                onSuccess(["pending"])
-            } else if let error = error {
+            if let error = error {
                 onError([error.reactNativeObject])
             } else {
-                onSuccess(["success"])
+                MobileMessaging.jwtSupplier = nil
+                if (status == MMSuccessPending.pending) {
+                    onSuccess(["pending"])
+                } else {
+                    onSuccess(["success"])
+                }
             }
         })
     }
@@ -529,9 +532,22 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
         onError([NSError(type: .NotSupported).reactNativeObject])
     }
 
+    @objc(cleanup:onError:)
+    func cleanup(onSuccess: @escaping RCTResponseSenderBlock, onError: @escaping RCTResponseSenderBlock) {
+        MobileMessaging.jwtSupplier = nil
+        RNMobileMessagingConfiguration.saveConfigToDefaults(rawConfig: [:])
+        MobileMessaging.cleanUpAndStop(false, completion: {
+            onSuccess([])
+        })
+    }
+
     @objc(setUserDataJwt:onSuccess:onError:)
     func setUserDataJwt(jwt: String?, onSuccess: @escaping RCTResponseSenderBlock, onError: @escaping RCTResponseSenderBlock) {
-      MobileMessaging.jwtSupplier = VariableJwtSupplier(jwt: jwt)
+      if let jwt = jwt, !jwt.isEmpty {
+          MobileMessaging.jwtSupplier = VariableJwtSupplier(jwt: jwt)
+      } else {
+          MobileMessaging.jwtSupplier = nil
+      }
       onSuccess(nil)
     }
 

@@ -725,6 +725,16 @@ declare namespace MobileMessagingReactNative {
         setChatDomain(domain?: string): void;
 
         /**
+         * Cleans up the SDK, removing all data and stopping all services.
+         * After cleanup, you should call init() again with a new configuration to restart the SDK.
+         * JWT supplier is also cleared during cleanup.
+         *
+         * @param onSuccess will be called on success
+         * @param onError will be called on error
+         */
+        cleanup(onSuccess: () => void, onError: (error: MobileMessagingError) => void): void;
+
+        /**
          * Set JSON Web Token for user data operations and personalization.
          * @param jwt JWT token in predefined format
          * @param onSuccess will be called on success

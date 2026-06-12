@@ -52,6 +52,9 @@ export interface Spec extends TurboModule {
     submitEvent(eventData: Object, onError: (error: Object) => void): void;
     submitEventImmediately(eventData: Object, onSuccess: () => void, onError: (error: Object) => void): void;
 
+    // Cleanup
+    cleanup(onSuccess: () => void, onError: (error: Object) => void): void;
+
     // JWT
     setUserDataJwt(jwt: string, onSuccess: () => void, onError: (error: Object) => void): void;
 

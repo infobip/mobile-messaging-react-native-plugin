@@ -154,6 +154,7 @@ class RNMobileMessagingConfiguration {
     private static func serializedConfig(from rawConfig: [String: AnyObject]) -> [String: AnyObject] {
         var rawConfig = rawConfig
         rawConfig.removeValue(forKey: RNMobileMessagingConfiguration.Keys.applicationCode)
+        rawConfig.removeValue(forKey: RNMobileMessagingConfiguration.Keys.userDataJwt)
         sanitizePrivacySettings(in: &rawConfig)
 
         var serializableConfig = rawConfig.compactMapValues { value -> AnyObject? in

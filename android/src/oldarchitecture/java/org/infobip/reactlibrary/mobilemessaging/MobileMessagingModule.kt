@@ -187,6 +187,13 @@ class MobileMessagingModule(reactContext: ReactApplicationContext) : ReactContex
         service.submitEventImmediately(eventData, successCallback, errorCallback)
     }
 
+    // Cleanup
+    @ReactMethod
+    fun cleanup(successCallback: Callback, errorCallback: Callback) {
+        RNMMLogger.d(TAG, "Cleanup...")
+        service.cleanup(successCallback, errorCallback)
+    }
+
     // JWT
     @ReactMethod
     fun setUserDataJwt(jwt: String?, successCallback: Callback, errorCallback: Callback) {

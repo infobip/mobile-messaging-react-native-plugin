@@ -449,6 +449,7 @@ class ReactNativeMobileMessagingService(
             mobileMessaging.depersonalize(object : MobileMessaging.ResultListener<SuccessPending>() {
                 override fun onResult(result: Result<SuccessPending, MobileMessagingError>) {
                     if (result.isSuccess) {
+                        mobileMessaging.setJwtSupplier { null }
                         val state = when (result.data) {
                             SuccessPending.Pending -> "pending"
                             SuccessPending.Success -> "success"
@@ -511,10 +512,25 @@ class ReactNativeMobileMessagingService(
         successCallback.invoke(readableMap)
     }
 
+    fun cleanup(successCallback: Callback, errorCallback: Callback) {
+        RNMMLogger.d(Utils.TAG, "Cleanup...")
+        try {
+            mobileMessaging.setJwtSupplier { null }
+            mobileMessaging.cleanup()
+            successCallback.invoke()
+        } catch (e: Exception) {
+            errorCallback.invoke(Utils.callbackError(e.message, null))
+        }
+    }
+
     fun setUserDataJwt(jwt: String?, successCallback: Callback, errorCallback: Callback) {
         RNMMLogger.d(Utils.TAG, "SetUserDataJwt...")
         try {
-            mobileMessaging.setJwtSupplier({ jwt })
+            if (jwt.isNullOrEmpty()) {
+                mobileMessaging.setJwtSupplier(null)
+            } else {
+                mobileMessaging.setJwtSupplier { jwt }
+            }
             successCallback.invoke()
         } catch (e: Exception) {
             errorCallback.invoke(Utils.callbackError(e.message, null))

@@ -887,6 +887,19 @@ class MobileMessaging {
     }
 
     /**
+     * Cleans up the SDK, removing all data and stopping all services.
+     * After cleanup, you should call init() again with a new configuration to restart the SDK.
+     * JWT supplier is also cleared during cleanup.
+     *
+     * @name cleanup
+     * @param {Function} onSuccess will be called on success
+     * @param {Function} onError will be called on error
+     */
+    cleanup(onSuccess = function() {}, onError = function() {}) {
+        ReactNativeMobileMessaging.cleanup(onSuccess, onError);
+    }
+
+    /**
      * Set JSON Web Token for user data operations and personalization.
      * @param {String} jwt JWT token in predefined format
      * @param {Function} onSuccess will be called on success
