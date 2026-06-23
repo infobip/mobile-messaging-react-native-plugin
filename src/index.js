@@ -442,6 +442,18 @@ class MobileMessaging {
     };
 
     /**
+     * Erases all locally stored SDK data and stops SDK services. After cleanup
+     * the plugin can be re-initialized with a different application code.
+     *
+     * @name cleanup
+     * @param {Function} onSuccess will be called on success
+     * @param {Function} onError will be called on error
+     */
+    cleanup(onSuccess = function() {}, onError = function() {}) {
+        ReactNativeMobileMessaging.cleanup(onSuccess, onError);
+    };
+
+    /**
      * Performs depersonalization of the installation referenced by pushRegistrationId.
      *
      * @param {String} pushRegistrationId of the remote installation to depersonalize

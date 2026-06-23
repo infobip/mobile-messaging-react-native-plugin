@@ -30,6 +30,7 @@ RCT_EXTERN_METHOD(getInstallation:(RCTResponseSenderBlock)successCallback)
 RCT_EXTERN_METHOD(setInstallationAsPrimary:(NSString *)pushRegistrationId primary:(BOOL)primary onSuccess:(RCTResponseSenderBlock)successCallback onError:(RCTResponseSenderBlock)errorCallback)
 RCT_EXTERN_METHOD(personalize:(NSDictionary *)context onSuccess:(RCTResponseSenderBlock)successCallback onError:(RCTResponseSenderBlock)errorCallback)
 RCT_EXTERN_METHOD(depersonalize:(RCTResponseSenderBlock)successCallback onError:(RCTResponseSenderBlock)errorCallback)
+RCT_EXTERN_METHOD(cleanup:(RCTResponseSenderBlock)successCallback onError:(RCTResponseSenderBlock)errorCallback)
 RCT_EXTERN_METHOD(depersonalizeInstallation:(NSString *)pushRegistrationId onSuccess:(RCTResponseSenderBlock)successCallback onError:(RCTResponseSenderBlock)errorCallback)
 
 /*Messages and Notifications*/

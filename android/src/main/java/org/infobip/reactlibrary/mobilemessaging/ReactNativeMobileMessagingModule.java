@@ -794,6 +794,19 @@ public class ReactNativeMobileMessagingModule extends ReactContextBaseJavaModule
     }
 
     @ReactMethod
+    public void cleanup(final Callback successCallback, final Callback errorCallback) {
+        try {
+            MobileMessaging mm = MobileMessaging.getInstance(reactContext.getApplicationContext());
+            if (mm != null) {
+                mm.cleanup();
+            }
+            successCallback.invoke("success");
+        } catch (Throwable t) {
+            errorCallback.invoke(Utils.callbackError(t.getMessage(), null));
+        }
+    }
+
+    @ReactMethod
     public void depersonalizeInstallation(final String pushRegistrationId, final Callback successCallback, final Callback errorCallback) {
         if (pushRegistrationId.isEmpty()) {
             errorCallback.invoke(Utils.callbackError("Cannot resolve pushRegistrationId from arguments", null));

@@ -543,6 +543,15 @@ declare namespace MobileMessagingReactNative {
         depersonalize(callback: (personalizeContext: PersonalizeContext) => void, errorCallback: (error: MobileMessagingError) => void): void;
 
         /**
+         * Erases all locally stored SDK data and stops SDK services. After cleanup
+         * the plugin can be re-initialized with a different application code.
+         *
+         * @param callback will be called on success
+         * @param errorCallback will be called on error
+         */
+        cleanup(callback: () => void, errorCallback: (error: MobileMessagingError) => void): void;
+
+        /**
          * Performs depersonalization of the installation referenced by pushRegistrationId.
          *
          * @param pushRegistrationId of the remote installation to depersonalize

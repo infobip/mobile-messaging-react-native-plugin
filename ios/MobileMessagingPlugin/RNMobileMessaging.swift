@@ -318,6 +318,14 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
         })
     }
     
+    @objc(cleanup:onError:)
+    func cleanup(onSuccess: @escaping RCTResponseSenderBlock, onError: @escaping RCTResponseSenderBlock) {
+        UserDefaults.standard.removeObject(forKey: RNMobileMessagingConfiguration.userDefaultsConfigKey)
+        MobileMessaging.cleanUpAndStop(true, completion: {
+            onSuccess(["success"])
+        })
+    }
+
     @objc(depersonalizeInstallation:onSuccess:onError:)
     func depersonalizeInstallation(pushRegistrationId: NSString, onSuccess: @escaping RCTResponseSenderBlock, onError: @escaping RCTResponseSenderBlock) {
         MobileMessaging.depersonalizeInstallation(withPushRegistrationId: pushRegistrationId as String, completion: { (installations, error) in
