@@ -90,6 +90,9 @@ class RNMMChat: NSObject  {
             self?.setNotNil(&chatsettings.advancedSettings.sendButtonIcon,
                       ChatCustomizationKeys.chatInputSendIcon.getImage(from: settings))
             self?.setNotNil(&chatsettings.sendButtonTintColor, ChatCustomizationKeys.chatInputSendIconTint.getColor(from: settings))
+            self?.setNotNil(&chatsettings.sendButtonTintDisabledColor, ChatCustomizationKeys.chatInputSendDisabledIconTint.getColor(from: settings))
+            self?.setNotNil(&chatsettings.attachmentButtonTintColor, ChatCustomizationKeys.chatInputAttachmentIconTint.getColor(from: settings))
+            self?.setNotNil(&chatsettings.attachmentButtonTintDisabledColor, ChatCustomizationKeys.chatInputAttachmentDisabledIconTint.getColor(from: settings))
             self?.setNotNil(&chatsettings.chatInputSeparatorLineColor, ChatCustomizationKeys.chatInputSeparatorLineColor.getColor(from: settings))
             self?.setNotNil(&chatsettings.advancedSettings.isLineSeparatorHidden, ChatCustomizationKeys.chatInputSeparatorLineVisible.getBool(from: settings))
             self?.setNotNil(&chatsettings.advancedSettings.typingIndicatorColor, ChatCustomizationKeys.chatInputCursorColor.getColor(from: settings))
