@@ -6,7 +6,7 @@
 //  Licensed under the Apache License, Version 2.0
 //
 
-import {EmitterSubscription, Rationale} from "react-native";
+import type {EmitterSubscription} from 'react-native';
 
 declare namespace MobileMessagingReactNative {
     export type OS = 'Android' | 'iOS';

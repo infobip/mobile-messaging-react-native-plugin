@@ -10,9 +10,9 @@ The document describes library integration steps for your React Native project.
 * [Initialization configuration](#initialization-configuration)
 
 ## Requirements
-- node (v20.16.0 or higher)
+- node (v20.19.4 or higher)
 - ruby (2.7.8 or higher; the Example app uses 3.3.5)
-- React Native (v0.84.0)
+- React Native (v0.86.0)
 
 For iOS project:
 - Xcode and Command Line Tools (16.x or newer, tested with 26.0.1)
