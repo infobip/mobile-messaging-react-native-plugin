@@ -27,7 +27,7 @@ For Android project:
 
 ## Quick start guide
 
-This guide is designed to get you up and running with Mobile Messaging SDK plugin for React Native:
+This guide is designed to get you up and running with Mobile Messaging SDK plugin for React Native.
 
 1. Make sure to [setup application at Infobip portal](https://www.infobip.com/docs/mobile-app-messaging/getting-started#create-and-enable-a-mobile-application-profile), if you haven't already.
 
@@ -70,7 +70,7 @@ This guide is designed to get you up and running with Mobile Messaging SDK plugi
          export PATH=$PATH:$ANDROID_HOME/tools/bin
          export PATH=$PATH:$ANDROID_HOME/platform-tools
          ```
-      2. Add 'com.google.gms:google-services' to `android/build.gradle` file
+      2. Add `com.google.gms:google-services` to `android/build.gradle` file
          ```groovy
          buildscript {
             ...
