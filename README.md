@@ -21,8 +21,9 @@ For iOS project:
 
 For Android project:
 - Android Studio (Narwhal | 2025.1.3)
-- Gradle (v8.13)
-- Supported API Levels: 24 (Android 7.0 - [Nougat](https://developer.android.com/about/versions/nougat)) - 35 ([Android 15.0](https://developer.android.com/about/versions/15))
+- JDK 17
+- Gradle (v8.14.3)
+- Supported API Levels: 24 (Android 7.0 - [Nougat](https://developer.android.com/about/versions/nougat)) - 36 ([Android 16](https://developer.android.com/about/versions/16))
 
 ## Quick start guide
 

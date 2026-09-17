@@ -34,7 +34,7 @@
   },
   "peerDependencies": {
     "react": "^19.2.3",
-    "react-native": ">=0.86.0 <1.0.x"
+    "react-native": ">=0.86.0 <1.0.0"
   },
   "devDependencies": {
     "@react-native/babel-preset": "0.86.0",

@@ -64,7 +64,6 @@ android {
     ndkVersion rootProject.ext.ndkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
-    compileSdkVersion rootProject.ext.compileSdkVersion
 
     namespace "com.example"
     defaultConfig {
@@ -95,9 +94,13 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
         coreLibraryDesugaringEnabled withWebRTCUI.toBoolean()
+    }
+
+    kotlinOptions {
+        jvmTarget = "17"
     }
 }
 

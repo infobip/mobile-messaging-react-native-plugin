@@ -1,3 +1,18 @@
+buildscript {
+    ext {
+        kotlin_version = '2.1.20'
+    }
+    repositories {
+        google()
+        mavenLocal()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.13.0'
+        classpath "com.facebook.react:react-native-gradle-plugin"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
 
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
@@ -16,21 +31,6 @@ if (isNewArchitectureEnabled()) {
     }
 }
 
-buildscript {
-    ext {
-        kotlin_version = '2.1.20'
-    }
-    repositories {
-        google()
-        mavenLocal()
-        mavenCentral()
-    }
-    dependencies {
-            classpath 'com.android.tools.build:gradle:8.13.0'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.25"
-    }
-}
-
 def overrideGmsVersion = rootProject.findProperty('overrideGmsVersion') ?: ''
 def overrideFirebaseVersion = rootProject.findProperty('overrideFirebaseVersion') ?: ''
 def withWebRTCUI = rootProject.findProperty('withWebRTCUI') ?: false
@@ -40,7 +40,7 @@ android {
     compileSdk 37
 
     defaultConfig {
-        minSdk 21
+        minSdk 24
         targetSdk 36
         buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
         consumerProguardFiles 'infobip-mm-proguard-rules.pro'
@@ -55,6 +55,15 @@ android {
             }
         }
     }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = "17"
+    }
 }
 
 repositories {
@@ -68,7 +77,7 @@ repositories {
 dependencies {
     def mmVersion = '16.1.0'
     implementation "org.jetbrains.kotlin:kotlin-stdlib:2.1.20"
-    compileOnly "com.facebook.react:react-android"
+    compileOnly "com.facebook.react:react-android:0.86.0"
     implementation "androidx.annotation:annotation:1.9.1"
 
     implementation 'com.google.android.material:material:1.12.0'
@@ -80,7 +89,7 @@ dependencies {
     implementation "com.infobip:infobip-mobile-messaging-android-chat-sdk:$mmVersion@aar"
     implementation "com.infobip:infobip-mobile-messaging-android-inbox-sdk:$mmVersion@aar"
     implementation("com.infobip:infobip-mobile-messaging-android-sdk:$mmVersion@aar") {
-        transitive = true;
+        transitive = true
 
         if (!overrideGmsVersion.empty) {
             exclude group: 'com.google.android.gms', module: 'play-services-location'
@@ -90,7 +99,7 @@ dependencies {
         }
     }
     if (withWebRTCUI.toBoolean()) {
-        implementation implementation("com.infobip:infobip-rtc-ui:$mmVersion") {
+        implementation("com.infobip:infobip-rtc-ui:$mmVersion") {
             transitive = true
         }
     }
