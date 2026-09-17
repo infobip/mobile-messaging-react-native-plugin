@@ -13,7 +13,7 @@ Pod::Spec.new do |s|
   s.homepage     = "https://github.com/infobip/mobile-messaging-react-native-plugin"
   s.license      = "MIT"
   s.authors      = { "Infobip" => "Push.Support@infobip.com" }
-  s.platforms    = { :ios => "15.0" }
+  s.platforms    = { :ios => "15.1" }
   s.source       = { :git => 'https://github.com/infobip/mobile-messaging-react-native-plugin.git', :tag => s.version}
   s.swift_version = '5.5'
   s.source_files = "ios/**/*.{h,m,swift}"
