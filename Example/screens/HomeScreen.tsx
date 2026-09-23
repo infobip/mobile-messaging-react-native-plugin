@@ -29,6 +29,8 @@ import SDKStatusCard, {
 import {URL} from 'react-native-url-polyfill';
 import {handleJWTError} from '../utils/JWTErrorHandler.ts';
 import Colors from '../constants/Colors';
+import EventLogStore from '../constants/EventLogStore';
+import {getDeeplinkFromTapEvent} from '../utils/DeeplinkUtils';
 
 interface HomeScreenProps {
   navigation: any;
@@ -214,21 +216,27 @@ const HomeScreen = ({navigation}: HomeScreenProps) => {
   function registerForDeeplinkEvents() {
     subscriptionDeeplink = mobileMessaging.subscribe(
       'actionTapped',
-      handleDeeplink,
+      eventData => handleDeeplink('actionTapped', eventData),
     );
     subscriptionNotificationTapped = mobileMessaging.subscribe(
       'notificationTapped',
-      handleDeeplink,
+      eventData => handleDeeplink('notificationTapped', eventData),
     );
     // Needed for opening from Intent / webPage, check Linking documentation
     Linking.addEventListener('url', handleDeepLinkUrl);
   }
 
-  function handleDeeplink(eventData: any) {
-    if (!eventData[0].deeplink) {
+  function handleDeeplink(eventName: string, eventData: any) {
+    console.log(`Event: ${eventName}, Data: ${JSON.stringify(eventData)}`);
+    void EventLogStore.add(eventName, eventData).catch(error => {
+      console.warn('Failed to persist tap event', error);
+    });
+    const deeplink = getDeeplinkFromTapEvent(eventData);
+    if (!deeplink) {
+      console.log(`${eventName}: no deeplink in the tapped message`);
       return;
     }
-    handleDeeplinkEvent(eventData[0].deeplink);
+    handleDeeplinkEvent(deeplink);
   }
 
   function unregisterFromDeeplinkEvents() {

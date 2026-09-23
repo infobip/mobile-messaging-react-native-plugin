@@ -32,11 +32,34 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
       let window = UIWindow(windowScene: windowScene)
       self.window = window
       
+      // React Native's Linking.getInitialURL() reads the launch options.
+      // Scene-based apps receive the initial URL in connectionOptions instead.
+      var launchOptions: [UIApplication.LaunchOptionsKey: Any] = [:]
+      if let urlContext = connectionOptions.urlContexts.first {
+        launchOptions[.url] = urlContext.url
+        if let sourceApplication = urlContext.options.sourceApplication {
+          launchOptions[.sourceApplication] = sourceApplication
+        }
+      }
+
       factory.startReactNative(
         withModuleName: "Example",
         in: window,
-        launchOptions: nil
+        launchOptions: launchOptions
       )
+    }
+
+    // Forward links received while the app is running to Linking's URL event.
+    func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+      for urlContext in URLContexts {
+        var options: [UIApplication.OpenURLOptionsKey: Any] = [
+          .openInPlace: urlContext.options.openInPlace
+        ]
+        if let sourceApplication = urlContext.options.sourceApplication {
+          options[.sourceApplication] = sourceApplication
+        }
+        RCTLinkingManager.application(UIApplication.shared, open: urlContext.url, options: options)
+      }
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {
