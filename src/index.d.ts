@@ -49,6 +49,7 @@ declare namespace MobileMessagingReactNative {
         android?: {
             notificationIcon?: string; // a resource name for a status bar icon (without extension), located in 'android/src/main/res/mipmap'
             multipleNotifications?: boolean;
+            withBannerForegroundNotificationsEnabled?: boolean;
             notificationAccentColor?: string;
             firebaseOptions?: {
                 apiKey: string;

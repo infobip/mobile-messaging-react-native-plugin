@@ -159,6 +159,7 @@ class MobileMessaging {
      *	    android: {
      *			notificationIcon: <String>,
      *			multipleNotifications: <Boolean>,
+     *			withBannerForegroundNotificationsEnabled: <Boolean>,
      *			notificationAccentColor: <String>,
      *			firebaseOptions: <Object>,
      *          notificationChannelId: <String>,

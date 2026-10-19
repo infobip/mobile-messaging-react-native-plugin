@@ -293,6 +293,10 @@ class ReactNativeMobileMessagingService(
             }
 
             configuration.android?.let { androidConfig ->
+                if (androidConfig.withBannerForegroundNotificationsEnabled) {
+                    builder.withBannerForegroundNotifications()
+                }
+
                 val notificationBuilder = NotificationSettings.Builder(context)
 
                 androidConfig.notificationIcon?.let { icon ->

@@ -29,6 +29,7 @@ public class Configuration {
         String notificationChannelName;
         String notificationSound;
         boolean multipleNotifications;
+        boolean withBannerForegroundNotificationsEnabled;
         String notificationAccentColor;
         FirebaseOptions firebaseOptions;
     }

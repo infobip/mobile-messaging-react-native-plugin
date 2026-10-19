@@ -74,6 +74,7 @@ class App extends Component<{}, AppState> {
       notificationTypes: ['alert', 'badge', 'sound'],
     },
     android: {
+      withBannerForegroundNotificationsEnabled: true,
       // firebaseOptions: {
       //   apiKey: '',
       //   applicationId: '',
