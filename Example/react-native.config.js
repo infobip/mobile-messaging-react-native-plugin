@@ -8,7 +8,7 @@
 
 module.exports = {
   project: {
-    ios: {},
+    ios: { automaticPodsInstallation: false },
     android: {},
   },
 };

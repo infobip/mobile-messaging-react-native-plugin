@@ -11,6 +11,9 @@ import React
 import React_RCTAppDelegate
 import ReactAppDependencyProvider
 import MobileMessaging
+#if canImport(MobileMessagingReactNative)
+import MobileMessagingReactNative
+#endif
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -21,7 +24,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
   ) -> Bool {
+#if canImport(MobileMessagingReactNative)
+    MobileMessagingReactNative.MobileMessagingPluginApplicationDelegate.install()
+#else
     MobileMessagingPluginApplicationDelegate.install();
+#endif
 
     // Set the message handling delegate to display notifications in foreground
     MobileMessaging.messageHandlingDelegate = MyMessageHandlingDelegate()

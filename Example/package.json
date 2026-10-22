@@ -5,6 +5,7 @@
   "scripts": {
     "android": "react-native run-android",
     "ios": "react-native run-ios",
+    "postinstall": "patch-package",
     "lint": "eslint .",
     "start": "react-native start",
     "test": "jest"
@@ -13,18 +14,17 @@
     "@react-native-async-storage/async-storage": "^2.1.0",
     "@react-native-clipboard/clipboard": "^1.14.0",
     "@react-native-picker/picker": "^2.11.2",
-    "@react-native/gradle-plugin": "0.86.0",
-    "@react-navigation/native": "^7.0.14",
-    "@react-navigation/native-stack": "^7.2.0",
-    "@react-navigation/stack": "^7.1.11",
+    "@react-native/gradle-plugin": "0.87.1",
+    "@react-navigation/native": "^7.5.0",
+    "@react-navigation/native-stack": "^7.20.0",
+    "@react-navigation/stack": "^7.12.0",
     "crypto-js": "^4.2.0",
     "infobip-mobile-messaging-react-native-plugin": "file:../",
     "react": "19.2.3",
-    "react-native": "0.86.0",
+    "react-native": "0.87.1",
     "react-native-get-random-values": "^1.11.0",
-    "react-native-pure-jwt": "^3.0.3",
-    "react-native-safe-area-context": "^5.6.1",
-    "react-native-screens": "^4.16.0",
+    "react-native-safe-area-context": "^5.10.1",
+    "react-native-screens": "5.0.0-alpha.3",
     "react-native-url-polyfill": "^2.0.0",
     "uuid": "^11.1.0"
   },
@@ -35,11 +35,11 @@
     "@react-native-community/cli": "20.2.0",
     "@react-native-community/cli-platform-android": "20.2.0",
     "@react-native-community/cli-platform-ios": "20.2.0",
-    "@react-native/babel-preset": "0.86.0",
-    "@react-native/eslint-config": "0.86.0",
-    "@react-native/jest-preset": "0.86.0",
-    "@react-native/metro-config": "0.86.0",
-    "@react-native/typescript-config": "0.86.0",
+    "@react-native/babel-preset": "0.87.1",
+    "@react-native/eslint-config": "0.87.1",
+    "@react-native/jest-preset": "0.87.1",
+    "@react-native/metro-config": "0.87.1",
+    "@react-native/typescript-config": "0.87.1",
     "@types/crypto-js": "^4.2.2",
     "@types/jest": "^29.5.13",
     "@types/react": "^19.2.3",
@@ -48,11 +48,18 @@
     "babel-jest": "^29.6.3",
     "eslint": "^8.19.0",
     "jest": "^29.6.3",
+    "patch-package": "^8.0.1",
     "prettier": "2.8.8",
     "react-test-renderer": "19.2.3",
     "typescript": "^5.8.3"
   },
   "engines": {
-    "node": ">=20.19.4 || >=22.13.0 || >=24.3.0"
+    "node": "^22.13.0 || ^24.3.0 || >= 26.0.0"
+  },
+  "overrides": {
+    "react-native-screens": "$react-native-screens"
+  },
+  "infobipMobileMessaging": {
+    "webRTCUI": true
   }
 }

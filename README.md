@@ -10,19 +10,19 @@ The document describes library integration steps for your React Native project.
 * [Initialization configuration](#initialization-configuration)
 
 ## Requirements
-- node (v20.19.4 or higher)
+- node (v20.19.4 or higher; v22.13.0 or higher if using Swift Package Manager)
 - ruby (2.7.8 or higher; the Example app uses 3.3.5)
-- React Native (v0.86.0)
+- React Native (v0.86.0 or higher; v0.87.0 or higher if using Swift Package Manager)
 
 For iOS project:
-- Xcode and Command Line Tools (16.x or newer, tested with 26.0.1)
-- CocoaPods (v1.16.x)
+- Xcode and Command Line Tools (16.x or newer, tested with 27.0.0)
 - Minimum deployment target 15.1
+- If using CocoaPods: CocoaPods (v1.16.x)
 
 For Android project:
 - Android Studio (Narwhal | 2025.1.3)
 - JDK 17
-- Gradle (v8.14.3)
+- Gradle (v9.4.1)
 - Supported API Levels: 24 (Android 7.0 - [Nougat](https://developer.android.com/about/versions/nougat)) - 36 ([Android 16](https://developer.android.com/about/versions/16))
 
 ## Quick start guide
@@ -40,27 +40,110 @@ This guide is designed to get you up and running with Mobile Messaging SDK plugi
 3. Configure platforms
 
    - **iOS**
+
+      The plugin ships both a CocoaPods podspec and a Swift Package Manager manifest, so your app can integrate it with either dependency manager.
+
+      #### Dependency manager setup
+
+      <details open><summary><b>CocoaPods</b></summary>
+
       > ### Notice
       > Starting from the [6.2.0](https://github.com/infobip/mobile-messaging-react-native-plugin/releases/tag/6.1.0) plugin version it's not mandatory to add `use_frameworks!` to the `Podfile`, check the [Migration guide](https://github.com/infobip/mobile-messaging-react-native-plugin/wiki/Migration-guides#migration-from-610-to-620-in-case-you-are-getting-rid-of-use_frameworks-in-the-podfile) if you want to get rid of it.
-      1. Run `pod install` from `/ios` folder (installs Mobile Messaging native SDK)
-      2. Import following header `#import <MobileMessaging/MobileMessagingPluginApplicationDelegate.h>` and add `[MobileMessagingPluginApplicationDelegate install];` into `/ios/<ProjectName>/AppDelegate.m` (this is required for OS callbacks such as `didRegisterForRemoteNotifications` to be intercepted by native MobileMessaging SDK)
-       ```objective-c
-           ...
-           #import <MobileMessaging/MobileMessagingPluginApplicationDelegate.h>
-     
-           @implementation AppDelegate
 
-           - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
-           {
-               [MobileMessagingPluginApplicationDelegate install];
+      1. Run `pod install` from `/ios` folder (installs Mobile Messaging native SDK)
+
+      </details>
+
+      <details><summary><b>Swift Package Manager (experimental)</b></summary>
+
+      > Requires React Native 0.87.0 or higher and node 22.13.0 or higher. See the [Swift Package Manager integration](https://github.com/infobip/mobile-messaging-react-native-plugin/wiki/Swift-Package-Manager-integration) guide for details.
+
+      1. If your app currently uses CocoaPods, remove the CocoaPods integration first (from `/ios` folder):
+         ```bash
+         bundle exec pod deintegrate
+         rm -rf Pods <ProjectName>.xcworkspace
+         ```
+      2. Disable automatic `pod install` in `react-native.config.js`. Otherwise, `react-native run-ios` reinstalls pods whenever a `Podfile` is present:
+         ```js
+         module.exports = {
+           project: {
+             ios: { automaticPodsInstallation: false },
+           },
+         };
+         ```
+      3. If you use WebRTC UI (the equivalent of `$WebRTCUIEnabled = true` in the `Podfile`), enable it in your app's `package.json`:
+         ```json
+         "infobipMobileMessaging": {
+           "webRTCUI": true
+         }
+         ```
+      4. If other native dependencies of your app don't ship a `Package.swift`, generate one for each of them from the project root:
+         ```bash
+         npx react-native spm scaffold
+         ```
+         - the generated files live in `node_modules` and are removed by `npm install`. Persist them with [patch-package](https://github.com/ds300/patch-package) (`npx patch-package <dependency-name>`, then commit the patch), or re-run the command after every install
+         - without them, the next step fails with `MissingManifestError`
+      5. From the project root, run the following command. React Native reads the plugin's `Package.swift` and wires it, together with the Mobile Messaging native SDK, into your Xcode project automatically:
+         ```bash
+         npx react-native spm --yes
+         ```
+         - re-run it after adding, removing or updating native dependencies, or after changing the `webRTCUI` flag
+         - open `ios/<ProjectName>.xcodeproj` (not the `.xcworkspace`) in Xcode
+
+      </details>
+
+      2. Import the necessary dependency (depending on the dependency manager) and add `MobileMessagingPluginApplicationDelegate.install()` into `/ios/<ProjectName>/AppDelegate.swift` (this is required for OS callbacks such as `didRegisterForRemoteNotifications` to be intercepted by native MobileMessaging SDK).
+      - If using SPM, import the `MobileMessagingReactNative` dependency.
+      - If using CocoaPods, import the `MobileMessaging` dependency.
+
+      The AppDelegate should now look like the following:
+       ```swift
+           import UIKit
+           import React
+           // if using Swift Package Manager, import the MobileMessagingReactNative dependency
+           import MobileMessagingReactNative
+           // if using CocoaPods, import the MobileMessaging dependency
+           import MobileMessaging
+
+           @main
+           class AppDelegate: UIResponder, UIApplicationDelegate {
+             func application(
+               _ application: UIApplication,
+               didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
+             ) -> Bool {
                ...
+               MobileMessagingPluginApplicationDelegate.install()
+               ...
+             }
            }
            ...
        ```
+
+      > ### Notice
+      > An Objective-C `AppDelegate.m` is only supported with the CocoaPods integration:
+      > ```objective-c
+      >     ...
+      >     #import <MobileMessaging/MobileMessagingPluginApplicationDelegate.h>
+      >
+      >     @implementation AppDelegate
+      >
+      >     - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+      >     {
+      >         [MobileMessagingPluginApplicationDelegate install];
+      >         ...
+      >     }
+      >     ...
+      > ```
+      > Swift Package Manager integration requires a Swift `AppDelegate.swift`.
+
       3. Configure your project to support Push Notification as described in item 2 of [iOS integration quick start guide](https://github.com/infobip/mobile-messaging-sdk-ios#quick-start-guide)
       4. [Integrate Notification Service Extension](https://github.com/infobip/mobile-messaging-react-native-plugin/wiki/Delivery-improvements-and-rich-content-notifications#setting-up-ios-part) into your app in order to obtain:
          - more accurate processing of messages and delivery stats
          - support of rich notifications on the lock screen
+      - If using SPM, follow the guide for integrating the NSE [here](https://github.com/infobip/mobile-messaging-sdk-ios/wiki/Integration-via-Swift-Package-Manager#Notification-Service-Extension).
+
+      > ### Notice (CocoaPods and Swift Package Manager integration):
+      > From version `15.1.0`, the plugin supports both **Swift Package Manager** (React Native 0.87 and above, experimental) and **CocoaPods**. After December 2, 2026, CocoaPods will permanently become read-only, so migration to SPM is recommended to get the latest plugin updates.
    - **Android**
       1. Following paths should be provided in .bash_profile
          ```sh

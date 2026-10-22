@@ -7,6 +7,9 @@
 //
 
 import Foundation
+#if canImport(MobileMessagingInbox)
+import MobileMessagingInbox
+#endif
 import MobileMessaging
 
 extension MM_MTMessage {

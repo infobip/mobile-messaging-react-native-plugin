@@ -6,6 +6,12 @@
 //  Licensed under the Apache License, Version 2.0
 //
 
+#if canImport(React)
+import React
+#endif
+#if canImport(InAppChat)
+import InAppChat
+#endif
 import Foundation
 import MobileMessaging
 

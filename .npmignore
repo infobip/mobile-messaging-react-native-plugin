@@ -11,3 +11,9 @@ tmp
 # Examples (If applicable to your project)
 Example
 BasicExample
+
+# Swift Package Manager
+ios/.swiftpm/
+ios/.build
+.swiftpm
+.build

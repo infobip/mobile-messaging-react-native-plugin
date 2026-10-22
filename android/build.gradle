@@ -75,7 +75,7 @@ repositories {
 }
 
 dependencies {
-    def mmVersion = '16.1.0'
+    def mmVersion = '16.3.0'
     implementation "org.jetbrains.kotlin:kotlin-stdlib:2.1.20"
     compileOnly "com.facebook.react:react-android:0.86.0"
     implementation "androidx.annotation:annotation:1.9.1"

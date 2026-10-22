@@ -20,6 +20,13 @@
 -keep class com.infobip.webrtc.ui.ErrorListener { *; }
 -keep class com.infobip.webrtc.ui.InfobipRtcUi { *; }
 
+# Room (used by WorkManager in the native MM SDK) instantiates generated *_Impl databases via reflection
+-keep class * extends androidx.room.RoomDatabase { <init>(); }
+
+# WorkManager instantiates input mergers and workers via reflection
+-keep class * extends androidx.work.InputMerger { <init>(); }
+-keep class * extends androidx.work.ListenableWorker { <init>(android.content.Context, androidx.work.WorkerParameters); }
+
 # Keep all classes that extend android.content.BroadcastReceiver
 -keep public class * extends android.content.BroadcastReceiver {
     public <init>(...);

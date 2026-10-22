@@ -58,6 +58,9 @@ yarn-error.log
 
 # Ruby / CocoaPods
 **/Pods/
+
+# Swift Package Manager (react-native spm)
+*.xcodeproj/.spm-injected.json
 /vendor/bundle/
 
 # Temporary files created by Metro to check the health of the file watcher
