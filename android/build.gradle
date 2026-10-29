@@ -18,17 +18,12 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'maven-publish'
 
-def isNewArchitectureEnabled() {
-    return rootProject.hasProperty("newArchEnabled") && rootProject.getProperty("newArchEnabled") == "true"
-}
+apply plugin: 'com.facebook.react'
 
-if (isNewArchitectureEnabled()) {
-    apply plugin: 'com.facebook.react'
-    react {
-        jsRootDir = file("../src/specs")
-        libraryName = "MobileMessaging"
-        codegenJavaPackageName = "org.infobip.reactlibrary.mobilemessaging"
-    }
+react {
+    jsRootDir = file("../src/specs")
+    libraryName = "MobileMessaging"
+    codegenJavaPackageName = "org.infobip.reactlibrary.mobilemessaging"
 }
 
 def overrideGmsVersion = rootProject.findProperty('overrideGmsVersion') ?: ''
@@ -42,18 +37,7 @@ android {
     defaultConfig {
         minSdk 24
         targetSdk 36
-        buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
         consumerProguardFiles 'infobip-mm-proguard-rules.pro'
-    }
-
-    sourceSets {
-        main {
-            if (isNewArchitectureEnabled()) {
-                java.srcDirs += ["src/newarchitecture"]
-            } else {
-                java.srcDirs += ["src/oldarchitecture"]
-            }
-        }
     }
 
     compileOptions {

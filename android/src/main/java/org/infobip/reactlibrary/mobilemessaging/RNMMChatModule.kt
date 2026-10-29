@@ -19,7 +19,7 @@ class RNMMChatModule(reactContext: ReactApplicationContext) : NativeRNMMChatSpec
 
     companion object {
         const val NAME = "RNMMChat"
-        private const val TAG = "RNMMChatNewModule"
+        private const val TAG = "RNMMChatModule"
     }
 
     private val service: RNMMChatService = RNMMChatService(reactContext)

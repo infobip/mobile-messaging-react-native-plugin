@@ -39,7 +39,7 @@ class ReactNativeMobileMessagingPackage : BaseReactPackage() {
         RNMMLogger.i("ReactNativeMobileMessagingPackage", "getReactModuleInfoProvider...")
         return ReactModuleInfoProvider {
             val reactModuleInfos: MutableMap<String, ReactModuleInfo> = HashMap()
-            val isTurboModule = BuildConfig.IS_NEW_ARCHITECTURE_ENABLED
+            val isTurboModule = true
             reactModuleInfos.put(
                 MobileMessagingModule.NAME,
                 ReactModuleInfo(

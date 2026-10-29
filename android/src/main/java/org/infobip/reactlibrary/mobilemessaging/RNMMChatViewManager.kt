@@ -25,7 +25,7 @@ class RNMMChatViewManager(
 
     companion object {
         const val NAME = "RNMMChatView"
-        private const val TAG = "RNMMChatViewNewManager"
+        private const val TAG = "RNMMChatViewManager"
     }
 
     private val delegate: RNMMChatViewManagerDelegate<RNMMChatView, RNMMChatViewManager> = RNMMChatViewManagerDelegate(this)
