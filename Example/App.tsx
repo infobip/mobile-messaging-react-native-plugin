@@ -84,6 +84,7 @@ class App extends Component<{}, AppState> {
     // defaultMessageStorage: true,
     messageStorage: myMessageStorage,
     inAppChatEnabled: true,
+    inAppChatPushNavigationEnabled: true,
     fullFeaturedInAppsEnabled: true,
     logging: true,
     // userDataJwt: '',

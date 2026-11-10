@@ -362,7 +362,9 @@ class ReactNativeMobileMessagingService(
             })
 
             if (configuration.inAppChatEnabled) {
-                InAppChat.getInstance(context).activate()
+                val chat = InAppChat.getInstance(context)
+                chat.activate()
+                chat.setPushNavigationEnabled(configuration.inAppChatPushNavigationEnabled)
             }
         } catch (e: Exception) {
             errorCallback.invoke(Utils.callbackError(e.message, null))

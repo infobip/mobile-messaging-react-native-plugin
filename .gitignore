@@ -53,3 +53,4 @@ package-lock.json
 Claude.md
 ./claude/*
 local_build.sh
+/AGENTS.md

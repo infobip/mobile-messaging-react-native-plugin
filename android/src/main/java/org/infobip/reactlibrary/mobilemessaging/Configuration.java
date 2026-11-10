@@ -61,6 +61,7 @@ public class Configuration {
     AndroidConfiguration android;
     String applicationCode;
     boolean inAppChatEnabled;
+    boolean inAppChatPushNavigationEnabled;
     boolean fullFeaturedInAppsEnabled;
     Map<String, ?> messageStorage;
     boolean defaultMessageStorage;

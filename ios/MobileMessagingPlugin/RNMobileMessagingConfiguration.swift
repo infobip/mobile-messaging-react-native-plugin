@@ -29,6 +29,7 @@ class RNMobileMessagingConfiguration {
         static let reactNativePluginVersion = "reactNativePluginVersion"
         static let notificationCategories = "notificationCategories"
         static let inAppChatEnabled = "inAppChatEnabled"
+        static let inAppChatPushNavigationEnabled = "inAppChatPushNavigationEnabled"
         static let fullFeaturedInAppsEnabled = "fullFeaturedInAppsEnabled"
         static let webViewSettings = "webViewSettings"
         static let userDataJwt = "userDataJwt"
@@ -44,6 +45,7 @@ class RNMobileMessagingConfiguration {
     let reactNativePluginVersion: String
     let categories: [MMNotificationCategory]?
     let inAppChatEnabled: Bool
+    let inAppChatPushNavigationEnabled: Bool
     let fullFeaturedInAppsEnabled: Bool
     let webViewSettings: [String: AnyObject]?
     let userDataJwt: String?
@@ -60,6 +62,7 @@ class RNMobileMessagingConfiguration {
         self.defaultMessageStorage = rawConfig[RNMobileMessagingConfiguration.Keys.defaultMessageStorage].unwrap(orDefault: false)
         self.messageStorageEnabled = rawConfig[RNMobileMessagingConfiguration.Keys.messageStorage] != nil ? true : false
         self.inAppChatEnabled = rawConfig[RNMobileMessagingConfiguration.Keys.inAppChatEnabled].unwrap(orDefault: false)
+        self.inAppChatPushNavigationEnabled = rawConfig[RNMobileMessagingConfiguration.Keys.inAppChatPushNavigationEnabled].unwrap(orDefault: false)
         self.fullFeaturedInAppsEnabled = rawConfig[RNMobileMessagingConfiguration.Keys.fullFeaturedInAppsEnabled].unwrap(orDefault: false)
         self.backendBaseURL = rawConfig[RNMobileMessagingConfiguration.Keys.backendBaseURL] as? String
 

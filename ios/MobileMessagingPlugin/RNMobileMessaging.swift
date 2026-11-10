@@ -214,7 +214,9 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
         }
 
         if configuration.inAppChatEnabled {
-            mobileMessaging = mobileMessaging.withInAppChat()
+            mobileMessaging = mobileMessaging.withInAppChat(
+                pushPresentationMode: configuration.inAppChatPushNavigationEnabled ? .uikit : nil
+            )
         }
 
         if configuration.fullFeaturedInAppsEnabled {

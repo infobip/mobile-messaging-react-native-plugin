@@ -152,6 +152,7 @@ class MobileMessaging {
      *		messageStorage: '<Message storage save callback>',
      *		defaultMessageStorage: true,
      *	    fullFeaturedInAppsEnabled: true,
+     *      inAppChatPushNavigationEnabled: true,
      *		logging: <Boolean>,
      *		ios: {
      *			notificationTypes: ['alert', 'sound', 'badge']
@@ -196,6 +197,8 @@ class MobileMessaging {
      */
     init(config, onSuccess = function() {}, onError = function() {}) {
         let messageStorage = config.messageStorage;
+
+        config.inAppChatPushNavigationEnabled = config.inAppChatPushNavigationEnabled === true;
 
         this.configuration = config;
 

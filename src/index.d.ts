@@ -36,6 +36,11 @@ declare namespace MobileMessagingReactNative {
             configurationId: string;
         };
         inAppChatEnabled?: boolean;
+        /**
+         * Enables automatic In-app chat navigation on chat push notification taps.
+         * Defaults to false, leaving navigation to the application.
+         */
+        inAppChatPushNavigationEnabled?: boolean;
         fullFeaturedInAppsEnabled?: boolean;
         /**
          * Message storage save callback
