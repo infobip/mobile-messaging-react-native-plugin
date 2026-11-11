@@ -190,7 +190,8 @@ class MobileMessaging {
      *				]
      *			}
      *		],
-     *	   userDataJwt: '<JSON Web Token for user data operations and personalization>'
+     *	   userDataJwt: '<JSON Web Token for user data operations and personalization>',
+     *	   trustedDomains: ['example.com', 'trusted.org'] // optional; when set, only web view and browser URLs from these domains (and their subdomains) will be opened
      *	}
      * @param {Function} onSuccess. Success callback
      * @param {Function} onError. Error callback

@@ -34,6 +34,7 @@ class RNMobileMessagingConfiguration {
         static let webViewSettings = "webViewSettings"
         static let userDataJwt = "userDataJwt"
         static let backendBaseURL = "backendBaseURL"
+        static let trustedDomains = "trustedDomains"
     }
 
     let webRTCUI: [String: AnyObject]?
@@ -50,12 +51,20 @@ class RNMobileMessagingConfiguration {
     let webViewSettings: [String: AnyObject]?
     let userDataJwt: String?
     let backendBaseURL: String?
+    let trustedDomains: [String]?
 
     init?(rawConfig: [String: AnyObject]) {
         guard let ios = rawConfig["ios"] as? [String: AnyObject] else
         {
             return nil
         }
+
+        guard let trustedDomains = RNMobileMessagingConfiguration.parseTrustedDomains(rawConfig[RNMobileMessagingConfiguration.Keys.trustedDomains]) else
+        {
+            MMLogError("[RNMobileMessaging] trustedDomains must be an array of strings")
+            return nil
+        }
+        self.trustedDomains = trustedDomains.isEmpty ? nil : trustedDomains
 
         self.webRTCUI = rawConfig[RNMobileMessagingConfiguration.Keys.webRTCUI] as? [String: AnyObject]
         self.logging = rawConfig[RNMobileMessagingConfiguration.Keys.logging].unwrap(orDefault: false)
@@ -105,6 +114,24 @@ class RNMobileMessagingConfiguration {
         }
 
         self.userDataJwt = rawConfig[RNMobileMessagingConfiguration.Keys.userDataJwt] as? String
+    }
+
+    /// Returns trusted domains, empty array when they are not set (omitted, null or empty array), or nil when the value is malformed.
+    static func parseTrustedDomains(_ value: AnyObject?) -> [String]? {
+        guard let value = value, !(value is NSNull) else {
+            return []
+        }
+        guard let array = value as? NSArray else {
+            return nil
+        }
+        var domains = [String]()
+        for item in array {
+            guard let domain = item as? NSString else {
+                return nil
+            }
+            domains.append(domain as String)
+        }
+        return domains
     }
 
     static func saveConfigToDefaults(rawConfig: [String: AnyObject]) {

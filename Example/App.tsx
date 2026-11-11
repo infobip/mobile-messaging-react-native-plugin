@@ -88,6 +88,7 @@ class App extends Component<{}, AppState> {
     fullFeaturedInAppsEnabled: true,
     logging: true,
     // userDataJwt: '',
+    // trustedDomains: ['example.com'],
   };
 
   subscriptions: any[] = [];

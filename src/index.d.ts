@@ -92,6 +92,12 @@ declare namespace MobileMessagingReactNative {
             }];
         userDataJwt?: string;
         backendBaseURL?: string;
+        /**
+         * Optional list of trusted domains, e.g. ['example.com', 'trusted.org'].
+         * When set, the SDK opens only web view and browser URLs whose host matches one of these domains or their subdomains.
+         * If not set or empty, all URLs are allowed.
+         */
+        trustedDomains?: string[];
     }
 
     export interface UserData {

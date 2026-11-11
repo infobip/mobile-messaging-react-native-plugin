@@ -30,6 +30,7 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
+import com.facebook.react.bridge.ReadableType
 import com.facebook.react.modules.core.PermissionAwareActivity
 import com.facebook.react.modules.core.PermissionListener
 import com.google.android.gms.common.ConnectionResult
@@ -106,6 +107,7 @@ class ReactNativeMobileMessagingService(
         const val EVENT_INAPPCHAT_CONFIGURATION_SYNCED = "inAppChat.configurationSynced"
         const val EVENT_INAPPCHAT_LIVECHAT_REGISTRATION_ID_UPDATED = "inAppChat.livechatRegistrationIdUpdated"
         const val EVENT_INAPPCHAT_AVAILABILITY_UPDATED = "inAppChat.availabilityUpdated"
+        private const val TRUSTED_DOMAINS = "trustedDomains"
 
         @JvmStatic
         @Volatile
@@ -245,6 +247,7 @@ class ReactNativeMobileMessagingService(
 
     fun init(args: ReadableMap, successCallback: Callback, errorCallback: Callback) {
         try {
+            validateTrustedDomains(args)
             val configuration = Configuration.resolveConfiguration(ReactNativeJson.convertMapToJson(args))
             ConfigCache.configuration = configuration
             if (configuration.logging) {
@@ -331,6 +334,10 @@ class ReactNativeMobileMessagingService(
 
             configuration.userDataJwt?.let { jwt ->
                 builder.withJwtSupplier { jwt }
+            }
+
+            configuration.trustedDomains?.takeIf { it.isNotEmpty() }?.let { domains ->
+                builder.withTrustedDomains(HashSet(domains))
             }
 
             var cryptor: Cryptor? = null
@@ -718,6 +725,18 @@ class ReactNativeMobileMessagingService(
                     errorCallback.invoke(Utils.callbackErrorWithStringErrorCode(result.error.message, result.error.code))
                 }
             }
+        }
+    }
+
+    /**
+     * Omitted, null or empty trustedDomains are valid and mean no restrictions, any other value must be an array of strings.
+     * Validated on [ReadableMap], because JSON conversion drops null array items.
+     */
+    private fun validateTrustedDomains(args: ReadableMap) {
+        if (!args.hasKey(TRUSTED_DOMAINS) || args.getType(TRUSTED_DOMAINS) == ReadableType.Null) return
+        val domains = if (args.getType(TRUSTED_DOMAINS) == ReadableType.Array) args.getArray(TRUSTED_DOMAINS) else null
+        require(domains != null && (0 until domains.size()).all { domains.getType(it) == ReadableType.String }) {
+            "trustedDomains must be an array of strings"
         }
     }
 

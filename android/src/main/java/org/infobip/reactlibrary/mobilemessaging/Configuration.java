@@ -72,6 +72,7 @@ public class Configuration {
     WebRTCUI webRTCUI;
     String userDataJwt;
     @Nullable String backendBaseURL;
+    @Nullable List<String> trustedDomains;
 
     @NonNull
     static Configuration resolveConfiguration(JSONObject args) throws JSONException {

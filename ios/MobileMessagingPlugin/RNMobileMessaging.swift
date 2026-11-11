@@ -231,6 +231,10 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
             mobileMessaging = mobileMessaging.withJwtSupplier(VariableJwtSupplier(jwt: jwt))
         }
 
+        if let domains = configuration.trustedDomains, !domains.isEmpty {
+            mobileMessaging = mobileMessaging.withTrustedDomains(domains)
+        }
+
         mobileMessaging.start({
             onSuccess(nil)
         })
