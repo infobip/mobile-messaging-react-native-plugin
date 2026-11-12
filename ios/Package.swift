@@ -10,7 +10,7 @@
 import PackageDescription
 import Foundation
 
-private let iOSMMVersion: Version = "15.9.0"
+private let iOSMMVersion: Version = "15.10.1"
 
 private let webRTCUIEnabled: Bool = {
     let appPackageJSON = URL(fileURLWithPath: Context.packageDirectory)
