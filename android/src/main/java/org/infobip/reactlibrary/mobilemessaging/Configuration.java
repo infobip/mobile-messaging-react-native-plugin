@@ -32,6 +32,7 @@ public class Configuration {
         boolean withBannerForegroundNotificationsEnabled;
         String notificationAccentColor;
         FirebaseOptions firebaseOptions;
+        boolean appManagedFcmTokenLifecycle;
     }
 
     class PrivacySettings {

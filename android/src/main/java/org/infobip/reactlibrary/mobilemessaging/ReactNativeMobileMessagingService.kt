@@ -275,6 +275,10 @@ class ReactNativeMobileMessagingService(
                 builder.withApiUri(baseURL)
             }
 
+            builder.withAppManagedFcmTokenLifecycle(
+                configuration.android?.appManagedFcmTokenLifecycle ?: false
+            )
+
             if (configuration.fullFeaturedInAppsEnabled) {
                 builder.withFullFeaturedInApps()
             }

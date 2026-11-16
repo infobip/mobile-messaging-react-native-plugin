@@ -164,8 +164,9 @@ class MobileMessaging {
      *			notificationAccentColor: <String>,
      *			firebaseOptions: <Object>,
      *          notificationChannelId: <String>,
- *              notificationChannelName: <String>,
- *              notificationSound: <String>
+     *          notificationChannelName: <String>,
+     *          notificationSound: <String>,
+     *          appManagedFcmTokenLifecycle: <Boolean>
      *	    }
      *		privacySettings: {
      *			userDataPersistingDisabled: <Boolean>,

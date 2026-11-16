@@ -68,6 +68,10 @@ declare namespace MobileMessagingReactNative {
             notificationChannelId?: string;
             notificationChannelName?: string;
             notificationSound?: string;
+            /** Android only. Preserve app-managed FCM token lifecycle during
+             * depersonalization/repersonalization. Defaults to `false`.
+             */
+            appManagedFcmTokenLifecycle?: boolean;
         };
         privacySettings?: {
             userDataPersistingDisabled?: boolean;
