@@ -77,6 +77,14 @@ class MobileMessagingModule(reactContext: ReactApplicationContext) : NativeMobil
         service.setInboxMessagesSeen(externalUserId, messageIds, onSuccess, onError)
     }
 
+    override fun deleteInboxMessages(token: String, externalUserId: String, messageIds: ReadableArray, onSuccess: Callback, onError: Callback) {
+        service.deleteInboxMessages(token, externalUserId, messageIds, onSuccess, onError)
+    }
+
+    override fun deleteInboxMessagesWithoutToken(externalUserId: String, messageIds: ReadableArray, onSuccess: Callback, onError: Callback) {
+        service.deleteInboxMessagesWithoutToken(externalUserId, messageIds, onSuccess, onError)
+    }
+
     override fun saveUser(userData: ReadableMap, successCallback: Callback, errorCallback: Callback) {
         RNMMLogger.d(TAG, "Save user...")
         service.saveUser(userData, successCallback, errorCallback)

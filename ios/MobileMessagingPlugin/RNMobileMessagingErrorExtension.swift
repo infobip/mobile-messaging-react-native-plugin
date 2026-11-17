@@ -17,6 +17,7 @@ public enum RNMobileMessagingErrorType: Error {
     case NotSupported
     case NoData
     case InitializationFailed
+    case InboxNotInitialized
 
     fileprivate var errorCode: Int {
         switch self {
@@ -32,6 +33,8 @@ public enum RNMobileMessagingErrorType: Error {
             return 4
         case .InitializationFailed:
             return 5
+        case .InboxNotInitialized:
+            return 6
         }
 
     }
@@ -52,6 +55,8 @@ public enum RNMobileMessagingErrorType: Error {
             errorDescription = NSLocalizedString("No data retrieved.", comment: "")
         case .InitializationFailed:
             errorDescription = NSLocalizedString("Could not initialize MobileMessaging SDK.", comment: "")
+        case .InboxNotInitialized:
+            errorDescription = NSLocalizedString("Inbox not initialized.", comment: "")
         }
         return errorDescription
     }

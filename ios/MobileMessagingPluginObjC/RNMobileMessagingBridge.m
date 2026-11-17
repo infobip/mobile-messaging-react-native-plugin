@@ -52,6 +52,8 @@ RCT_EXTERN_METHOD(showDialogForError:(int)errorCode onSuccess:(RCTResponseSender
 /*Inbox*/
 RCT_EXTERN_METHOD(fetchInboxMessages:(NSString *)token externalUserId:(NSString *)externalUserId inboxFilterOptions:(NSDictionary *)inboxFilterOptions onSuccess:(RCTResponseSenderBlock)successCallback onError:(RCTResponseSenderBlock)errorCallback)
 RCT_EXTERN_METHOD(fetchInboxMessagesWithoutToken:(NSString *)externalUserId inboxFilterOptions:(NSDictionary *)inboxFilterOptions onSuccess:(RCTResponseSenderBlock)successCallback onError:(RCTResponseSenderBlock)errorCallback)
+RCT_EXTERN_METHOD(deleteInboxMessages:(NSString *)token externalUserId:(NSString *)externalUserId messageIds:(NSArray *)messageIds onSuccess:(RCTResponseSenderBlock)successCallback onError:(RCTResponseSenderBlock)errorCallback)
+RCT_EXTERN_METHOD(deleteInboxMessagesWithoutToken:(NSString *)externalUserId messageIds:(NSArray *)messageIds onSuccess:(RCTResponseSenderBlock)successCallback onError:(RCTResponseSenderBlock)errorCallback)
 RCT_EXTERN_METHOD(setInboxMessagesSeen:(NSString *)externalUserId messages:(NSArray *)messages onSuccess:(RCTResponseSenderBlock)successCallback onError:(RCTResponseSenderBlock)errorCallback)
 
 /*Cleanup*/

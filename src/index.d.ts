@@ -148,6 +148,7 @@ declare namespace MobileMessagingReactNative {
         countTotalFiltered?: number;
         countUnreadFiltered?: number;
         messages?: Message[];
+        nextCursor?: string;
     }
 
     export interface MMInboxFilterOptions {
@@ -156,6 +157,7 @@ declare namespace MobileMessagingReactNative {
         topic?: string;
         topics?: string[];
         limit?: number;
+        cursor?: string | null;
     }
 
     export interface PersonalizeContext {
@@ -228,7 +230,7 @@ declare namespace MobileMessagingReactNative {
          *
          * @param callback has to be called on completion with one parameter - found message object
          */
-        find(messageId: string, callback: (message: Message) => void): void;
+        find(messageId: string, callback: (message: Message | null) => void): void;
 
         /**
          * Will be called by the plugin to find all messages in the storage
@@ -469,6 +471,29 @@ declare namespace MobileMessagingReactNative {
          *@param {Function} errorCallback will be called on error
          */
         fetchInboxMessagesWithoutToken(externalUserId: String, filterOptions: MMInboxFilterOptions, callback: (inbox: MMInbox) => void, errorCallback: (error: MobileMessagingError) => void): void;
+
+        /**
+         * Delete inbox messages. Messages that are missing or already deleted count as deleted.
+         *
+         * @name deleteInboxMessages
+         * @param token access token (JWT in a strictly predefined format) required for current user to have access to the Inbox messages
+         * @param externalUserId External User ID is meant to be an ID of a user in an external (non-Infobip) service
+         * @param messageIds list of inbox message identifiers to delete
+         * @param callback will be called on success
+         * @param {Function} errorCallback will be called on error
+         */
+        deleteInboxMessages(token: string, externalUserId: string, messageIds: string[], callback: () => void, errorCallback: (error: MobileMessagingError) => void): void;
+
+        /**
+         * Delete inbox messages. Messages that are missing or already deleted count as deleted.
+         *
+         * @name deleteInboxMessagesWithoutToken
+         * @param externalUserId External User ID is meant to be an ID of a user in an external (non-Infobip) service
+         * @param messageIds list of inbox message identifiers to delete
+         * @param callback will be called on success
+         * @param {Function} errorCallback will be called on error
+         */
+        deleteInboxMessagesWithoutToken(externalUserId: string, messageIds: string[], callback: () => void, errorCallback: (error: MobileMessagingError) => void): void;
 
         /**
          * Set inbox messages as seen.

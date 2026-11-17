@@ -37,22 +37,6 @@ extension MM_MTMessage {
 
 }
 
-extension MMInbox {
-    func dictionary() -> [String: Any] {
-        var result = [String: Any]()
-        result["countTotal"] = countTotal
-        result["countUnread"] = countUnread
-        if let countTotalFiltered = countTotalFiltered {
-            result["countTotalFiltered"] = countTotalFiltered
-        }
-        if let countUnreadFiltered = countUnreadFiltered {
-            result["countUnreadFiltered"] = countUnreadFiltered
-        }
-        result["messages"] = messages.map({ return $0.dictionaryRepresentation })
-        return result
-    }
-}
-
 extension MMBaseMessage {
     class func createFrom(dictionary: [String: Any]) -> MMBaseMessage? {
         guard let messageId = dictionary["messageId"] as? String,

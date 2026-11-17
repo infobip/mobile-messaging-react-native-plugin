@@ -18,6 +18,17 @@ const RNMMWebRTCUI = require('./specs/NativeRNMMWebRTCUI').default;
 
 export { default as ChatView, ChatViewHandle, ChatViewProps } from './components/ChatView';
 
+function validateInboxMessageIds(messageIds, onError) {
+    if (Array.isArray(messageIds) && [...messageIds].every(messageId => typeof messageId === 'string')) {
+        return true;
+    }
+    onError({
+        code: '20013',
+        description: 'Message identifiers must be an array of strings.',
+    });
+    return false;
+}
+
 /**
  * Constructor
  */
@@ -294,10 +305,12 @@ class MobileMessaging {
      * {
      *   fromDateTime: <String; filter messages received after this datetime in ISO8601 format with timezone, e.g. "2024-03-11T12:00:00+01:00">,
      *   toDateTime: <String; filter messages received before this datetime in ISO8601 format with timezone, e.g. "2024-03-20T12:00:00+01:00">,
-     *   topic: <String; filter messages by a single topic. Mutually exclusive with 'topics'>,
-     *   topics: <Array<String>; filter messages by multiple topics, e.g. ["topic1", "topic2"]. Mutually exclusive with 'topic'>,
-     *   limit: <Number; maximum number of messages to return. Default is 20 for standard/single-topic fetches. When using 'topics', no default limit is applied unless explicitly provided, and the limit applies to the total returned messages, not per topic>,
+     *   topic: <String; filter messages by a single topic. Use either 'topic' or 'topics'; a non-null 'topic' takes precedence>,
+     *   topics: <Array<String>; filter messages by multiple topics, e.g. ["topic1", "topic2"]. Ignored when 'topic' is non-null>,
+     *   limit: <Number; maximum number of matching messages to return. Defaults to 20 for standard/single-topic fetches. With 'topics', a positive limit applies after local filtering; see the Inbox wiki for multi-topic limitations>,
+     *   cursor: <String; 'nextCursor' of the previous page to fetch the next page, omit or pass null to fetch the first page. Keep 'fromDateTime', 'toDateTime' and 'topic' unchanged between pages. Not supported with client-side 'topics' filtering>,
      * }
+     * @see https://github.com/infobip/mobile-messaging-react-native-plugin/wiki/Inbox
      * @param onSuccess will be called on success
      * @param {Function} onError will be called on error
      */
@@ -314,15 +327,50 @@ class MobileMessaging {
      * {
      *   fromDateTime: <String; filter messages received after this datetime in ISO8601 format with timezone, e.g. "2024-03-11T12:00:00+01:00">,
      *   toDateTime: <String; filter messages received before this datetime in ISO8601 format with timezone, e.g. "2024-03-20T12:00:00+01:00">,
-     *   topic: <String; filter messages by a single topic. Mutually exclusive with 'topics'>,
-     *   topics: <Array<String>; filter messages by multiple topics, e.g. ["topic1", "topic2"]. Mutually exclusive with 'topic'>,
-     *   limit: <Number; maximum number of messages to return. Default is 20 for standard/single-topic fetches. When using 'topics', no default limit is applied unless explicitly provided, and the limit applies to the total returned messages, not per topic>,
+     *   topic: <String; filter messages by a single topic. Use either 'topic' or 'topics'; a non-null 'topic' takes precedence>,
+     *   topics: <Array<String>; filter messages by multiple topics, e.g. ["topic1", "topic2"]. Ignored when 'topic' is non-null>,
+     *   limit: <Number; maximum number of matching messages to return. Defaults to 20 for standard/single-topic fetches. With 'topics', a positive limit applies after local filtering; see the Inbox wiki for multi-topic limitations>,
+     *   cursor: <String; 'nextCursor' of the previous page to fetch the next page, omit or pass null to fetch the first page. Keep 'fromDateTime', 'toDateTime' and 'topic' unchanged between pages. Not supported with client-side 'topics' filtering>,
      * }
+     * @see https://github.com/infobip/mobile-messaging-react-native-plugin/wiki/Inbox
      * @param onSuccess will be called on success
      * @param {Function} onError will be called on error
      */
     fetchInboxMessagesWithoutToken(externalUserId, filterOptions, onSuccess  = function() {}, onError = function() {}) {
         ReactNativeMobileMessaging.fetchInboxMessagesWithoutToken(externalUserId, filterOptions, onSuccess, onError);
+    };
+
+    /**
+     * Delete inbox messages. Messages that are missing or already deleted count as deleted.
+     *
+     * @name deleteInboxMessages
+     * @param token access token (JWT in a strictly predefined format) required for current user to have access to the Inbox messages
+     * @param externalUserId External User ID is meant to be an ID of a user in an external (non-Infobip) service
+     * @param {Array<string>} messageIds array of inbox message IDs to delete
+     * @param onSuccess will be called on success
+     * @param {Function} onError will be called on error
+     */
+    deleteInboxMessages(token, externalUserId, messageIds, onSuccess = function() {}, onError = function() {}) {
+        if (!validateInboxMessageIds(messageIds, onError)) {
+            return;
+        }
+        ReactNativeMobileMessaging.deleteInboxMessages(token, externalUserId, messageIds, onSuccess, onError);
+    };
+
+    /**
+     * Delete inbox messages. Messages that are missing or already deleted count as deleted.
+     *
+     * @name deleteInboxMessagesWithoutToken
+     * @param externalUserId External User ID is meant to be an ID of a user in an external (non-Infobip) service
+     * @param {Array<string>} messageIds array of inbox message IDs to delete
+     * @param onSuccess will be called on success
+     * @param {Function} onError will be called on error
+     */
+    deleteInboxMessagesWithoutToken(externalUserId, messageIds, onSuccess = function() {}, onError = function() {}) {
+        if (!validateInboxMessageIds(messageIds, onError)) {
+            return;
+        }
+        ReactNativeMobileMessaging.deleteInboxMessagesWithoutToken(externalUserId, messageIds, onSuccess, onError);
     };
 
     /**

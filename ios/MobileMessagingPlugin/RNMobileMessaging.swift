@@ -273,36 +273,73 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
     
     @objc(fetchInboxMessages:externalUserId:inboxFilterOptions:onSuccess:onError:)
     func fetchInboxMessages(token: String, externalUserId: String, inboxFilterOptions: NSDictionary, onSuccess: @escaping RCTResponseSenderBlock, onError: @escaping RCTResponseSenderBlock) {
+        guard let inboxService = MobileMessaging.inbox else {
+            onError([NSError(type: .InboxNotInitialized).reactNativeObject])
+            return
+        }
         var filteringOptions: MMInboxFilterOptions? = nil
         if let inboxFilterOptionsDictionary = inboxFilterOptions as? [String: Any] {
             let inboxFilterOptions = MMInboxFilterOptions(dictRepresentation: inboxFilterOptionsDictionary)
             filteringOptions = inboxFilterOptions
         }
-        MobileMessaging.inbox?.fetchInbox(token: token, externalUserId: externalUserId, options: filteringOptions, completion: { (inbox, error) in
+        inboxService.fetchInbox(token: token, externalUserId: externalUserId, options: filteringOptions, completion: { (inbox, error) in
             if let error = error {
                 onError([error.reactNativeObject])
             } else {
-                onSuccess([inbox?.dictionary() ?? [:]])
+                onSuccess([inbox?.dictionaryRepresentation ?? [:]])
             }
         })
     }
     
     @objc(fetchInboxMessagesWithoutToken:inboxFilterOptions:onSuccess:onError:)
     func fetchInboxMessagesWithoutToken(externalUserId: String, inboxFilterOptions: NSDictionary, onSuccess: @escaping RCTResponseSenderBlock, onError: @escaping RCTResponseSenderBlock) {
+        guard let inboxService = MobileMessaging.inbox else {
+            onError([NSError(type: .InboxNotInitialized).reactNativeObject])
+            return
+        }
         var filteringOptions: MMInboxFilterOptions? = nil
         if let inboxFilterOptionsDictionary = inboxFilterOptions as? [String: Any] {
             let inboxFilterOptions = MMInboxFilterOptions(dictRepresentation: inboxFilterOptionsDictionary)
             filteringOptions = inboxFilterOptions
         }
-        MobileMessaging.inbox?.fetchInbox(externalUserId: externalUserId, options: filteringOptions, completion: { (inbox, error) in
+        inboxService.fetchInbox(externalUserId: externalUserId, options: filteringOptions, completion: { (inbox, error) in
             if let error = error {
                 onError([error.reactNativeObject])
             } else {
-                onSuccess([inbox?.dictionary() ?? [:]])
+                onSuccess([inbox?.dictionaryRepresentation ?? [:]])
             }
         })
     }
     
+    @objc(deleteInboxMessages:externalUserId:messageIds:onSuccess:onError:)
+    func deleteInboxMessages(token: String, externalUserId: String, messageIds: [String], onSuccess: @escaping RCTResponseSenderBlock, onError: @escaping RCTResponseSenderBlock) {
+        deleteInboxMessages(token: token, externalUserId: externalUserId, messageIds: messageIds, success: onSuccess, failure: onError)
+    }
+
+    @objc(deleteInboxMessagesWithoutToken:messageIds:onSuccess:onError:)
+    func deleteInboxMessagesWithoutToken(externalUserId: String, messageIds: [String], onSuccess: @escaping RCTResponseSenderBlock, onError: @escaping RCTResponseSenderBlock) {
+        deleteInboxMessages(token: nil, externalUserId: externalUserId, messageIds: messageIds, success: onSuccess, failure: onError)
+    }
+
+    private func deleteInboxMessages(token: String?, externalUserId: String, messageIds: [String], success: @escaping RCTResponseSenderBlock, failure: @escaping RCTResponseSenderBlock) {
+        guard let inboxService = MobileMessaging.inbox else {
+            failure([NSError(type: .InboxNotInitialized).reactNativeObject])
+            return
+        }
+        Task { @MainActor in
+            do {
+                if let token = token {
+                    try await inboxService.deleteMessages(token: token, externalUserId: externalUserId, messageIds: messageIds)
+                } else {
+                    try await inboxService.deleteMessages(externalUserId: externalUserId, messageIds: messageIds)
+                }
+                success([])
+            } catch {
+                failure([(error as NSError).reactNativeObject])
+            }
+        }
+    }
+
     @objc(setInboxMessagesSeen:messages:onSuccess:onError:)
     func setInboxMessagesSeen(externalUserId: String, messages: [String]?, onSuccess: @escaping RCTResponseSenderBlock, onError: @escaping RCTResponseSenderBlock) {
         guard let messagesIDs = messages else
@@ -310,7 +347,11 @@ class ReactNativeMobileMessaging: RCTEventEmitter  {
             onError([NSError(type: .InvalidArguments).reactNativeObject])
             return
         }
-        MobileMessaging.inbox?.setSeen(externalUserId: externalUserId, messageIds: messagesIDs, completion: { (error) in
+        guard let inboxService = MobileMessaging.inbox else {
+            onError([NSError(type: .InboxNotInitialized).reactNativeObject])
+            return
+        }
+        inboxService.setSeen(externalUserId: externalUserId, messageIds: messagesIDs, completion: { (error) in
             if let error = error {
                 onError([error.reactNativeObject])
             } else {

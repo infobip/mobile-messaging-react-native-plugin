@@ -915,7 +915,41 @@ class ReactNativeMobileMessagingService(
                         errorCallback.invoke(Utils.callbackError("Error converting inbox result: ${e.message}", null))
                     }
                 } else {
-                    errorCallback.invoke(Utils.callbackError(result.error.message, null))
+                    errorCallback.invoke(Utils.callbackErrorWithStringErrorCode(result.error.message, result.error.code))
+                }
+            }
+        }
+    }
+
+    fun deleteInboxMessages(token: String, externalUserId: String, args: ReadableArray, successCallback: Callback, errorCallback: Callback) {
+        RNMMLogger.d(Utils.TAG, "Delete inbox messages with token...")
+        try {
+            val messageIds = convertReadableArrayToStringArray(args)
+            mobileMessagingInbox.deleteMessages(token, externalUserId, messageIds, deleteResultListener(successCallback, errorCallback))
+        } catch (e: Exception) {
+            RNMMLogger.e(Utils.TAG, "Error deleting inbox messages: ${e.message}", e)
+            errorCallback.invoke(Utils.callbackError("Error deleting inbox messages: ${e.message}", null))
+        }
+    }
+
+    fun deleteInboxMessagesWithoutToken(externalUserId: String, args: ReadableArray, successCallback: Callback, errorCallback: Callback) {
+        RNMMLogger.d(Utils.TAG, "Delete inbox messages without token...")
+        try {
+            val messageIds = convertReadableArrayToStringArray(args)
+            mobileMessagingInbox.deleteMessages(externalUserId, messageIds, deleteResultListener(successCallback, errorCallback))
+        } catch (e: Exception) {
+            RNMMLogger.e(Utils.TAG, "Error deleting inbox messages: ${e.message}", e)
+            errorCallback.invoke(Utils.callbackError("Error deleting inbox messages: ${e.message}", null))
+        }
+    }
+
+    private fun deleteResultListener(successCallback: Callback, errorCallback: Callback): MobileMessaging.ResultListener<Void> {
+        return object : MobileMessaging.ResultListener<Void>() {
+            override fun onResult(result: Result<Void, MobileMessagingError>) {
+                if (result.isSuccess) {
+                    successCallback.invoke()
+                } else {
+                    errorCallback.invoke(Utils.callbackErrorWithStringErrorCode(result.error.message, result.error.code))
                 }
             }
         }
