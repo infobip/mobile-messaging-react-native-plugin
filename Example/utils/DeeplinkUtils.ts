@@ -5,9 +5,27 @@
 //  Copyright (c) 2016-2026 Infobip Limited
 //  Licensed under the Apache License, Version 2.0
 //
+
+import {URL} from 'react-native-url-polyfill';
+import type {RootStackParamList} from '../constants/RootStackParamList';
+
 // The iOS SDK fires actionTapped for dismiss actions too (swipe-away or in-app close button).
 // Reject those so a deeplink is never opened on dismissal.
 const IOS_DISMISS_ACTION_ID = 'com.apple.UNNotificationDismissActionIdentifier';
+
+// Must match the scheme registered in AndroidManifest.xml and Info.plist.
+const DEEPLINK_SCHEME = 'com.infobip.mobilemessaging:';
+
+type DeeplinkScreen = keyof RootStackParamList;
+
+// Only these path segments open a screen; anything else in a deeplink is ignored.
+const deeplinkScreens = new Map<string, DeeplinkScreen>([
+  ['TestDeeplinkingScreen', 'TestDeeplinkingScreen'],
+  ['TestDeeplinkingScreen2', 'TestDeeplinkingScreen2'],
+  ['InboxScreen', 'InboxScreen'],
+  ['testdeeplinking', 'TestDeeplinkingScreen'],
+  ['testdeeplinking2', 'TestDeeplinkingScreen2'],
+]);
 
 export function getDeeplinkFromTapEvent(
   eventData: unknown,
@@ -27,4 +45,24 @@ export function getDeeplinkFromTapEvent(
     return undefined;
   }
   return message.deeplink;
+}
+
+/**
+ * Returns the screens to open, in order, for a deeplink such as
+ * com.infobip.mobilemessaging://deeplink/TestDeeplinkingScreen/TestDeeplinkingScreen2.
+ */
+export function getDeeplinkScreens(deeplink: string): DeeplinkScreen[] {
+  let url: URL;
+  try {
+    url = new URL(deeplink);
+  } catch {
+    return [];
+  }
+  if (url.protocol !== DEEPLINK_SCHEME) {
+    return [];
+  }
+  return url.pathname
+    .split('/')
+    .map(segment => deeplinkScreens.get(segment))
+    .filter((screen): screen is DeeplinkScreen => screen !== undefined);
 }

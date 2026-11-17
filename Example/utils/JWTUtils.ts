@@ -7,9 +7,9 @@
 //
 
 import 'react-native-get-random-values';
-import { v4 as uuidv4 } from 'uuid';
+import {v4 as uuidv4} from 'uuid';
 import CryptoJS from 'crypto-js';
-import { SubjectType } from '../constants/SubjectType';
+import {SubjectType} from '../constants/SubjectType';
 
 export interface JWTConfig {
   keyid: string;
@@ -18,7 +18,7 @@ export interface JWTConfig {
   externalPersonId: string;
 }
 
-// Test configuration for JWT generation
+/** Demo only: a production app gets user tokens from its own backend and never ships the signing secret. */
 export const testConfig: JWTConfig = {
   keyid: '',
   secretKeyHex: '',
@@ -87,11 +87,7 @@ function createJWTManually(
     .replace(/=/g, '');
 
   // Combine all parts
-  const jwt = `${encodedHeader}.${encodedPayload}.${encodedSignature}`;
-
-  console.log('JWT:', jwt);
-
-  return jwt;
+  return `${encodedHeader}.${encodedPayload}.${encodedSignature}`;
 }
 
 /**
@@ -100,10 +96,7 @@ function createJWTManually(
 function base64URLEncode(str: string): string {
   // First encode to base64, then convert to base64url
   const base64 = btoa(str);
-  return base64
-    .replace(/\+/g, '-')
-    .replace(/\//g, '_')
-    .replace(/=/g, '');
+  return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
 }
 
 export async function generateSignedJWT(
@@ -112,7 +105,12 @@ export async function generateSignedJWT(
   applicationCode: string,
   externalPersonId: string,
 ): Promise<string> {
-  return createJWTManually(keyid, secretKeyHex, applicationCode, externalPersonId);
+  return createJWTManually(
+    keyid,
+    secretKeyHex,
+    applicationCode,
+    externalPersonId,
+  );
 }
 
 export async function generateChatJWT(

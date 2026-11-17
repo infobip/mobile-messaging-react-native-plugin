@@ -2,85 +2,108 @@
 //  MyMessageStorage.ts
 //  MobileMessagingReactNative
 //
-//  Copyright (c) 2016-2025 Infobip Limited
+//  Copyright (c) 2016-2026 Infobip Limited
 //  Licensed under the Apache License, Version 2.0
 //
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import type {Message, CustomMessageStorage} from 'infobip-mobile-messaging-react-native-plugin';
+import type {MobileMessagingReactNative} from 'infobip-mobile-messaging-react-native-plugin';
 
-const MyMessageStorage: CustomMessageStorage = {
+type Message = MobileMessagingReactNative.Message;
+
+// A key prefix keeps messages apart from anything else the app stores in AsyncStorage.
+const KEY_PREFIX = 'mm-message:';
+const keyFor = (messageId: string) => KEY_PREFIX + messageId;
+
+async function getMessageKeys(): Promise<string[]> {
+  const keys = await AsyncStorage.getAllKeys();
+  return keys.filter(key => key.startsWith(KEY_PREFIX));
+}
+
+function parseMessage(value: string | null): Message | null {
+  if (!value) {
+    return null;
+  }
+  try {
+    const message = JSON.parse(value) as Partial<Message>;
+    return typeof message.messageId === 'string' ? (message as Message) : null;
+  } catch {
+    return null;
+  }
+}
+
+// Storage operations run one at a time in call order: reads see messages saved just before them,
+// and markSeen cannot write back a message that a concurrent delete removed.
+let pendingOperation: Promise<unknown> = Promise.resolve();
+function runInOrder<T>(operation: () => Promise<T>): Promise<T> {
+  const result = pendingOperation.then(operation);
+  pendingOperation = result.catch(() => undefined);
+  return result;
+}
+
+async function loadAll(): Promise<Message[]> {
+  const entries = await AsyncStorage.multiGet(await getMessageKeys());
+  return entries
+    .map(([, value]) => parseMessage(value))
+    .filter((message): message is Message => message !== null);
+}
+
+/**
+ * Custom message storage passed to `mobileMessaging.init` as `messageStorage`.
+ * The SDK calls start, stop, save, find and findAll; the app uses findAll, markSeen, delete and deleteAll.
+ */
+const MyMessageStorage = {
+  start() {},
+
+  stop() {},
+
   save(messages: Message[]) {
-    for (const message of messages) {
-      AsyncStorage.setItem(message.messageId, JSON.stringify(message));
-    }
-    console.log('[CustomStorage] Saving messages: ' + JSON.stringify(messages));
+    runInOrder(() =>
+      AsyncStorage.multiSet(
+        messages.map(message => [
+          keyFor(message.messageId),
+          JSON.stringify(message),
+        ]),
+      ),
+    ).catch(error =>
+      console.warn('[MyMessageStorage] Saving messages failed', error),
+    );
   },
 
-  async find(messageId: string, callback: (message: Message | null) => void): Promise<void> {
-    console.log('[CustomStorage] Find message: ' + messageId);
-    try {
-      const messageString = await AsyncStorage.getItem(messageId);
-      if (messageString) {
-        console.log('[CustomStorage] Found message: ' + messageString);
-        const message: Message = JSON.parse(messageString);
-        callback(message);
-      } else {
-        console.log('[CustomStorage] Message not found');
-        callback(null);
+  find(messageId: string, callback: (message: Message | null) => void) {
+    runInOrder(() => AsyncStorage.getItem(keyFor(messageId)))
+      .then(value => callback(parseMessage(value)))
+      .catch(() => callback(null));
+  },
+
+  findAll(callback: (messages: Message[]) => void) {
+    runInOrder(loadAll)
+      .then(callback)
+      .catch(() => callback([]));
+  },
+
+  markSeen(messageId: string): Promise<void> {
+    return runInOrder(async () => {
+      const message = parseMessage(
+        await AsyncStorage.getItem(keyFor(messageId)),
+      );
+      if (message) {
+        await AsyncStorage.setItem(
+          keyFor(messageId),
+          JSON.stringify({...message, seen: true, seenDate: Date.now()}),
+        );
       }
-    } catch (error) {
-      console.log('[CustomStorage] Error finding message: ', error);
-      callback(null);
-    }
-  },
-
-  findAll(callback: (messages: Message[]) => void): void {
-    console.log('[CustomStorage] Find all');
-    this.getAllMessages((messages: Message[]) => {
-      console.log('[CustomStorage] Find all messages result: ', messages);
-      callback(messages);
     });
   },
 
-  start() {
-    console.log('[CustomStorage] Start');
+  delete(messageId: string): Promise<void> {
+    return runInOrder(() => AsyncStorage.removeItem(keyFor(messageId)));
   },
 
-  stop() {
-    console.log('[CustomStorage] Stop');
-  },
-
-  getAllMessages(callback: (messages: Message[]) => void): void {
-    AsyncStorage.getAllKeys()
-      .then((keys) => {
-        console.log('[CustomStorage] All Keys: ', keys);
-        return AsyncStorage.multiGet(keys);
-      })
-      .then((stores) => {
-        console.log('[CustomStorage] All Values: ', stores);
-        const messages: Message[] = stores
-          .map(([_, value]) => {
-            if (!value) {
-              return null;
-            }
-            try {
-              const parsed = JSON.parse(value) as Partial<Message>;
-              if (parsed && typeof parsed.messageId === 'string') {
-                return parsed as Message;
-              }
-            } catch (error) {
-              console.log('[CustomStorage] Failed to parse message: ', error);
-            }
-            return null;
-          })
-          .filter((message): message is Message => message !== null);
-        callback(messages);
-      })
-      .catch((error) => {
-        console.log('[CustomStorage] Error: ', error);
-        callback([]);
-      });
+  deleteAll(): Promise<void> {
+    return runInOrder(async () =>
+      AsyncStorage.multiRemove(await getMessageKeys()),
+    );
   },
 };
 

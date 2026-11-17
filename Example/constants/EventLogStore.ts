@@ -18,11 +18,14 @@ export type EventLogEntry = {
 const STORAGE_KEY = 'eventlog:entries';
 const MAX_ENTRIES = 500;
 let writeQueue: Promise<void> = Promise.resolve();
+const changeListeners = new Set<() => void>();
+
+function notifyChange() {
+  changeListeners.forEach(listener => listener());
+}
 
 function enqueueWrite(task: () => Promise<void>): Promise<void> {
-  const next = writeQueue
-    .catch(() => {})
-    .then(task);
+  const next = writeQueue.catch(() => {}).then(task);
 
   writeQueue = next.then(
     () => undefined,
@@ -39,7 +42,7 @@ async function readAll(): Promise<EventLogEntry[]> {
     const parsed = JSON.parse(raw);
     if (Array.isArray(parsed)) return parsed as EventLogEntry[];
     return [];
-  } catch (e) {
+  } catch {
     return [];
   }
 }
@@ -47,11 +50,9 @@ async function readAll(): Promise<EventLogEntry[]> {
 async function writeAll(entries: EventLogEntry[]): Promise<void> {
   try {
     // Cap entries and persist
-    const trimmed = entries
-      .sort((a, b) => b.ts - a.ts)
-      .slice(0, MAX_ENTRIES);
+    const trimmed = entries.sort((a, b) => b.ts - a.ts).slice(0, MAX_ENTRIES);
     await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(trimmed));
-  } catch (e) {
+  } catch {
     // no-op
   }
 }
@@ -69,6 +70,7 @@ export const EventLogStore = {
       all.unshift(entry);
       await writeAll(all);
     });
+    notifyChange();
   },
 
   async list(): Promise<EventLogEntry[]> {
@@ -80,10 +82,19 @@ export const EventLogStore = {
     await enqueueWrite(async () => {
       try {
         await AsyncStorage.removeItem(STORAGE_KEY);
-      } catch (e) {
+      } catch {
         // no-op
       }
     });
+    notifyChange();
+  },
+
+  /** Calls `listener` after every add or clear. Returns the unsubscribe function. */
+  subscribe(listener: () => void): () => void {
+    changeListeners.add(listener);
+    return () => {
+      changeListeners.delete(listener);
+    };
   },
 };
 

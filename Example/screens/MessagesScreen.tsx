@@ -2,312 +2,249 @@
 //  MessagesScreen.tsx
 //  MobileMessagingReactNative
 //
-//  Copyright (c) 2016-2025 Infobip Limited
+//  Copyright (c) 2016-2026 Infobip Limited
 //  Licensed under the Apache License, Version 2.0
 //
 
 import React, {useCallback, useEffect, useState} from 'react';
 import {
-  Alert,
   FlatList,
-  Linking,
+  Pressable,
   RefreshControl,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from 'react-native';
-import {
-  mobileMessaging,
-} from 'infobip-mobile-messaging-react-native-plugin';
-import type {
-  Message,
-  DefaultMessageStorage,
-} from 'infobip-mobile-messaging-react-native-plugin';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import {mobileMessaging} from 'infobip-mobile-messaging-react-native-plugin';
+import type {MobileMessagingReactNative} from 'infobip-mobile-messaging-react-native-plugin';
+import EmptyState from '../components/EmptyState';
+import MessageCard from '../components/MessageCard';
+import MessageDetailsSheet from '../components/MessageDetailsSheet';
+import Notice from '../components/Notice';
 import Colors from '../constants/Colors';
-import PrimaryButton from '../components/PrimaryButton';
-import MyMessageStorage from '../constants/MyMessageStorage.ts';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import MyMessageStorage from '../constants/MyMessageStorage';
+import {errorFeedback} from '../utils/feedback';
+import type {Feedback} from '../utils/feedback';
+import {countLabel, formatDateTime, toTimestampMs} from '../utils/format';
+
+type Message = MobileMessagingReactNative.Message;
+
+type ReceivedMessageStore = {
+  findAll(): Promise<Message[]>;
+  markSeen(messageId: string): Promise<void>;
+  delete(messageId: string): Promise<void>;
+  deleteAll(): Promise<void>;
+};
+
+/**
+ * Received messages are kept by the SDK's default storage when `defaultMessageStorage: true` is configured,
+ * otherwise by the custom `messageStorage` passed to init, here MyMessageStorage.
+ */
+function getReceivedMessageStore(): ReceivedMessageStore {
+  const defaultStorage = mobileMessaging.defaultMessageStorage();
+  if (!defaultStorage) {
+    return {
+      findAll: () => new Promise(resolve => MyMessageStorage.findAll(resolve)),
+      markSeen: MyMessageStorage.markSeen,
+      delete: MyMessageStorage.delete,
+      deleteAll: MyMessageStorage.deleteAll,
+    };
+  }
+  return {
+    findAll: () =>
+      new Promise((resolve, reject) => defaultStorage.findAll(resolve, reject)),
+    // The SDK updates its default storage itself when messages are marked as seen.
+    markSeen: () => Promise.resolve(),
+    delete: messageId =>
+      new Promise((resolve, reject) =>
+        defaultStorage.delete(messageId, resolve, reject),
+      ),
+    deleteAll: () =>
+      new Promise((resolve, reject) =>
+        defaultStorage.deleteAll(resolve, reject),
+      ),
+  };
+}
+
+const newestFirst = (a: Message, b: Message) =>
+  (toTimestampMs(b.receivedTimestamp) ?? 0) -
+  (toTimestampMs(a.receivedTimestamp) ?? 0);
+
+const storageFailed = (title: string): Feedback => ({
+  tone: 'error',
+  title,
+  message: 'Message storage request failed.',
+});
 
 const MessagesScreen: React.FC = () => {
+  const {bottom: bottomInset} = useSafeAreaInsets();
   const [messages, setMessages] = useState<Message[]>([]);
   const [refreshing, setRefreshing] = useState(false);
-  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [detailsId, setDetailsId] = useState<string>();
+  const [feedback, setFeedback] = useState<Feedback>();
 
-  const sortMessages = (msgs: Message[]) => {
-    return (msgs || [])
-      .filter(m => m && m.messageId && typeof m.body !== 'undefined')
-      .sort(
-        (a, b) =>
-          (normalizeMs(b.receivedTimestamp ?? null) ?? 0) -
-          (normalizeMs(a.receivedTimestamp ?? null) ?? 0),
-      );
-  };
-
-  const loadMessages = useCallback(() => {
-    const defaultStorage: DefaultMessageStorage | undefined =
-      // @ts-ignore RN SDK exposes function returning storage API when enabled
-      (mobileMessaging as any).defaultMessageStorage?.();
-
-    if (defaultStorage) {
-      defaultStorage.findAll(
-        msgs => setMessages(sortMessages(msgs)),
-        () => setMessages([]),
-      );
-      return;
+  const loadMessages = useCallback(async () => {
+    try {
+      const stored = await getReceivedMessageStore().findAll();
+      setMessages(stored.slice().sort(newestFirst));
+    } catch {
+      setFeedback(storageFailed('Loading messages failed'));
     }
-
-    MyMessageStorage.findAll(msgs => {
-      setMessages(sortMessages(msgs));
-    });
   }, []);
 
   useEffect(() => {
     loadMessages();
-    const sub1 = mobileMessaging.subscribe('messageReceived', () =>
-      loadMessages(),
+    const subscriptions = ['messageReceived', 'notificationTapped'].map(event =>
+      mobileMessaging.subscribe(event, loadMessages),
     );
-    const sub2 = mobileMessaging.subscribe('notificationTapped', () =>
-      loadMessages(),
-    );
-    return () => {
-      mobileMessaging.unsubscribe(sub1);
-      mobileMessaging.unsubscribe(sub2);
-    };
+    return () =>
+      subscriptions.forEach(subscription =>
+        mobileMessaging.unsubscribe(subscription),
+      );
   }, [loadMessages]);
 
-  const onRefresh = () => {
+  const refresh = async () => {
     setRefreshing(true);
-    loadMessages();
-    setTimeout(() => setRefreshing(false), 800);
+    await loadMessages();
+    setRefreshing(false);
   };
 
-  const toggleExpand = (id: string) => {
-    setExpandedId(prev => (prev === id ? null : id));
-  };
-
-  const openLink = async (url?: string) => {
-    if (!url) return;
-    try {
-      await Linking.openURL(url);
-    } catch (e) {
-      Alert.alert('Open URL failed', String(e));
-    }
-  };
-
-  const markSeen = (m: Message) => {
+  const markSeen = (messageId: string) => {
     mobileMessaging.markMessagesSeen(
-      [m.messageId],
+      [messageId],
       () => {
-        const updated = {...m, seen: true, seenDate: Date.now()};
-        AsyncStorage.setItem(m.messageId, JSON.stringify(updated)).finally(
-          loadMessages,
-        );
+        getReceivedMessageStore()
+          .markSeen(messageId)
+          .catch(() => setFeedback(storageFailed('Saving seen status failed')))
+          .finally(loadMessages);
       },
-      err => {
-        Alert.alert('Mark seen failed', err?.description || 'Unknown error');
-      },
+      error => setFeedback(errorFeedback('Mark as seen failed', error)),
     );
   };
 
-  const deleteMessage = (m: Message) => {
-    const defaultStorage: DefaultMessageStorage | undefined =
-      // @ts-ignore RN SDK exposes function returning storage API when enabled
-      (mobileMessaging as any).defaultMessageStorage?.();
-
-    if (defaultStorage) {
-      defaultStorage.delete(m.messageId, () => loadMessages(), () => loadMessages());
-      return;
-    }
-    AsyncStorage.removeItem(m.messageId).then(loadMessages);
+  const deleteMessage = (messageId: string) => {
+    getReceivedMessageStore()
+      .delete(messageId)
+      .catch(() => setFeedback(storageFailed('Delete failed')))
+      .finally(loadMessages);
   };
 
-  const clearAll = () => {
-    const defaultStorage: DefaultMessageStorage | undefined =
-      // @ts-ignore RN SDK exposes function returning storage API when enabled
-      (mobileMessaging as any).defaultMessageStorage?.();
-
-    if (defaultStorage) {
-      defaultStorage.deleteAll(() => setMessages([]), () => setMessages([]));
-      return;
-    }
-    MyMessageStorage.findAll(msgs => {
-      const ids = (msgs || [])
-        .map(m => m.messageId)
-        .filter((id): id is string => typeof id === 'string' && id.length > 0);
-      Promise.all(ids.map(id => AsyncStorage.removeItem(id))).then(() => {
-        setMessages([]);
-      });
-    });
+  const deleteAll = () => {
+    getReceivedMessageStore()
+      .deleteAll()
+      .catch(() => setFeedback(storageFailed('Delete failed')))
+      .finally(loadMessages);
   };
 
-  const renderItem = ({item}: {item: Message}) => {
-    const isExpanded = expandedId === item.messageId;
-    return (
-      <TouchableOpacity
-        onPress={() => toggleExpand(item.messageId)}
-        style={styles.card}>
-        <View style={styles.rowHeader}>
-          <Text style={styles.title}>{item.title || '(No title)'}</Text>
-        </View>
-        <Text style={styles.body} numberOfLines={isExpanded ? 0 : 2}>
-          {item.body || ''}
-        </Text>
-        <View style={styles.timeRow}>
-          <Text style={styles.timestamp}>
-            {formatTimestamp(normalizeMs(item.receivedTimestamp ?? null))}
+  const renderMessage = ({item}: {item: Message}) => (
+    <MessageCard
+      title={item.title}
+      body={item.body}
+      time={formatDateTime(toTimestampMs(item.receivedTimestamp))}
+      seen={Boolean(item.seen)}
+      onPress={() => setDetailsId(item.messageId)}
+      swipeRightAction={
+        item.seen
+          ? undefined
+          : {
+              label: 'Mark as seen',
+              color: Colors.primary,
+              onTrigger: () => markSeen(item.messageId),
+            }
+      }
+      swipeLeftAction={{
+        label: 'Delete',
+        color: Colors.danger,
+        onTrigger: () => deleteMessage(item.messageId),
+      }}
+    />
+  );
+
+  const detailsMessage = messages.find(
+    message => message.messageId === detailsId,
+  );
+
+  const header = (
+    <View style={styles.header}>
+      <Text style={styles.description}>
+        Push messages received on this device, kept by the message storage
+        configured in mobileMessaging.init. Tap a message for details, swipe
+        right to mark it as seen or left to delete it.
+      </Text>
+      {feedback ? <Notice {...feedback} /> : null}
+      {messages.length ? (
+        <View style={styles.summary}>
+          <Text style={styles.summaryText}>
+            {countLabel(messages.length, 'message')}
           </Text>
-          {item.seen ? (
-            <Text style={styles.seen}>
-              <Text style={styles.seenIcon}>✓✓</Text> Seen
-            </Text>
-          ) : (
-            <Text style={styles.unseen}>Unseen</Text>
-          )}
+          <Pressable onPress={deleteAll} accessibilityRole="button" hitSlop={8}>
+            <Text style={styles.deleteAll}>Delete all</Text>
+          </Pressable>
         </View>
-        {isExpanded && (
-          <View style={styles.actions}>
-            {item.deeplink ? (
-              <PrimaryButton onPress={() => openLink(item.deeplink)}>
-                Open Deeplink
-              </PrimaryButton>
-            ) : null}
-            {item.contentUrl || item.webViewUrl ? (
-              <PrimaryButton
-                onPress={() => openLink(item.contentUrl || item.webViewUrl)}>
-                Open Content
-              </PrimaryButton>
-            ) : null}
-            <PrimaryButton onPress={() => markSeen(item)}>
-              {item.seen ? 'Mark Seen Again' : 'Mark Seen'}
-            </PrimaryButton>
-            <PrimaryButton onPress={() => deleteMessage(item)}>
-              Delete
-            </PrimaryButton>
-          </View>
-        )}
-      </TouchableOpacity>
-    );
-  };
+      ) : null}
+    </View>
+  );
 
   return (
-    <View style={styles.container}>
-      <View style={styles.toolbar}>
-        <Text style={styles.toolbarTitle}>Push Messages ({messages.length})</Text>
-        <TouchableOpacity onPress={clearAll} style={styles.headerAction}>
-          <Text style={styles.headerActionText}>Clear All</Text>
-        </TouchableOpacity>
-      </View>
+    <>
       <FlatList
         data={messages}
-        keyExtractor={m => m.messageId}
-        renderItem={renderItem}
-        contentContainerStyle={styles.listContent}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        keyExtractor={message => message.messageId}
+        renderItem={renderMessage}
+        ListHeaderComponent={header}
+        ListEmptyComponent={
+          <EmptyState
+            title="No messages yet"
+            description="Send a push message to this device and it appears here."
+          />
         }
-        ListEmptyComponent={<Text style={styles.empty}>No messages yet</Text>}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={refresh}
+            colors={[Colors.accent]}
+          />
+        }
+        contentContainerStyle={[styles.list, {paddingBottom: 16 + bottomInset}]}
       />
-    </View>
+      <MessageDetailsSheet
+        message={detailsMessage}
+        time={formatDateTime(toTimestampMs(detailsMessage?.receivedTimestamp))}
+        onClose={() => setDetailsId(undefined)}
+        onMarkSeen={markSeen}
+        onDelete={deleteMessage}
+      />
+    </>
   );
 };
 
-function normalizeMs(ts?: number | string | null): number | null {
-  if (typeof ts === 'number') {
-    return Number.isFinite(ts) && ts > 0 ? ts : null;
-  }
-  if (typeof ts === 'string') {
-    const n = Number(ts);
-    return Number.isFinite(n) && n > 0 ? n : null;
-  }
-  return null;
-}
-
-function formatTimestamp(ts?: number | null): string {
-  if (!ts || !Number.isFinite(ts)) return 'Unknown time';
-  const d = new Date(ts);
-  if (isNaN(d.getTime())) return 'Unknown time';
-  try {
-    const fmt = new Intl.DateTimeFormat(undefined, {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: false,
-    });
-    return fmt.format(d);
-  } catch (e) {
-    return d.toLocaleString(undefined, {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: false,
-    } as any);
-  }
-}
-
 const styles = StyleSheet.create({
-  container: {flex: 1, backgroundColor: Colors.tintWhite},
-  toolbar: {
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    backgroundColor: Colors.primary500,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+  list: {
+    padding: 16,
+    gap: 12,
   },
-  toolbarTitle: {color: Colors.tintWhite, fontSize: 16, fontWeight: 'bold'},
-  headerAction: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    backgroundColor: Colors.primary600,
-    borderRadius: 16,
+  header: {
+    gap: 12,
   },
-  headerActionText: {color: Colors.tintWhite, fontWeight: '600'},
-  listContent: {padding: 8},
-  card: {
-    backgroundColor: 'white',
-    borderRadius: 12,
-    padding: 12,
-    marginBottom: 10,
-    shadowColor: '#000',
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 1,
+  description: {
+    fontSize: 14,
+    lineHeight: 20,
+    color: Colors.textSecondary,
   },
-  rowHeader: {
+  summary: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  title: {
-    fontSize: 16,
+  summaryText: {
+    fontSize: 14,
+    color: Colors.textSecondary,
+  },
+  deleteAll: {
+    fontSize: 14,
     fontWeight: '600',
-    color: Colors.primaryGray,
-    flex: 1,
-    marginRight: 8,
-  },
-  body: {fontSize: 14, color: Colors.primaryGray, marginTop: 6},
-  timestamp: {fontSize: 12, color: '#777', marginTop: 6},
-  timeRow: {
-    marginTop: 6,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  actions: {marginTop: 10},
-  seen: {fontSize: 12, color: Colors.primaryGray},
-  seenIcon: {fontSize: 12, color: '#06ec3c', fontWeight: 'bold'},
-  unseen: {fontSize: 12, color: '#F44336'},
-  empty: {
-    textAlign: 'center',
-    color: Colors.primaryGray,
-    marginTop: 24,
+    color: Colors.dangerText,
   },
 });
 

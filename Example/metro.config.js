@@ -20,6 +20,7 @@ const pluginRoot = path.resolve(__dirname, '..');
 const config = {
   watchFolders: [pluginRoot],
   resolver: {
+    disableHierarchicalLookup: true,
     nodeModulesPaths: [
       path.resolve(__dirname, 'node_modules'),
       path.resolve(pluginRoot, 'node_modules'),

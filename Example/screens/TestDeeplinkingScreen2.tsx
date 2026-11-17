@@ -2,38 +2,18 @@
 //  TestDeeplinkingScreen2.tsx
 //  MobileMessagingReactNative
 //
-//  Copyright (c) 2016-2025 Infobip Limited
+//  Copyright (c) 2016-2026 Infobip Limited
 //  Licensed under the Apache License, Version 2.0
 //
 
 import React from 'react';
-import {StyleSheet, Text, View} from 'react-native';
-import Colors from "../constants/Colors.ts";
+import EmptyState from '../components/EmptyState';
 
-const TestDeeplinkingScreen2: React.FC = () => {
-  return (
-    <View style={styles.infoView}>
-      <Text style={styles.infoText}>
-        This screen was opened by the second deeplink
-      </Text>
-    </View>
-  );
-};
-
-const styles = StyleSheet.create({
-  infoText: {
-    margin: 5,
-    fontSize: 20,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    lineHeight: 40,
-    color: Colors.primaryGray,
-  },
-  infoView: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+const TestDeeplinkingScreen2: React.FC = () => (
+  <EmptyState
+    title="Opened by a deeplink"
+    description="Deeplink com.infobip.mobilemessaging://deeplink/TestDeeplinkingScreen2 opens this screen. Each path segment opens one more screen."
+  />
+);
 
 export default TestDeeplinkingScreen2;

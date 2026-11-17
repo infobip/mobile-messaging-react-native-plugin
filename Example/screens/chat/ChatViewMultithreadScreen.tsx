@@ -7,79 +7,70 @@
 //
 
 /*
-    Example of subview multithread in-app chat screen as React Component
+    Example of subview multithread in-app chat screen as React Component.
+    ChatView shows the SDK's default alert for chat errors. On Android you can handle them yourself
+    by passing a handler to chatViewRef.current?.setExceptionHandler once the view is mounted.
+    The iOS wrapper does not forward that handler yet.
  */
 
 import React, {useRef, useState, useEffect} from 'react';
-import { SafeAreaView } from 'react-native';
+import {SafeAreaView} from 'react-native-safe-area-context';
 import Colors from '../../constants/Colors';
-import PrimaryButton from '../../components/PrimaryButton';
-import { mobileMessaging, ChatView, ChatViewHandle, ChatException } from 'infobip-mobile-messaging-react-native-plugin';
-import { NavigationProp } from '@react-navigation/native';
+import type {ScreenProps} from '../../constants/RootStackParamList';
+import Button from '../../components/Button';
+import {
+  mobileMessaging,
+  ChatView,
+  ChatViewHandle,
+} from 'infobip-mobile-messaging-react-native-plugin';
 
-interface MultiThreadChatScreenProps {
-  navigation: NavigationProp<any>;
-}
-
-const ChatViewMultithreadScreen: React.FC<MultiThreadChatScreenProps> = ({
-  navigation,
-}) => {
+const ChatViewMultithreadScreen: React.FC<
+  ScreenProps<'ChatViewMultithreadScreen'>
+> = ({navigation}) => {
   const [showButton, setShowButton] = useState(false);
   const chatViewRef = useRef<ChatViewHandle>(null);
 
-  const setExceptionHandler = () => {
-    chatViewRef.current?.setExceptionHandler(
-      (exception: ChatException) =>
-        console.log(
-          'React app: ChatView exception received: ' + JSON.stringify(exception),
-        ),
-      (error: Error) =>
-        console.log('React app: ChatView exception handler error: ' + error),
-    );
-  };
-
   useEffect(() => {
+    const handleViewStateChangeEvent = (value: any) => {
+      if (typeof value !== 'undefined' && value != null) {
+        const view = String(value).split(',').pop()?.trim();
+        /*
+          Possible views: LOADING, THREAD_LIST, LOADING_THREAD, THREAD, CLOSED_THREAD, SINGLE_MODE_THREAD, UNKNOWN
+        */
+        const isNestedDestination =
+          view === 'THREAD' ||
+          view === 'LOADING_THREAD' ||
+          view === 'CLOSED_THREAD';
+        setShowButton(isNestedDestination);
+        navigation.setOptions({headerShown: !isNestedDestination});
+      }
+    };
     const subscription = mobileMessaging.subscribe(
       'inAppChat.viewStateChanged',
       handleViewStateChangeEvent,
     );
-    // Uncomment to use custom exception handler
-    // setExceptionHandler();
-
     return () => {
       mobileMessaging.unsubscribe(subscription);
     };
-  }, []);
-
-  const handleViewStateChangeEvent = (value: any) => {
-    if (typeof value !== 'undefined' && value != null) {
-      const view = String(value).split(',').pop()?.trim();
-      console.log('React app: Chat view changed to: ' + view);
-      /*
-        Possible views: LOADING, THREAD_LIST, LOADING_THREAD, THREAD, CLOSED_THREAD, SINGLE_MODE_THREAD, UNKNOWN
-      */
-      const isNestedDestination =
-        view === 'THREAD' ||
-        view === 'LOADING_THREAD' ||
-        view === 'CLOSED_THREAD';
-      setShowButton(isNestedDestination);
-      navigation.setOptions({headerShown: !isNestedDestination});
-    }
-  };
+  }, [navigation]);
 
   const goBackToList = () => {
     chatViewRef.current?.showThreadsList();
   };
 
   return (
-    <SafeAreaView style={{backgroundColor: Colors.primary500, flex: 1.0}}>
+    <SafeAreaView style={{backgroundColor: Colors.surface, flex: 1.0}}>
       {showButton && (
-        <PrimaryButton onPress={goBackToList}>Show Chat List</PrimaryButton>
+        <Button
+          variant="secondary"
+          title="Show chat list"
+          onPress={goBackToList}
+        />
       )}
       <ChatView
         ref={chatViewRef}
         style={{flex: 1}}
-        sendButtonColor={'#FF0000'}
+        sendButtonColor={Colors.accent}
       />
     </SafeAreaView>
   );

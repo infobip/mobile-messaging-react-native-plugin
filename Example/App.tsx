@@ -2,272 +2,162 @@
 //  App.tsx
 //  MobileMessagingReactNative
 //
-//  Copyright (c) 2016-2025 Infobip Limited
+//  Copyright (c) 2016-2026 Infobip Limited
 //  Licensed under the Apache License, Version 2.0
 //
 
-import React, {Component} from 'react';
-import {NavigationContainer} from '@react-navigation/native';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
-
+import React, {useEffect} from 'react';
 import {
-  mobileMessaging,
-  MobileMessagingError,
-} from 'infobip-mobile-messaging-react-native-plugin';
-import type {Configuration} from 'infobip-mobile-messaging-react-native-plugin';
+  NavigationContainer,
+  createNavigationContainerRef,
+} from '@react-navigation/native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import {mobileMessaging} from 'infobip-mobile-messaging-react-native-plugin';
 
-import MyMessageStorage from './constants/MyMessageStorage.ts';
-import Colors from './constants/Colors.ts';
+import mobileMessagingConfig from './constants/MobileMessagingConfig';
+import type {RootStackParamList} from './constants/RootStackParamList';
+import Colors from './constants/Colors';
+import EventLogStore from './constants/EventLogStore';
+import useDeeplinkNavigation from './hooks/useDeeplinkNavigation';
 
 import HomeScreen from './screens/HomeScreen';
+import InstallationScreen from './screens/InstallationScreen';
+import UserScreen from './screens/UserScreen';
 import PersonalizeScreen from './screens/PersonalizeScreen';
 import UserDataScreen from './screens/UserDataScreen';
+import InboxScreen from './screens/inbox/InboxScreen';
 import MessagesScreen from './screens/MessagesScreen';
-import InboxScreen from './screens/InboxScreen';
-import ChatOptionsScreen from './screens/chat/ChatOptionsScreen';
 import EventLogScreen from './screens/EventLogScreen';
+import ChatOptionsScreen from './screens/chat/ChatOptionsScreen';
 import ChatViewScreen from './screens/chat/ChatViewScreen';
 import ChatViewCustomLayoutScreen from './screens/chat/ChatViewCustomLayoutScreen';
 import ChatViewMultithreadScreen from './screens/chat/ChatViewMultithreadScreen';
 import TestDeeplinkingScreen from './screens/TestDeeplinkingScreen';
 import TestDeeplinkingScreen2 from './screens/TestDeeplinkingScreen2';
-import EventLogStore from './constants/EventLogStore.ts';
 
-interface AppState {
-  logInfo: string;
-}
-
-type RootStackParamList = {
-  HomeScreen: undefined;
-  PersonalizeScreen: undefined;
-  UserDataScreen: undefined;
-  MessagesScreen: undefined;
-  InboxScreen: undefined;
-  EventLogScreen: undefined;
-  ChatOptionsScreen: undefined;
-  ChatViewScreen: undefined;
-  ChatViewCustomLayoutScreen: undefined;
-  ChatViewMultithreadScreen: undefined;
-  TestDeeplinkingScreen: undefined;
-  TestDeeplinkingScreen2: undefined;
-};
+// Initialize once, before any screen calls the SDK.
+mobileMessaging.init(
+  mobileMessagingConfig,
+  () => console.log('MobileMessaging started'),
+  error => console.log('MobileMessaging error: ' + JSON.stringify(error)),
+);
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
+const navigationRef = createNavigationContainerRef<RootStackParamList>();
 
-const myMessageStorage = MyMessageStorage;
-
-async function persistEventLog(eventName: string, value: any): Promise<void> {
-  try {
-    await EventLogStore.add(eventName, value);
-  } catch (error) {
-    console.warn('Failed to persist event log entry', error);
-  }
-}
-
-class App extends Component<{}, AppState> {
-  configuration: Configuration = {
-    applicationCode: 'Your application code',
-    webRTCUI: {
-      configurationId: 'Your webrtc push configuration id',
-    },
-    ios: {
-      notificationTypes: ['alert', 'badge', 'sound'],
-    },
-    android: {
-      withBannerForegroundNotificationsEnabled: true,
-      // firebaseOptions: {
-      //   apiKey: '',
-      //   applicationId: '',
-      //   projectId: '',
-      // },
-    },
-    // defaultMessageStorage: true,
-    messageStorage: myMessageStorage,
-    inAppChatEnabled: true,
-    inAppChatPushNavigationEnabled: true,
-    fullFeaturedInAppsEnabled: true,
-    logging: true,
-    // userDataJwt: '',
-    // trustedDomains: ['example.com'],
-  };
-
-  subscriptions: any[] = [];
-
-  constructor(props: {}) {
-    super(props);
-    this.state = {
-      logInfo: '...',
-    };
-    this.initMobileMessaging();
-  }
-
-  componentDidMount() {
-    const deeplinkEvents = ['notificationTapped', 'actionTapped'];
+/** Records every SDK event so the Event log screen can show them. */
+function useEventLogRecording() {
+  useEffect(() => {
     const events = [
       ...mobileMessaging.supportedEvents,
       ...mobileMessaging.inAppChatEvents,
-    ].filter(e => !deeplinkEvents.includes(e));
-
-    events.forEach((event: string) => {
-      const subscription = mobileMessaging.subscribe(event, (value: any) => {
-        this.handleMobileMessagingEvent(event, value);
-      });
-      this.subscriptions.push(subscription);
-    });
-  }
-
-  componentWillUnmount() {
-    this.subscriptions.forEach((subscription: any) => {
-      mobileMessaging.unsubscribe(subscription);
-    });
-  }
-
-  handleMobileMessagingEvent = (eventName: string, value: any) => {
-    const eventInfo = `Event: ${eventName}, Data: ${JSON.stringify(value)}`;
-    this.updateLogInfo(eventInfo);
-    void persistEventLog(eventName, value);
-  };
-
-  initMobileMessaging() {
-    mobileMessaging.init(
-      this.configuration,
-      () => {
-        this.updateLogInfo('MobileMessaging started');
-      },
-      (error: MobileMessagingError) => {
-        this.updateLogInfo('MobileMessaging error: ' + JSON.stringify(error));
-      },
+    ];
+    const subscriptions = events.map(event =>
+      mobileMessaging.subscribe(event, value => {
+        EventLogStore.add(event, value).catch(error =>
+          console.warn('Failed to persist event log entry', error),
+        );
+      }),
     );
-  }
-
-  updateLogInfo(info: string) {
-    console.log(info);
-    this.setState({logInfo: info});
-  }
-
-  render() {
-    return (
-      <NavigationContainer>
-        <Stack.Navigator
-          initialRouteName="HomeScreen"
-          screenOptions={{
-            headerShown: true,
-            contentStyle: {backgroundColor: Colors.tintWhite},
-            headerTintColor: 'white',
-            headerStyle: {backgroundColor: Colors.primary500},
-          }}>
-          <Stack.Screen
-            name="HomeScreen"
-            component={HomeScreen}
-            options={{title: 'Infobip Push & Live Chat Example App'}}
-          />
-          <Stack.Screen
-            name="MessagesScreen"
-            component={MessagesScreen}
-            options={{title: 'Messages'}}
-          />
-          <Stack.Screen
-            name="InboxScreen"
-            component={InboxScreen}
-            options={{title: 'Inbox'}}
-          />
-          <Stack.Screen
-            name="EventLogScreen"
-            component={EventLogScreen}
-            options={{title: 'Event Log'}}
-          />
-          <Stack.Screen
-            name="PersonalizeScreen"
-            component={PersonalizeScreen}
-            options={{title: 'Personalize'}}
-          />
-          <Stack.Screen
-            name="UserDataScreen"
-            component={UserDataScreen}
-            options={{title: 'Edit User Data'}}
-          />
-          <Stack.Screen
-            name="ChatOptionsScreen"
-            component={ChatOptionsScreen}
-            options={{
-              title: 'Chat options',
-              headerStyle: {
-                backgroundColor: Colors.primary500,
-              },
-              headerTintColor: Colors.tintWhite,
-              headerTitleStyle: {
-                fontWeight: 'bold',
-              },
-            }}
-          />
-          <Stack.Screen
-            name="ChatViewScreen"
-            component={ChatViewScreen}
-            options={{
-              title: 'ChatView React component fullscreen',
-              headerStyle: {
-                backgroundColor: Colors.primary500,
-              },
-              headerTintColor: Colors.tintWhite,
-              headerTitleStyle: {
-                fontWeight: 'bold',
-              },
-            }}
-          />
-          <Stack.Screen
-            name="ChatViewCustomLayoutScreen"
-            component={ChatViewCustomLayoutScreen}
-            options={{
-              title: 'ChatView React component in custom layout',
-              headerTintColor: Colors.tintWhite,
-              headerTitleStyle: {
-                fontWeight: 'bold',
-              },
-            }}
-          />
-          <Stack.Screen
-            name="ChatViewMultithreadScreen"
-            component={ChatViewMultithreadScreen}
-            options={{
-              title: 'Multithread ChatView React component',
-              headerTintColor: Colors.tintWhite,
-              headerTitleStyle: {
-                fontWeight: 'bold',
-              },
-            }}
-          />
-          <Stack.Screen
-            name="TestDeeplinkingScreen"
-            component={TestDeeplinkingScreen}
-            options={{
-              title: 'Test Deeplinking',
-              headerStyle: {
-                backgroundColor: Colors.primary500,
-              },
-              headerTintColor: Colors.tintWhite,
-              headerTitleStyle: {
-                fontWeight: 'bold',
-              },
-            }}
-          />
-          <Stack.Screen
-            name="TestDeeplinkingScreen2"
-            component={TestDeeplinkingScreen2}
-            options={{
-              title: 'Test Deeplinking2',
-              headerStyle: {
-                backgroundColor: Colors.primary500,
-              },
-              headerTintColor: Colors.tintWhite,
-              headerTitleStyle: {
-                fontWeight: 'bold',
-              },
-            }}
-          />
-        </Stack.Navigator>
-      </NavigationContainer>
-    );
-  }
+    return () => {
+      subscriptions.forEach(subscription =>
+        mobileMessaging.unsubscribe(subscription),
+      );
+    };
+  }, []);
 }
+
+/** Message rows use horizontal swipes, so iOS goes back only with the edge swipe on these screens. */
+const swipeableListOptions = {fullScreenGestureEnabled: false};
+
+const App: React.FC = () => {
+  useEventLogRecording();
+  const onNavigationReady = useDeeplinkNavigation(navigationRef);
+
+  return (
+    <NavigationContainer ref={navigationRef} onReady={onNavigationReady}>
+      <Stack.Navigator
+        initialRouteName="HomeScreen"
+        screenOptions={{
+          headerStyle: {backgroundColor: Colors.surface},
+          headerTintColor: Colors.textPrimary,
+          headerShadowVisible: true,
+          headerBackButtonDisplayMode: 'minimal',
+          contentStyle: {backgroundColor: Colors.background},
+        }}>
+        <Stack.Screen
+          name="HomeScreen"
+          component={HomeScreen}
+          options={{title: 'Infobip Mobile Messaging'}}
+        />
+        <Stack.Screen
+          name="InstallationScreen"
+          component={InstallationScreen}
+          options={{title: 'Installation'}}
+        />
+        <Stack.Screen
+          name="UserScreen"
+          component={UserScreen}
+          options={{title: 'User'}}
+        />
+        <Stack.Screen
+          name="PersonalizeScreen"
+          component={PersonalizeScreen}
+          options={{title: 'Personalize'}}
+        />
+        <Stack.Screen
+          name="UserDataScreen"
+          component={UserDataScreen}
+          options={{title: 'Edit user data'}}
+        />
+        <Stack.Screen
+          name="InboxScreen"
+          component={InboxScreen}
+          options={{title: 'Inbox', ...swipeableListOptions}}
+        />
+        <Stack.Screen
+          name="MessagesScreen"
+          component={MessagesScreen}
+          options={{title: 'Received messages', ...swipeableListOptions}}
+        />
+        <Stack.Screen
+          name="EventLogScreen"
+          component={EventLogScreen}
+          options={{title: 'Event log'}}
+        />
+        <Stack.Screen
+          name="ChatOptionsScreen"
+          component={ChatOptionsScreen}
+          options={{title: 'Live chat'}}
+        />
+        <Stack.Screen
+          name="ChatViewScreen"
+          component={ChatViewScreen}
+          options={{title: 'ChatView fullscreen'}}
+        />
+        <Stack.Screen
+          name="ChatViewCustomLayoutScreen"
+          component={ChatViewCustomLayoutScreen}
+          options={{title: 'ChatView in custom layout'}}
+        />
+        <Stack.Screen
+          name="ChatViewMultithreadScreen"
+          component={ChatViewMultithreadScreen}
+          options={{title: 'Multithread ChatView'}}
+        />
+        <Stack.Screen
+          name="TestDeeplinkingScreen"
+          component={TestDeeplinkingScreen}
+          options={{title: 'Test deeplinking'}}
+        />
+        <Stack.Screen
+          name="TestDeeplinkingScreen2"
+          component={TestDeeplinkingScreen2}
+          options={{title: 'Test deeplinking 2'}}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+};
 
 export default App;

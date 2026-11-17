@@ -2,261 +2,177 @@
 //  UserDataScreen.tsx
 //  MobileMessagingReactNative
 //
-//  Copyright (c) 2016-2025 Infobip Limited
+//  Copyright (c) 2016-2026 Infobip Limited
 //  Licensed under the Apache License, Version 2.0
 //
 
 import React, {useState} from 'react';
-import {
-  Alert,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-  ScrollView,
-  TouchableOpacity,
-} from 'react-native';
-import Colors from '../constants/Colors';
-import PrimaryButton from '../components/PrimaryButton';
+import {StyleSheet, Text, View} from 'react-native';
 import {mobileMessaging} from 'infobip-mobile-messaging-react-native-plugin';
-import type {UserData, MobileMessagingError, Gender} from 'infobip-mobile-messaging-react-native-plugin';
-import {handleJWTError} from '../utils/JWTErrorHandler';
+import type {MobileMessagingReactNative} from 'infobip-mobile-messaging-react-native-plugin';
+import Button from '../components/Button';
+import Card from '../components/Card';
+import Chip from '../components/Chip';
+import JsonDetails from '../components/JsonDetails';
+import Notice from '../components/Notice';
+import ScreenContainer from '../components/ScreenContainer';
+import TextField from '../components/TextField';
+import Colors from '../constants/Colors';
+import {errorFeedback} from '../utils/feedback';
+import type {Feedback} from '../utils/feedback';
+
+type UserData = MobileMessagingReactNative.UserData;
+type Gender = MobileMessagingReactNative.Gender;
+
+const genders: Gender[] = ['Male', 'Female'];
+
+const emptyForm = {
+  firstName: '',
+  middleName: '',
+  lastName: '',
+  birthday: '',
+  gender: undefined as Gender | undefined,
+};
+
+/** Empty form fields preserve the corresponding values fetched before saving. */
+function buildUserData(form: typeof emptyForm): UserData {
+  const userData: UserData = {};
+  if (form.firstName.trim()) {
+    userData.firstName = form.firstName.trim();
+  }
+  if (form.middleName.trim()) {
+    userData.middleName = form.middleName.trim();
+  }
+  if (form.lastName.trim()) {
+    userData.lastName = form.lastName.trim();
+  }
+  if (form.birthday.trim()) {
+    userData.birthday = form.birthday.trim();
+  }
+  if (form.gender) {
+    userData.gender = form.gender;
+  }
+  return userData;
+}
 
 const UserDataScreen: React.FC = () => {
-  const [firstName, setFirstName] = useState<string>('');
-  const [lastName, setLastName] = useState<string>('');
-  const [middleName, setMiddleName] = useState<string>('');
-  const [gender, setGender] = useState<Gender | undefined>(undefined);
-  const [birthday, setBirthday] = useState<string>('');
+  const [form, setForm] = useState(emptyForm);
+  const [feedback, setFeedback] = useState<Feedback>();
+  const [result, setResult] = useState<UserData>();
+  const [saving, setSaving] = useState(false);
+  const update = (change: Partial<typeof emptyForm>) =>
+    setForm(previous => ({...previous, ...change}));
 
-  const confirmSaveUserHandler = () => {
-    const userData: UserData = {};
-
-    if (firstName.trim() !== '') {
-      userData.firstName = firstName.trim();
-    }
-    if (lastName.trim() !== '') {
-      userData.lastName = lastName.trim();
-    }
-    if (middleName.trim() !== '') {
-      userData.middleName = middleName.trim();
-    }
-    if (gender) {
-      userData.gender = gender;
-    }
-    if (birthday.trim() !== '') {
-      userData.birthday = birthday.trim();
-    }
-
+  const save = () => {
+    const userData = buildUserData(form);
     if (Object.keys(userData).length === 0) {
-      Alert.alert(
-        'Validation Error',
-        'Please provide at least one field to save.',
-      );
+      setFeedback({tone: 'error', title: 'Fill in at least one field'});
       return;
     }
-
-    mobileMessaging.saveUser(
-      userData,
-      updatedUserData => {
-        Alert.alert(
-          'User Data Saved',
-          JSON.stringify(updatedUserData, null, 2),
-        );
-      },
-      (error: MobileMessagingError) => {
-        handleJWTError(error);
-      },
-    );
-  };
-
-
-  const resetInputHandler = () => {
-    setFirstName('');
-    setLastName('');
-    setMiddleName('');
-    setGender(undefined);
-    setBirthday('');
+    setResult(undefined);
+    setFeedback(undefined);
+    setSaving(true);
+    const onError = (
+      error: MobileMessagingReactNative.MobileMessagingError,
+    ) => {
+      setSaving(false);
+      setFeedback(errorFeedback('Save failed', error));
+    };
+    // iOS builds a complete user from this object; omitted existing fields can become null updates.
+    mobileMessaging.fetchUser(currentUser => {
+      const currentData: UserData = Object.fromEntries(
+        Object.entries(currentUser).filter(
+          ([, value]) => value != null && value !== 'null',
+        ),
+      );
+      mobileMessaging.saveUser(
+        {...currentData, ...userData},
+        saved => {
+          setSaving(false);
+          setResult(saved);
+          setFeedback({tone: 'success', title: 'User data saved'});
+        },
+        onError,
+      );
+    }, onError);
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.scrollContainer}>
-      <View style={styles.inputContainer}>
-        <Text style={styles.instructionText}>Edit your user data:</Text>
-
-        {/* First Name */}
-        <Text style={styles.label}>First Name:</Text>
-        <TextInput
-          style={styles.textInput}
-          value={firstName}
-          onChangeText={setFirstName}
-          placeholder="Enter first name"
-          placeholderTextColor={Colors.primaryGray}
+    <ScreenContainer>
+      <Card
+        title="User data"
+        description="Saved with saveUser for the current user. Empty fields are left unchanged.">
+        <TextField
+          label="First name"
+          value={form.firstName}
+          onChangeText={firstName => update({firstName})}
         />
-
-        {/* Last Name */}
-        <Text style={styles.label}>Last Name:</Text>
-        <TextInput
-          style={styles.textInput}
-          value={lastName}
-          onChangeText={setLastName}
-          placeholder="Enter last name"
-          placeholderTextColor={Colors.primaryGray}
+        <TextField
+          label="Middle name"
+          value={form.middleName}
+          onChangeText={middleName => update({middleName})}
         />
-
-        {/* Middle Name */}
-        <Text style={styles.label}>Middle Name:</Text>
-        <TextInput
-          style={styles.textInput}
-          value={middleName}
-          onChangeText={setMiddleName}
-          placeholder="Enter middle name"
-          placeholderTextColor={Colors.primaryGray}
+        <TextField
+          label="Last name"
+          value={form.lastName}
+          onChangeText={lastName => update({lastName})}
         />
-
-        {/* Gender */}
-        <Text style={styles.label}>Gender:</Text>
-        <View style={styles.genderContainer}>
-          <TouchableOpacity
-            style={[
-              styles.genderButton,
-              gender === 'Male' && styles.genderButtonSelected,
-            ]}
-            onPress={() => setGender(gender === 'Male' ? undefined : 'Male')}
-          >
-            <Text
-              style={[
-                styles.genderButtonText,
-                gender === 'Male' && styles.genderButtonTextSelected,
-              ]}
-            >
-              Male
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[
-              styles.genderButton,
-              gender === 'Female' && styles.genderButtonSelected,
-            ]}
-            onPress={() => setGender(gender === 'Female' ? undefined : 'Female')}
-          >
-            <Text
-              style={[
-                styles.genderButtonText,
-                gender === 'Female' && styles.genderButtonTextSelected,
-              ]}
-            >
-              Female
-            </Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Birthday */}
-        <Text style={styles.label}>Birthday (YYYY-MM-DD):</Text>
-        <TextInput
-          style={styles.textInput}
-          value={birthday}
-          onChangeText={setBirthday}
+        <TextField
+          label="Birthday"
           placeholder="1985-01-15"
-          placeholderTextColor={Colors.primaryGray}
+          hint="Format YYYY-MM-DD"
+          value={form.birthday}
+          onChangeText={birthday => update({birthday})}
           autoCapitalize="none"
         />
-
-        {/* Buttons */}
-        <View style={styles.buttonsContainer}>
-          <View style={styles.buttonContainer}>
-            <PrimaryButton onPress={resetInputHandler}>Reset</PrimaryButton>
-          </View>
-          <View style={styles.buttonContainer}>
-            <PrimaryButton onPress={confirmSaveUserHandler}>
-              Save User Data
-            </PrimaryButton>
+        <View style={styles.genders}>
+          <Text style={styles.label}>Gender</Text>
+          <View style={styles.chips} accessibilityRole="radiogroup">
+            {genders.map(gender => (
+              <Chip
+                key={gender}
+                label={gender}
+                selected={form.gender === gender}
+                onPress={() =>
+                  update({gender: form.gender === gender ? undefined : gender})
+                }
+              />
+            ))}
           </View>
         </View>
-      </View>
-    </ScrollView>
+      </Card>
+
+      {feedback ? <Notice {...feedback} /> : null}
+      {result ? <JsonDetails label="saved user" value={result} /> : null}
+
+      <Button
+        title={saving ? 'Saving…' : 'Save user data'}
+        onPress={save}
+        disabled={saving}
+      />
+      <Button
+        variant="secondary"
+        title="Clear form"
+        onPress={() => setForm(emptyForm)}
+        disabled={saving}
+      />
+    </ScreenContainer>
   );
 };
 
-export default UserDataScreen;
-
 const styles = StyleSheet.create({
-  scrollContainer: {
-    flexGrow: 1,
-    justifyContent: 'flex-start',
-    paddingVertical: 20,
-    paddingBottom: 40,
-  },
-  inputContainer: {
-    marginHorizontal: 24,
-    padding: 16,
-    backgroundColor: Colors.primary500,
-    borderRadius: 8,
-    elevation: 4,
-    shadowColor: Colors.primaryGray,
-    shadowOffset: {width: 0, height: 2},
-    shadowRadius: 6,
-    shadowOpacity: 0.25,
-  },
-  instructionText: {
-    fontSize: 18,
-    color: Colors.tintWhite,
-    marginBottom: 16,
-    textAlign: 'center',
+  genders: {
+    gap: 8,
   },
   label: {
-    fontSize: 16,
-    color: Colors.tintWhite,
-    marginBottom: 4,
-    marginLeft: 4,
-  },
-  textInput: {
-    height: 40,
-    width: '100%',
-    borderColor: Colors.tintWhite,
-    borderWidth: 1,
-    borderRadius: 4,
-    color: Colors.primaryGray,
-    marginBottom: 12,
-    paddingHorizontal: 10,
-    backgroundColor: Colors.tintWhite,
-  },
-  genderContainer: {
-    flexDirection: 'row',
-    marginBottom: 12,
-    gap: 10,
-  },
-  genderButton: {
-    flex: 1,
-    height: 40,
-    backgroundColor: Colors.tintWhite,
-    borderColor: Colors.tintWhite,
-    borderWidth: 1,
-    borderRadius: 4,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  genderButtonSelected: {
-    backgroundColor: Colors.primary500,
-    borderColor: Colors.tintWhite,
-    borderWidth: 2,
-  },
-  genderButtonText: {
-    color: Colors.primaryGray,
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '500',
+    color: Colors.textPrimary,
   },
-  genderButtonTextSelected: {
-    color: Colors.tintWhite,
-    fontWeight: '600',
-  },
-  buttonsContainer: {
+  chips: {
     flexDirection: 'row',
-    marginTop: 16,
-  },
-  buttonContainer: {
-    flex: 1,
-    marginHorizontal: 5,
+    gap: 8,
   },
 });
+
+export default UserDataScreen;

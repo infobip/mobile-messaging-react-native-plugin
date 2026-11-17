@@ -2,257 +2,169 @@
 //  PersonalizeScreen.tsx
 //  MobileMessagingReactNative
 //
-//  Copyright (c) 2016-2025 Infobip Limited
+//  Copyright (c) 2016-2026 Infobip Limited
 //  Licensed under the Apache License, Version 2.0
 //
 
 import React, {useState} from 'react';
-import {
-  Alert,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-  Switch,
-  ScrollView,
-} from 'react-native';
-import Colors from '../constants/Colors';
-import PrimaryButton from '../components/PrimaryButton';
 import {mobileMessaging} from 'infobip-mobile-messaging-react-native-plugin';
-import type {UserIdentity, MobileMessagingError} from 'infobip-mobile-messaging-react-native-plugin';
-import {handleJWTError} from '../utils/JWTErrorHandler';
+import type {MobileMessagingReactNative} from 'infobip-mobile-messaging-react-native-plugin';
+import Button from '../components/Button';
+import Card from '../components/Card';
+import JsonDetails from '../components/JsonDetails';
+import Notice from '../components/Notice';
+import ScreenContainer from '../components/ScreenContainer';
+import SwitchRow from '../components/SwitchRow';
+import TextField from '../components/TextField';
+import {errorFeedback} from '../utils/feedback';
+import type {Feedback} from '../utils/feedback';
+import {testConfig} from '../utils/JWTUtils';
+
+type UserIdentity = MobileMessagingReactNative.UserIdentity;
+type PersonalizeContext = MobileMessagingReactNative.PersonalizeContext;
+
+const emptyForm = {
+  externalUserId: '',
+  email: '',
+  phone: '',
+  firstName: '',
+  lastName: '',
+  forceDepersonalize: false,
+  keepAsLead: false,
+  setDeviceAsPrimary: false,
+};
+
+/** Builds the personalize request from the filled-in fields only. */
+function buildPersonalizeContext(form: typeof emptyForm): PersonalizeContext {
+  const userIdentity: UserIdentity = {};
+  if (form.externalUserId.trim()) {
+    userIdentity.externalUserId = form.externalUserId.trim();
+  }
+  if (form.email.trim()) {
+    userIdentity.emails = [form.email.trim()];
+  }
+  if (form.phone.trim()) {
+    userIdentity.phones = [form.phone.trim()];
+  }
+  const userAttributes: Record<string, string> = {};
+  if (form.firstName.trim()) {
+    userAttributes.firstName = form.firstName.trim();
+  }
+  if (form.lastName.trim()) {
+    userAttributes.lastName = form.lastName.trim();
+  }
+  return {
+    userIdentity,
+    userAttributes,
+    forceDepersonalize: form.forceDepersonalize,
+    keepAsLead: form.keepAsLead,
+    setDeviceAsPrimary: form.setDeviceAsPrimary,
+  };
+}
 
 const PersonalizeScreen: React.FC = () => {
-  const [firstName, setFirstName] = useState<string>('');
-  const [lastName, setLastName] = useState<string>('');
-  const [phoneNumber, setPhoneNumber] = useState<string>('');
-  const [email, setEmail] = useState<string>('');
-  const [externalUserId, setExternalUserId] = useState<string>('');
-  const [forceDepersonalize, setForceDepersonalize] = useState<boolean>(false);
-  const [keepAsLead, setKeepAsLead] = useState<boolean>(false);
-  const [setDeviceAsPrimary, setSetAsPrimary] = useState<boolean>(false);
+  const [form, setForm] = useState(emptyForm);
+  const [feedback, setFeedback] = useState<Feedback>();
+  const [result, setResult] = useState<PersonalizeContext>();
+  const update = (change: Partial<typeof emptyForm>) =>
+    setForm(previous => ({...previous, ...change}));
 
-  const confirmPersonalizeHandler = () => {
-    // Construct userIdentity with phones and emails if provided
-    const userIdentity: UserIdentity = {};
-
-    if (phoneNumber.trim() !== '') {
-      userIdentity.phones = [phoneNumber.trim()];
-    }
-    if (email.trim() !== '') {
-      userIdentity.emails = [email.trim()];
-    }
-    if (externalUserId.trim() !== '') {
-      userIdentity.externalUserId = externalUserId.trim();
-    }
-
-    // Construct userAttributes with only provided fields
-    const userAttributes: Record<string, string | number | boolean | object[]> = {};
-    if (firstName.trim() !== '') {
-      userAttributes.firstName = firstName.trim();
-    }
-    if (lastName.trim() !== '') {
-      userAttributes.lastName = lastName.trim();
-    }
-
-    // Check if at least one of userIdentity or userAttributes is provided
-    if (
-      Object.keys(userIdentity).length === 0 &&
-      Object.keys(userAttributes).length === 0
-    ) {
-      Alert.alert(
-        'Validation Error',
-        'Please provide at least one field to personalize.',
-      );
+  const personalize = () => {
+    const context = buildPersonalizeContext(form);
+    if (Object.keys(context.userIdentity).length === 0) {
+      setFeedback({
+        tone: 'error',
+        title: 'Enter at least one identity: external user ID, email or phone',
+      });
       return;
     }
-
+    setResult(undefined);
+    testConfig.externalPersonId = context.userIdentity.externalUserId ?? '';
     mobileMessaging.personalize(
-      {
-        userIdentity: userIdentity,
-        userAttributes: userAttributes,
-        forceDepersonalize: forceDepersonalize,
-        keepAsLead: keepAsLead,
-        setDeviceAsPrimary: setDeviceAsPrimary,
+      context,
+      personalized => {
+        setResult(personalized);
+        setFeedback({tone: 'success', title: 'Personalized'});
       },
-      personalizeContext => {
-        Alert.alert(
-          'Personalized',
-          JSON.stringify(personalizeContext, null, 2),
-        );
-      },
-      (error: MobileMessagingError) => {
-        handleJWTError(error);
-      },
+      error => setFeedback(errorFeedback('Personalize failed', error)),
     );
   };
 
-  const resetInputHandler = () => {
-    setFirstName('');
-    setLastName('');
-    setPhoneNumber('');
-    setEmail('');
-    setExternalUserId('');
-    setForceDepersonalize(false);
-    setKeepAsLead(false);
-    setSetAsPrimary(false);
-  };
-
   return (
-    <ScrollView
-      contentContainerStyle={styles.scrollContainer}
-      keyboardShouldPersistTaps="handled">
-      <View style={styles.inputContainer}>
-        <Text style={styles.instructionText}>Please enter your details:</Text>
-
-        {/* First Name */}
-        <Text style={styles.label}>First Name:</Text>
-        <TextInput
-          style={styles.textInput}
-          value={firstName}
-          onChangeText={setFirstName}
+    <ScreenContainer>
+      <Card
+        title="User identity"
+        description="Identifies the person in People. The inbox requires an external user ID.">
+        <TextField
+          label="External user ID"
+          value={form.externalUserId}
+          onChangeText={externalUserId => update({externalUserId})}
+          autoCapitalize="none"
         />
-
-        {/* Last Name */}
-        <Text style={styles.label}>Last Name:</Text>
-        <TextInput
-          style={styles.textInput}
-          value={lastName}
-          onChangeText={setLastName}
-        />
-
-        {/* Phone Number */}
-        <Text style={styles.label}>Phone Number:</Text>
-        <TextInput
-          style={styles.textInput}
-          keyboardType="phone-pad"
-          value={phoneNumber}
-          onChangeText={setPhoneNumber}
-        />
-
-        {/* Email */}
-        <Text style={styles.label}>Email:</Text>
-        <TextInput
-          style={styles.textInput}
+        <TextField
+          label="Email"
+          value={form.email}
+          onChangeText={email => update({email})}
           keyboardType="email-address"
-          value={email}
-          onChangeText={setEmail}
           autoCapitalize="none"
         />
-
-        {/* External User ID */}
-        <Text style={styles.label}>External User ID:</Text>
-        <TextInput
-          style={styles.textInput}
-          value={externalUserId}
-          onChangeText={setExternalUserId}
-          autoCapitalize="none"
+        <TextField
+          label="Phone"
+          hint="International format, for example 385981234567"
+          value={form.phone}
+          onChangeText={phone => update({phone})}
+          keyboardType="phone-pad"
         />
+      </Card>
 
-        {/* Force Depersonalize */}
-        <View style={styles.switchContainer}>
-          <Text style={styles.switchLabel}>Force Depersonalize</Text>
-          <Switch
-            value={forceDepersonalize}
-            onValueChange={setForceDepersonalize}
-          />
-        </View>
+      <Card
+        title="User attributes"
+        description="Optional data stored with the person.">
+        <TextField
+          label="First name"
+          value={form.firstName}
+          onChangeText={firstName => update({firstName})}
+        />
+        <TextField
+          label="Last name"
+          value={form.lastName}
+          onChangeText={lastName => update({lastName})}
+        />
+      </Card>
 
-        {/* Keep As Lead */}
-        <View style={styles.switchContainer}>
-          <Text style={styles.switchLabel}>Keep As Lead</Text>
-          <Switch value={keepAsLead} onValueChange={setKeepAsLead} />
-        </View>
+      <Card title="Options">
+        <SwitchRow
+          label="Force depersonalize"
+          description="Unlink this installation from a different person first."
+          value={form.forceDepersonalize}
+          onValueChange={forceDepersonalize => update({forceDepersonalize})}
+        />
+        <SwitchRow
+          label="Keep as lead"
+          description="Keep the person as a lead instead of a customer."
+          value={form.keepAsLead}
+          onValueChange={keepAsLead => update({keepAsLead})}
+        />
+        <SwitchRow
+          label="Set device as primary"
+          value={form.setDeviceAsPrimary}
+          onValueChange={setDeviceAsPrimary => update({setDeviceAsPrimary})}
+        />
+      </Card>
 
-        {/* Set As Primary */}
-        <View style={styles.switchContainer}>
-          <Text style={styles.switchLabel}>Set As Primary</Text>
-          <Switch value={setDeviceAsPrimary} onValueChange={setSetAsPrimary} />
-        </View>
+      {feedback ? <Notice {...feedback} /> : null}
+      {result ? (
+        <JsonDetails label="personalize result" value={result} />
+      ) : null}
 
-        {/* Buttons */}
-        <View style={styles.buttonsContainer}>
-          <View style={styles.buttonContainer}>
-            <PrimaryButton onPress={resetInputHandler}>Reset</PrimaryButton>
-          </View>
-          <View style={styles.buttonContainer}>
-            <PrimaryButton onPress={confirmPersonalizeHandler}>
-              Personalize
-            </PrimaryButton>
-          </View>
-        </View>
-      </View>
-    </ScrollView>
+      <Button title="Personalize" onPress={personalize} />
+      <Button
+        variant="secondary"
+        title="Clear form"
+        onPress={() => setForm(emptyForm)}
+      />
+    </ScreenContainer>
   );
 };
 
 export default PersonalizeScreen;
-
-const styles = StyleSheet.create({
-  scrollContainer: {
-    flexGrow: 1,
-    justifyContent: 'flex-start',
-    paddingVertical: 20,
-    paddingBottom: 40,
-  },
-  inputContainer: {
-    marginHorizontal: 24,
-    padding: 16,
-    backgroundColor: Colors.primary500,
-    borderRadius: 8,
-    elevation: 4,
-    shadowColor: Colors.primaryGray,
-    shadowOffset: {width: 0, height: 2},
-    shadowRadius: 6,
-    shadowOpacity: 0.25,
-  },
-  instructionText: {
-    fontSize: 18,
-    color: Colors.tintWhite,
-    marginBottom: 16,
-    textAlign: 'center',
-  },
-  label: {
-    fontSize: 16,
-    color: Colors.tintWhite,
-    marginBottom: 4,
-    marginLeft: 4,
-  },
-  textInput: {
-    height: 40,
-    width: '100%',
-    borderColor: Colors.tintWhite,
-    borderWidth: 1,
-    borderRadius: 4,
-    color: Colors.primaryGray,
-    marginBottom: 12,
-    paddingHorizontal: 10,
-    backgroundColor: Colors.tintWhite,
-  },
-  switchContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    width: '100%',
-    justifyContent: 'space-between',
-    marginBottom: 12,
-  },
-  switchLabel: {
-    fontSize: 16,
-    color: Colors.tintWhite,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    color: Colors.tintWhite,
-    marginVertical: 12,
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-  buttonsContainer: {
-    flexDirection: 'row',
-    marginTop: 16,
-  },
-  buttonContainer: {
-    flex: 1,
-    marginHorizontal: 5,
-  },
-});

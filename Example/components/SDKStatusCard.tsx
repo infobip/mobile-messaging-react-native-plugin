@@ -2,342 +2,163 @@
 //  SDKStatusCard.tsx
 //  MobileMessagingReactNative
 //
-//  Copyright (c) 2016-2025 Infobip Limited
+//  Copyright (c) 2016-2026 Infobip Limited
 //  Licensed under the Apache License, Version 2.0
 //
 
-import React, {
-  useState,
-  useEffect,
-  useCallback,
-  forwardRef,
-  useImperativeHandle,
-} from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Alert,
-  NativeModules,
-  Pressable,
-  Platform,
-} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {Platform, Pressable, StyleSheet, Text, View} from 'react-native';
 import {mobileMessaging} from 'infobip-mobile-messaging-react-native-plugin';
+import type {MobileMessagingReactNative} from 'infobip-mobile-messaging-react-native-plugin';
+import Card from './Card';
+import DetailRow from './DetailRow';
 import Colors from '../constants/Colors';
-import Clipboard from '@react-native-clipboard/clipboard';
+import {withoutNullStrings} from '../utils/format';
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const pluginPackage = require('infobip-mobile-messaging-react-native-plugin/package.json');
+// The native SDKs also report the push service token, which the Installation type does not declare.
+type Installation = MobileMessagingReactNative.Installation & {
+  pushServiceToken?: string;
+};
+type UserData = MobileMessagingReactNative.UserData;
+
 const pluginVersion: string =
-  pluginPackage?.version != null ? String(pluginPackage.version) : 'Unknown';
+  require('infobip-mobile-messaging-react-native-plugin/package.json').version;
+const reactNativeVersion = (() => {
+  const {major, minor, patch} = Platform.constants.reactNativeVersion;
+  return `${major}.${minor}.${patch}`;
+})();
 
-export interface SDKStatusCardRef {
-  refresh: () => void;
-}
+const statusEvents = [
+  'registrationUpdated',
+  'tokenReceived',
+  'installationUpdated',
+  'userUpdated',
+  'personalized',
+  'depersonalized',
+];
 
-const isNewArchitectureEnabled =
-  (() => {
-    const globalScope = globalThis as any;
-    const turboModulesOn = typeof globalScope.__turboModuleProxy === 'function';
-    const fabricOn = globalScope.nativeFabricUIManager != null;
-    const bridgelessOn = globalScope.RN$Bridgeless === true;
-
-    const toBool = (value: unknown) => {
-      if (typeof value === 'boolean') {
-        return value;
-      }
-      if (typeof value === 'string') {
-        return value.toLowerCase() === 'true';
-      }
-      if (typeof value === 'number') {
-        return value === 1;
-      }
-      return false;
-    };
-
-    const platformConstants = NativeModules?.PlatformConstants;
-    const platformReported =
-      platformConstants?.getConstants?.().isNewArchitectureEnabled ??
-      platformConstants?.isNewArchitectureEnabled;
-
-    return (
-      turboModulesOn ||
-      fabricOn ||
-      bridgelessOn ||
-      toBool(platformReported) ||
-      globalScope.RNNewArchitectureEnabled === true
-    );
-  })();
-
-const SDKStatusCard = forwardRef<SDKStatusCardRef>((props, ref) => {
-  const [status, setStatus] = useState({
-    isConnected: null as boolean | null,
-    pushServiceToken: null as string | null,
-    pushRegistrationId: null as string | null,
-    personalizedWith: null as string[] | null,
-  });
-  const [expanded, setExpanded] = useState(false);
-
-  const checkConnectivity = useCallback(async () => {
-    try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 5000);
-
-      const response = await fetch('https://api.infobip.com', {
-        method: 'HEAD',
-        signal: controller.signal,
-      });
-
-      clearTimeout(timeoutId);
-      setStatus(prev => ({...prev, isConnected: response.ok}));
-    } catch (error) {
-      setStatus(prev => ({...prev, isConnected: false}));
-    }
-  }, []);
-
-  const refreshStatus = useCallback(() => {
-    mobileMessaging.getInstallation((installation: any) => {
-      const pushRegId = installation.pushRegistrationId;
-      const pushToken = installation.pushServiceToken;
-
-      setStatus(prev => ({
-        ...prev,
-        pushRegistrationId: pushRegId && pushRegId !== 'null' ? pushRegId : null,
-        pushServiceToken: pushToken && pushToken !== 'null' ? pushToken : null,
-      }));
-    });
-
-    mobileMessaging.getUser((user: any) => {
-      const identifiers: string[] = [];
-
-      if (user.externalUserId && user.externalUserId !== 'null') {
-        identifiers.push(user.externalUserId);
-      }
-      if (user.emails && Array.isArray(user.emails) && user.emails.length > 0) {
-        identifiers.push(...user.emails);
-      }
-      if (user.phones && Array.isArray(user.phones) && user.phones.length > 0) {
-        identifiers.push(...user.phones);
-      }
-
-      setStatus(prev => ({
-        ...prev,
-        personalizedWith: identifiers.length > 0 ? identifiers : null,
-      }));
-    });
-  }, []);
-
-  useImperativeHandle(ref, () => ({
-    refresh: () => {
-      checkConnectivity();
-      refreshStatus();
-    },
-  }));
+/** Cached installation and user, refreshed whenever the SDK reports a change. */
+function useSdkStatus() {
+  const [installation, setInstallation] = useState<Installation>();
+  const [user, setUser] = useState<UserData>();
 
   useEffect(() => {
-    checkConnectivity();
-    refreshStatus();
-
-    const subscriptions = [
-      mobileMessaging.subscribe('registrationUpdated', refreshStatus),
-      mobileMessaging.subscribe('installationUpdated', refreshStatus),
-      mobileMessaging.subscribe('userUpdated', refreshStatus),
-      mobileMessaging.subscribe('personalized', refreshStatus),
-      mobileMessaging.subscribe('depersonalized', refreshStatus),
-    ];
-
-    return () => {
-      subscriptions.forEach(sub => mobileMessaging.unsubscribe(sub));
-    };
-  }, [refreshStatus, checkConnectivity]);
-
-  const copyPushId = () => {
-    if (status.pushRegistrationId) {
-      Clipboard.setString(status.pushRegistrationId);
-      Alert.alert('Copied', 'Push Registration ID copied to clipboard');
-    }
-  };
-
-  const copyDeviceToken = () => {
-    if (status.pushServiceToken) {
-      Clipboard.setString(status.pushServiceToken);
-      Alert.alert('Copied', 'Device Token copied to clipboard');
-    }
-  };
-
-  const reactNativeVersion = (() => {
-    const version = Platform.constants?.reactNativeVersion;
-    if (version) {
-      const {major, minor, patch, prerelease} = version;
-      const parts = [major, minor, patch].filter(
-        value => value !== undefined && value !== null,
+    const refresh = () => {
+      mobileMessaging.getInstallation(cached =>
+        setInstallation(withoutNullStrings(cached)),
       );
-      const base = parts.join('.');
-      return prerelease ? `${base}-${prerelease}` : base;
-    }
-    if (typeof Platform.Version === 'string') {
-      return Platform.Version;
-    }
-    if (typeof Platform.Version === 'number') {
-      return Platform.Version.toString();
-    }
-    return 'Unknown';
-  })();
+      mobileMessaging.getUser(cached => setUser(withoutNullStrings(cached)));
+    };
+    refresh();
+    const subscriptions = statusEvents.map(event =>
+      mobileMessaging.subscribe(event, refresh),
+    );
+    return () =>
+      subscriptions.forEach(subscription =>
+        mobileMessaging.unsubscribe(subscription),
+      );
+  }, []);
+
+  return {installation, user};
+}
+
+function describeUser(user?: UserData): string | undefined {
+  const identifiers = [
+    user?.externalUserId,
+    ...(user?.emails ?? []),
+    ...(user?.phones ?? []),
+  ];
+  return identifiers.filter(Boolean).join(', ') || undefined;
+}
+
+const SDKStatusCard: React.FC = () => {
+  const {installation, user} = useSdkStatus();
+  const [expanded, setExpanded] = useState(false);
+  const isRegistered = Boolean(installation?.pushRegistrationId);
 
   return (
-    <Pressable
-      onPress={() => setExpanded(prev => !prev)}
-      style={({pressed}) => [
-        styles.container,
-        pressed && styles.containerPressed,
-      ]}>
-      <View style={styles.statusRow}>
-        <Text style={styles.statusLabel}>Internet:</Text>
+    <Card>
+      <View style={styles.header}>
+        <Text style={styles.title}>SDK status</Text>
         <Text
           style={[
-            styles.statusValue,
-            {
-              color:
-                status.isConnected === null
-                  ? '#777'
-                  : status.isConnected
-                  ? '#4CAF50'
-                  : '#F44336',
-            },
+            styles.badge,
+            isRegistered ? styles.registered : styles.pending,
           ]}>
-          {status.isConnected === null
-            ? 'Checking...'
-            : status.isConnected
-            ? 'Connected ✓'
-            : 'Not connected ✘'}
+          {isRegistered ? 'Registered' : 'Not registered yet'}
         </Text>
       </View>
-
-      <View style={styles.statusRow}>
-        <Text style={styles.statusLabel}>Device Token:</Text>
-        {status.pushServiceToken ? (
-          <TouchableOpacity onPress={copyDeviceToken} style={styles.pushIdTouchable}>
-            <Text style={styles.pushIdText} numberOfLines={1}>
-              {status.pushServiceToken}
-            </Text>
-          </TouchableOpacity>
-        ) : (
-          <Text style={[styles.statusValue, {color: '#777'}]}>
-            Not available
-          </Text>
-        )}
-      </View>
-
-      <View style={styles.statusRow}>
-        <Text style={styles.statusLabel}>Push Reg ID:</Text>
-        {status.pushRegistrationId ? (
-          <TouchableOpacity onPress={copyPushId} style={styles.pushIdTouchable}>
-            <Text style={styles.pushIdText} numberOfLines={1}>
-              {status.pushRegistrationId}
-            </Text>
-          </TouchableOpacity>
-        ) : (
-          <Text style={[styles.statusValue, {color: '#777'}]}>
-            Not available
-          </Text>
-        )}
-      </View>
-
-      <View style={styles.statusRow}>
-        <Text style={styles.statusLabel}>Personalized:</Text>
-        <Text
-          style={[
-            styles.statusValue,
-            {color: status.personalizedWith ? Colors.primary500 : '#777'},
-          ]}>
-          {status.personalizedWith ? status.personalizedWith.join(', ') : 'Not personalized'}
-        </Text>
-      </View>
-
-      <Text style={styles.expandHint}>
-        {expanded ? 'Tap to collapse' : 'Tap to expand'}
-      </Text>
-
+      <DetailRow
+        label="Registration ID"
+        value={installation?.pushRegistrationId}
+        copyable
+      />
+      <DetailRow
+        label="User"
+        value={describeUser(user) ?? 'Not personalized'}
+      />
       {expanded ? (
         <>
-          <View style={styles.divider} />
-          <View style={styles.statusRow}>
-            <Text style={styles.statusLabel}>RN Architecture:</Text>
-            <Text
-              style={[
-                styles.statusValue,
-                {color: isNewArchitectureEnabled ? Colors.primary500 : '#777'},
-              ]}>
-              {isNewArchitectureEnabled ? 'New' : 'Legacy'}
-            </Text>
-          </View>
-          <View style={styles.statusRow}>
-            <Text style={styles.statusLabel}>React Native:</Text>
-            <Text style={styles.statusValue}>{reactNativeVersion}</Text>
-          </View>
-          <View style={styles.statusRow}>
-            <Text style={styles.statusLabel}>Plugin:</Text>
-            <Text style={styles.statusValue}>
-              {`infobip-mobile-messaging-react-native-plugin ${pluginVersion}`}
-            </Text>
-          </View>
+          <DetailRow
+            label="Push token"
+            value={installation?.pushServiceToken}
+            copyable
+          />
+          <DetailRow
+            label="Notifications"
+            value={
+              installation?.notificationsEnabled ? 'Allowed' : 'Not allowed'
+            }
+          />
+          <DetailRow label="SDK" value={installation?.sdkVersion} />
+          <DetailRow label="Plugin" value={pluginVersion} />
+          <DetailRow label="React Native" value={reactNativeVersion} />
         </>
       ) : null}
-    </Pressable>
+      <Pressable
+        onPress={() => setExpanded(previous => !previous)}
+        accessibilityRole="button"
+        accessibilityState={{expanded}}
+        hitSlop={8}>
+        <Text style={styles.toggle}>
+          {expanded ? 'Show less' : 'Show more'}
+        </Text>
+      </Pressable>
+    </Card>
   );
-});
+};
 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: 'white',
-    borderRadius: 12,
-    padding: 12,
-    marginHorizontal: 5,
-    marginBottom: 10,
-    shadowColor: '#000',
-    shadowOffset: {width: 0, height: 2},
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 1,
-  },
-  containerPressed: {
-    opacity: 0.95,
-  },
-  divider: {
-    height: 1,
-    backgroundColor: '#e0e0e0',
-    marginVertical: 8,
-  },
-  statusRow: {
+  header: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 8,
   },
-  statusLabel: {
-    fontSize: 14,
-    color: Colors.primaryGray,
+  title: {
+    fontSize: 17,
     fontWeight: '600',
-    minWidth: 110,
+    color: Colors.textPrimary,
   },
-  statusValue: {
+  badge: {
+    fontSize: 12,
+    fontWeight: '600',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 10,
+    overflow: 'hidden',
+  },
+  registered: {
+    color: Colors.successText,
+    backgroundColor: Colors.successSubdued,
+  },
+  pending: {
+    color: Colors.infoText,
+    backgroundColor: Colors.infoSubdued,
+  },
+  toggle: {
     fontSize: 14,
-    color: Colors.primaryGray,
-    flex: 1,
-  },
-  pushIdTouchable: {
-    flex: 1,
-  },
-  pushIdText: {
-    fontSize: 12,
-    color: Colors.primary500,
-    fontFamily: 'monospace',
-  },
-  expandHint: {
-    fontSize: 12,
-    color: '#777',
-    textAlign: 'right',
-    marginTop: 4,
+    fontWeight: '600',
+    color: Colors.primary,
   },
 });
 

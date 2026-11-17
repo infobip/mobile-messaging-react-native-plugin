@@ -2,190 +2,157 @@
 //  EventLogScreen.tsx
 //  MobileMessagingReactNative
 //
-//  Copyright (c) 2016-2025 Infobip Limited
+//  Copyright (c) 2016-2026 Infobip Limited
 //  Licensed under the Apache License, Version 2.0
 //
 
 import React, {useCallback, useEffect, useState} from 'react';
 import {
   FlatList,
-  RefreshControl,
+  Platform,
+  Pressable,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from 'react-native';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import EmptyState from '../components/EmptyState';
 import Colors from '../constants/Colors';
-import {mobileMessaging} from 'infobip-mobile-messaging-react-native-plugin';
-import EventLogStore, {EventLogEntry} from '../constants/EventLogStore';
+import EventLogStore from '../constants/EventLogStore';
+import type {EventLogEntry} from '../constants/EventLogStore';
+import {countLabel, formatDateTime} from '../utils/format';
 
+/** Events are recorded with their argument list; most have a single argument, shown on its own. */
+function formatEventData(data: unknown, expanded: boolean): string {
+  const value = Array.isArray(data) && data.length === 1 ? data[0] : data;
+  if (value === undefined || value === null) {
+    return 'No data';
+  }
+  if (typeof value === 'string') {
+    return value;
+  }
+  return expanded ? JSON.stringify(value, null, 2) : JSON.stringify(value);
+}
+
+/** Every SDK event received since install, recorded by App.tsx. Useful when testing push and personalization. */
 const EventLogScreen: React.FC = () => {
+  const {bottom: bottomInset} = useSafeAreaInsets();
   const [entries, setEntries] = useState<EventLogEntry[]>([]);
-  const [refreshing, setRefreshing] = useState(false);
-  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [expandedId, setExpandedId] = useState<string>();
 
-  const load = useCallback(async () => {
-    const list = await EventLogStore.list();
-    setEntries(list);
-  }, []);
+  const load = useCallback(
+    async () => setEntries(await EventLogStore.list()),
+    [],
+  );
 
   useEffect(() => {
     load();
-    // Auto-refresh on incoming events
-    const subs: any[] = [];
-    for (const ev of mobileMessaging.supportedEvents) {
-      subs.push(mobileMessaging.subscribe(ev, () => load()));
-    }
-    return () => {
-      subs.forEach(s => mobileMessaging.unsubscribe(s));
-    };
+    return EventLogStore.subscribe(load);
   }, [load]);
 
-  const onRefresh = () => {
-    setRefreshing(true);
-    load().finally(() => setTimeout(() => setRefreshing(false), 600));
-  };
-
-  const clearAll = () => {
-    EventLogStore.clear().then(() => setEntries([]));
-  };
-
-  const renderItem = ({item}: {item: EventLogEntry}) => {
-    const isExpanded = expandedId === item.id;
-    const preview = makePreview(item.data);
+  const renderEntry = ({item}: {item: EventLogEntry}) => {
+    const expanded = expandedId === item.id;
     return (
-      <TouchableOpacity
-        style={styles.card}
-        onPress={() => setExpandedId(prev => (prev === item.id ? null : item.id))}>
-        <View style={styles.rowHeader}>
-          <Text style={styles.title}>{item.type}</Text>
+      <Pressable
+        onPress={() =>
+          setExpandedId(previous =>
+            previous === item.id ? undefined : item.id,
+          )
+        }
+        accessibilityRole="button"
+        accessibilityState={{expanded}}
+        style={styles.entry}>
+        <View style={styles.entryHeader}>
+          <Text style={styles.type}>{item.type}</Text>
+          <Text style={styles.time}>{formatDateTime(item.ts)}</Text>
         </View>
-        <View style={styles.timeRow}>
-          <Text style={styles.timestamp}>{formatTimestamp(item.ts)}</Text>
-        </View>
-        <Text style={styles.preview} numberOfLines={isExpanded ? 0 : 3}>
-          {preview}
+        <Text style={styles.data} numberOfLines={expanded ? undefined : 3}>
+          {formatEventData(item.data, expanded)}
         </Text>
-      </TouchableOpacity>
+      </Pressable>
     );
   };
 
-  return (
-    <View style={styles.container}>
-      <View style={styles.toolbar}>
-        <Text style={styles.toolbarTitle}>Event Log ({entries.length})</Text>
-        <TouchableOpacity onPress={clearAll} style={styles.headerAction}>
-          <Text style={styles.headerActionText}>Clear All</Text>
-        </TouchableOpacity>
-      </View>
-      <FlatList
-        data={entries}
-        keyExtractor={e => e.id}
-        renderItem={renderItem}
-        contentContainerStyle={styles.listContent}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-        ListEmptyComponent={<Text style={styles.empty}>No events yet</Text>}
-      />
+  const header = entries.length ? (
+    <View style={styles.summary}>
+      <Text style={styles.summaryText}>
+        {countLabel(entries.length, 'event')}
+      </Text>
+      <Pressable
+        onPress={() => EventLogStore.clear()}
+        accessibilityRole="button"
+        hitSlop={8}>
+        <Text style={styles.clear}>Clear</Text>
+      </Pressable>
     </View>
+  ) : undefined;
+
+  return (
+    <FlatList
+      data={entries}
+      keyExtractor={entry => entry.id}
+      renderItem={renderEntry}
+      ListHeaderComponent={header}
+      ListEmptyComponent={
+        <EmptyState
+          title="No events yet"
+          description="SDK events such as registrationUpdated appear here."
+        />
+      }
+      contentContainerStyle={[styles.list, {paddingBottom: 16 + bottomInset}]}
+    />
   );
 };
 
-function makePreview(data: any): string {
-  try {
-    if (data == null) return '∅';
-    if (typeof data === 'string') return data;
-    if (Array.isArray(data)) {
-      return JSON.stringify(data[0] ?? data, null, 2);
-    }
-    return JSON.stringify(data, null, 2);
-  } catch (e) {
-    return String(data);
-  }
-}
-
-function formatTimestamp(ts?: number | null): string {
-  if (!ts || !Number.isFinite(ts)) return 'Unknown time';
-  const d = new Date(ts);
-  if (isNaN(d.getTime())) return 'Unknown time';
-  try {
-    const fmt = new Intl.DateTimeFormat(undefined, {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: false,
-    });
-    return fmt.format(d);
-  } catch (e) {
-    return d.toLocaleString(undefined, {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: false,
-    } as any);
-  }
-}
-
 const styles = StyleSheet.create({
-  container: {flex: 1, backgroundColor: Colors.tintWhite},
-  toolbar: {
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    backgroundColor: Colors.primary500,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+  list: {
+    padding: 16,
+    gap: 8,
   },
-  toolbarTitle: {color: Colors.tintWhite, fontSize: 16, fontWeight: 'bold'},
-  headerAction: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    backgroundColor: Colors.primary600,
-    borderRadius: 16,
-  },
-  headerActionText: {color: Colors.tintWhite, fontWeight: '600'},
-  listContent: {padding: 8},
-  card: {
-    backgroundColor: 'white',
-    borderRadius: 12,
-    padding: 12,
-    marginBottom: 10,
-    shadowColor: '#000',
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 1,
-  },
-  rowHeader: {
+  summary: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    marginBottom: 4,
   },
-  title: {
-    fontSize: 16,
+  summaryText: {
+    fontSize: 14,
+    color: Colors.textSecondary,
+  },
+  clear: {
+    fontSize: 14,
     fontWeight: '600',
-    color: Colors.primaryGray,
-    flex: 1,
-    marginRight: 8,
+    color: Colors.dangerText,
   },
-  timeRow: {
-    marginTop: 6,
+  entry: {
+    backgroundColor: Colors.surface,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    padding: 12,
+    gap: 6,
+  },
+  entryHeader: {
     flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'space-between',
+    alignItems: 'center',
+    gap: 8,
   },
-  timestamp: {fontSize: 12, color: '#777', marginTop: 6},
-  preview: {fontSize: 13, color: Colors.primaryGray, marginTop: 8},
-  empty: {
-    textAlign: 'center',
-    color: Colors.primaryGray,
-    marginTop: 24,
+  type: {
+    flexShrink: 1,
+    fontSize: 15,
+    fontWeight: '600',
+    color: Colors.textPrimary,
+  },
+  time: {
+    fontSize: 12,
+    color: Colors.textTertiary,
+  },
+  data: {
+    fontSize: 12,
+    lineHeight: 17,
+    color: Colors.textSecondary,
+    fontFamily: Platform.select({ios: 'Menlo', default: 'monospace'}),
   },
 });
 
